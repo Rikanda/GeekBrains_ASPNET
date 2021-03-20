@@ -57,3 +57,4 @@ curl -d -L -X DELETE "http://localhost:51684/api/weatherforecast/delete?date=202
 curl -d -L -X DELETE "http://localhost:51684/api/weatherforecast/deleteall"  
 ```  
   
+![Пример работы запросов](Pics/task-01-01.gif "Пример работы запросов")
