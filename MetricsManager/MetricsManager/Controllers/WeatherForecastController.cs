@@ -10,13 +10,6 @@ namespace MetricsManager.Controllers
 	[ApiController]
 	public class WeatherForecastController : ControllerBase
 	{
-		#region ---- CONSTANTS ----
-
-		/// <summary>Формат даты для парсинга запросов</summary>
-		private readonly string _format = "yyyy-MM-dd";
-
-		#endregion
-
 		#region ---- FIELDS ----
 
 		/// <summary>Список для хранения значений температуры</summary>
@@ -33,7 +26,7 @@ namespace MetricsManager.Controllers
 
 		#endregion
 
-		#region ---- CREATE ----
+		#region ---- METHODS ----
 
 		/// <summary>
 		/// Создает запись в списке с показаниями температуры
@@ -42,65 +35,27 @@ namespace MetricsManager.Controllers
 		/// <param name="temperature">Значение температуры в градусах Цельсия</param>
 		/// <returns></returns>
 		[HttpPost("create")]
-		public IActionResult Create([FromQuery] string date, [FromQuery] string temperature)
+		public IActionResult Create([FromQuery] DateTime? date, [FromQuery] int? temperature)
 		{
-			bool isProceed;
-			int temperatureParsed = 0;
-
-			isProceed = DateTime.TryParseExact(date, _format, CultureInfo.InvariantCulture, DateTimeStyles.None, out DateTime dateParsed);
-			if (isProceed) isProceed = int.TryParse(temperature, out temperatureParsed);
-
-			if (isProceed)
+			if(date.HasValue && temperature.HasValue)
 			{
-				WeatherForecast newItem = new WeatherForecast(dateParsed, temperatureParsed);
-				if (!_holder.Contains(newItem))
+				var item = from weatherForecast in _holder
+							where weatherForecast.Date == date.Value
+							select weatherForecast;
+
+				if(item.Any() != true)
 				{
-					_holder.Add(newItem);
-				}
-				else
-				{
-					isProceed = false;
+					_holder.Add(new WeatherForecast(date.Value, temperature.Value));
 				}
 			}
-
-			return Ok(isProceed);
-		}
-
-		#endregion
-
-		#region ---- READ ----
-
-		/// <summary>
-		/// Просмотр всех сохраненных значений температуры
-		/// </summary>
-		/// <returns>Список со всеми значениями температуры</returns>
-		[HttpGet("read")]
-		public IActionResult Read()
-		{
-			return Ok(_holder);
-		}
-
-		/// <summary>Выдает значение температуры за определенную дату</summary>
-		/// <param name="date">Дата за которую нужно узнать значение температуры</param>
-		/// <returns>Запись из списка значений температур</returns>
-		[HttpGet("readValue")]
-		public IActionResult Read([FromQuery] string date)
-		{
-			bool isProceed = false;
-			DateTime dateParsed = DateTime.MinValue;
-
-			isProceed = DateTime.TryParseExact(date, _format, CultureInfo.InvariantCulture, DateTimeStyles.None, out dateParsed);
-
-			if (isProceed)
+			else
 			{
-				var value = from i in _holder
-							where i.Date == dateParsed
-							select i;
-				return Ok(value);
+				return BadRequest();
 			}
 
-			return Ok(isProceed);
+			return Ok();
 		}
+
 
 		/// <summary>
 		/// Выдает значения температуры, за определенный интервал дат
@@ -108,120 +63,82 @@ namespace MetricsManager.Controllers
 		/// <param name="dateFrom">Начальная дата</param>
 		/// <param name="dateTo">Конечная дата</param>
 		/// <returns>Список со значениями температур за указанный период</returns>
-		[HttpGet("readInterval")]
-		public IActionResult Read([FromQuery] string dateFrom, [FromQuery] string dateTo)
+		[HttpGet("read")]
+		public IActionResult Read([FromQuery] DateTime? dateFrom, [FromQuery] DateTime? dateTo)
 		{
-			bool isProceed = false;
-			DateTime dateFromParsed = DateTime.MinValue;
-			DateTime dateToParsed = DateTime.MinValue;
-
-			isProceed = DateTime.TryParseExact(dateFrom, _format, CultureInfo.InvariantCulture, DateTimeStyles.None, out dateFromParsed);
-			if (isProceed) isProceed = DateTime.TryParseExact(dateTo, _format, CultureInfo.InvariantCulture, DateTimeStyles.None, out dateToParsed);
-
-			if (isProceed)
+			if (!dateFrom.HasValue)
 			{
-				var value = from i in _holder
-							where i.Date >= dateFromParsed && i.Date <= dateToParsed
-							select i;
-				return Ok(value);
+				dateFrom = DateTime.MinValue;
+			}
+			if(!dateTo.HasValue)
+			{
+				dateTo = DateTime.MaxValue;
 			}
 
-			return Ok(isProceed);
+			var items = from weatherForecast in _holder
+						where weatherForecast.Date >= dateFrom.Value && weatherForecast.Date <= dateTo.Value
+						select weatherForecast;
+
+			return Ok(items);
 		}
 
-		#endregion
-
-		#region ---- UPDATE ----
 
 		/// <summary>
-		/// 
+		/// Изменяет значение температуры в заданную дату
 		/// </summary>
-		/// <param name="date"></param>
-		/// <param name="temperature"></param>
+		/// <param name="date">Дата за которую нужно изменить значение температуры</param>
+		/// <param name="temperature">Новое значение температуры</param>
 		/// <returns></returns>
 		[HttpPut("update")]
-		public IActionResult Update([FromQuery] string date, [FromQuery] string temperature)
+		public IActionResult Update([FromQuery] DateTime? date, [FromQuery] int? temperature)
 		{
-			bool isProceed = false;
-			int temperatureParsed = 0;
-			DateTime dateParsed = DateTime.MinValue;
-
-			isProceed = DateTime.TryParseExact(date, _format, CultureInfo.InvariantCulture, DateTimeStyles.None, out dateParsed);
-			if (isProceed) isProceed = int.TryParse(temperature, out temperatureParsed);
-
-
-			if (isProceed)
+			if (date.HasValue && temperature.HasValue)
 			{
-				WeatherForecast newItem = new WeatherForecast(dateParsed, temperatureParsed);
-
-				var value = from i in _holder
-							where i.Date == dateParsed
-							select i;
-
-				WeatherForecast[] oldItems = value.ToArray<WeatherForecast>();
-
-				if (oldItems.Length != 0)
+				try
 				{
-					_holder.Remove(oldItems[0]);
-					_holder.Add(newItem);
+					var updatedWeatherForecast = _holder.Single(weatherForecast => weatherForecast.Date == date.Value);
+					updatedWeatherForecast.TemperatureC = temperature.Value;
 				}
-				else
+				catch
 				{
-					isProceed = false;
+					return BadRequest();
 				}
 			}
-
-			return Ok(isProceed);
-		}
-
-		#endregion
-
-		#region ---- DELETE ----
-
-		/// <summary>
-		/// Удаляет все записи из списка показаний температур
-		/// </summary>
-		/// <returns></returns>
-		[HttpDelete("deleteAll")]
-		public IActionResult Delete()
-		{
-			_holder.Clear();
+			else
+			{
+				return BadRequest();
+			}
 			return Ok();
 		}
 
 
 		/// <summary>
-		/// Удаляет из списка показаний температур значение за указанную дату
+		/// Удаляет из списка показаний температур значение за указанный интервал дат
 		/// </summary>
-		/// <param name="date">Дата за которую нужно удалить значение температуры</param>
-		/// <returns>true, если процесс удаления прошел успешно</returns>
+		/// <param name="dateFrom">Начальная дата</param>
+		/// <param name="dateTo">Конечная дата</param>
+		/// <returns></returns>
 		[HttpDelete("delete")]
-		public IActionResult Delete([FromQuery] string date)
+		public IActionResult Delete([FromQuery] DateTime? dateFrom, [FromQuery] DateTime? dateTo)
 		{
-			bool isProceed = false;
-			DateTime dateParsed = DateTime.MinValue;
-
-			isProceed = DateTime.TryParseExact(date, _format, CultureInfo.InvariantCulture, DateTimeStyles.None, out dateParsed);
-
-			if (isProceed)
+			if (dateFrom.HasValue && dateTo.HasValue)
 			{
-				var value = from i in _holder
-							where i.Date == dateParsed
-							select i;
+				var items = from weatherForecast in _holder
+							where weatherForecast.Date >= dateFrom.Value && weatherForecast.Date <= dateTo.Value
+							select weatherForecast;
 
-				WeatherForecast[] oldItems = value.ToArray<WeatherForecast>();
-
-				if (oldItems.Length != 0)
+				//ToList, для того чтобы прошло немедленное выполнение запроса, иначе выскакивает exception при удалении элементов
+				foreach (var item in items.ToList())
 				{
-					_holder.Remove(oldItems[0]);
-				}
-				else
-				{
-					isProceed = false;
+					_holder.Remove(item);
 				}
 			}
+			else
+			{
+				return BadRequest();
+			}
 
-			return Ok(isProceed);
+			return Ok();
 		}
 
 		#endregion
