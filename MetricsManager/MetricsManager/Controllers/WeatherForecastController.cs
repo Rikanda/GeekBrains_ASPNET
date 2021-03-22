@@ -42,65 +42,30 @@ namespace MetricsManager.Controllers
 		/// <param name="temperature">Значение температуры в градусах Цельсия</param>
 		/// <returns></returns>
 		[HttpPost("create")]
-		public IActionResult Create([FromQuery] string date, [FromQuery] string temperature)
+		public IActionResult Create([FromQuery] DateTime? date, [FromQuery] int? temperature)
 		{
-			bool isProceed;
-			int temperatureParsed = 0;
-
-			isProceed = DateTime.TryParseExact(date, _format, CultureInfo.InvariantCulture, DateTimeStyles.None, out DateTime dateParsed);
-			if (isProceed) isProceed = int.TryParse(temperature, out temperatureParsed);
-
-			if (isProceed)
+			if(date.HasValue && temperature.HasValue)
 			{
-				WeatherForecast newItem = new WeatherForecast(dateParsed, temperatureParsed);
-				if (!_holder.Contains(newItem))
+				var value = from weatherForecast in _holder
+							where weatherForecast.Date == date.Value
+							select weatherForecast;
+
+				if(value.Any() != true)
 				{
-					_holder.Add(newItem);
-				}
-				else
-				{
-					isProceed = false;
+					_holder.Add(new WeatherForecast(date.Value, temperature.Value));
 				}
 			}
+			else
+			{
+				return BadRequest();
+			}
 
-			return Ok(isProceed);
+			return Ok();
 		}
 
 		#endregion
 
 		#region ---- READ ----
-
-		/// <summary>
-		/// Просмотр всех сохраненных значений температуры
-		/// </summary>
-		/// <returns>Список со всеми значениями температуры</returns>
-		[HttpGet("read")]
-		public IActionResult Read()
-		{
-			return Ok(_holder);
-		}
-
-		/// <summary>Выдает значение температуры за определенную дату</summary>
-		/// <param name="date">Дата за которую нужно узнать значение температуры</param>
-		/// <returns>Запись из списка значений температур</returns>
-		[HttpGet("readValue")]
-		public IActionResult Read([FromQuery] string date)
-		{
-			bool isProceed = false;
-			DateTime dateParsed = DateTime.MinValue;
-
-			isProceed = DateTime.TryParseExact(date, _format, CultureInfo.InvariantCulture, DateTimeStyles.None, out dateParsed);
-
-			if (isProceed)
-			{
-				var value = from i in _holder
-							where i.Date == dateParsed
-							select i;
-				return Ok(value);
-			}
-
-			return Ok(isProceed);
-		}
 
 		/// <summary>
 		/// Выдает значения температуры, за определенный интервал дат
@@ -120,9 +85,9 @@ namespace MetricsManager.Controllers
 
 			if (isProceed)
 			{
-				var value = from i in _holder
-							where i.Date >= dateFromParsed && i.Date <= dateToParsed
-							select i;
+				var value = from weatherForecast in _holder
+							where weatherForecast.Date >= dateFromParsed && weatherForecast.Date <= dateToParsed
+							select weatherForecast;
 				return Ok(value);
 			}
 
@@ -154,9 +119,9 @@ namespace MetricsManager.Controllers
 			{
 				WeatherForecast newItem = new WeatherForecast(dateParsed, temperatureParsed);
 
-				var value = from i in _holder
-							where i.Date == dateParsed
-							select i;
+				var value = from weatherForecast in _holder
+							where weatherForecast.Date == dateParsed
+							select weatherForecast;
 
 				WeatherForecast[] oldItems = value.ToArray<WeatherForecast>();
 
@@ -177,18 +142,6 @@ namespace MetricsManager.Controllers
 		#endregion
 
 		#region ---- DELETE ----
-
-		/// <summary>
-		/// Удаляет все записи из списка показаний температур
-		/// </summary>
-		/// <returns></returns>
-		[HttpDelete("deleteAll")]
-		public IActionResult Delete()
-		{
-			_holder.Clear();
-			return Ok();
-		}
-
 
 		/// <summary>
 		/// Удаляет из списка показаний температур значение за указанную дату
