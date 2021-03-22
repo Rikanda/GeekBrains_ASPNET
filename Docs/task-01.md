@@ -21,12 +21,9 @@
 | Имя                      | 	Действие |
 |--------------------------|----------------|
 |**create**                | создает элемент в списке  
-|**read**                  | выдает все значения из списка  
-|**readValue**             | выдает элемент из списка за определенную дату  
-|**readInterval**          | выдает элементы списка за указанный промежуток дат  
+|**read**                  | выдает элементы списка за указанный промежуток дат  
 |**update**                | изменяет элемент в списке за указанную дату  
-|**delete**                | удаляет элемент из списка за указанную дату  
-|**deleteAll**             | удаляет все элементы из списка  
+|**delete**                | удаляет элементы из списка за указанный промежуток дат
   
 ---
   
@@ -38,23 +35,14 @@ curl -d -L -X POST "http://localhost:51684/api/weatherforecast/create?date=2020-
 curl -d -L -X POST "http://localhost:51684/api/weatherforecast/create?date=2020-02-02&temperature=-10"  
 curl -d -L -X POST "http://localhost:51684/api/weatherforecast/create?date=2020-02-21&temperature=11"  
   
-//Просмотр всех элементов списка                      
-curl -L -X GET "http://localhost:51684/api/weatherforecast/read"  
-  
 //Просмотр значений за интервал дат  
-curl -L -X GET "http://localhost:51684/api/weatherforecast/readinterval?datefrom=2020-01-15&dateto=2020-02-10"  
-  
-//Просмотр значения за указанную дату  
-curl -L -X GET "http://localhost:51684/api/weatherforecast/readvalue?date=2020-01-15"  
-  
+curl -L -X GET "http://localhost:51684/api/weatherforecast/read?datefrom=2020-01-15&dateto=2020-02-10"  
+    
 //Изменение значения за определенную дату  
 curl -d -L -X PUT "http://localhost:51684/api/weatherforecast/update?date=2020-01-15&temperature=-22"  
   
-//Удаление значения за определенную дату  
-curl -d -L -X DELETE "http://localhost:51684/api/weatherforecast/delete?date=2020-01-15"  
-  
-//Удаление всех элементов из списка  
-curl -d -L -X DELETE "http://localhost:51684/api/weatherforecast/deleteall"  
+//Удаление значений за интервал дат
+curl -d -L -X DELETE "http://localhost:51684/api/weatherforecast/delete?datefrom=2020-01-15&dateto=2020-02-10"  
 ```  
   
 ![Пример работы запросов](Pics/task-01-01.gif "Пример работы запросов")
