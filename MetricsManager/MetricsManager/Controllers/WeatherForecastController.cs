@@ -96,7 +96,7 @@ namespace MetricsManager.Controllers
 			{
 				try
 				{
-					var updatedWeatherForecast = _holder.Single(weatherForecast => weatherForecast.Date == date);
+					var updatedWeatherForecast = _holder.Single(weatherForecast => weatherForecast.Date == date.Value);
 					updatedWeatherForecast.TemperatureC = temperature.Value;
 				}
 				catch
