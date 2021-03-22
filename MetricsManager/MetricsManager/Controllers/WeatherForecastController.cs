@@ -39,11 +39,11 @@ namespace MetricsManager.Controllers
 		{
 			if(date.HasValue && temperature.HasValue)
 			{
-				var value = from weatherForecast in _holder
+				var item = from weatherForecast in _holder
 							where weatherForecast.Date == date.Value
 							select weatherForecast;
 
-				if(value.Any() != true)
+				if(item.Any() != true)
 				{
 					_holder.Add(new WeatherForecast(date.Value, temperature.Value));
 				}
@@ -66,17 +66,20 @@ namespace MetricsManager.Controllers
 		[HttpGet("read")]
 		public IActionResult Read([FromQuery] DateTime? dateFrom, [FromQuery] DateTime? dateTo)
 		{
-			if (dateFrom.HasValue && dateTo.HasValue)
+			if (!dateFrom.HasValue)
 			{
-				var value = from weatherForecast in _holder
-							where weatherForecast.Date >= dateFrom.Value && weatherForecast.Date <= dateTo.Value
-							select weatherForecast;
-				return Ok(value);
+				dateFrom = DateTime.MinValue;
 			}
-			else
+			if(!dateTo.HasValue)
 			{
-				return Ok();
+				dateTo = DateTime.MaxValue;
 			}
+
+			var items = from weatherForecast in _holder
+						where weatherForecast.Date >= dateFrom.Value && weatherForecast.Date <= dateTo.Value
+						select weatherForecast;
+
+			return Ok(items);
 		}
 
 
@@ -120,11 +123,12 @@ namespace MetricsManager.Controllers
 		{
 			if (dateFrom.HasValue && dateTo.HasValue)
 			{
-				var values = from weatherForecast in _holder
+				var items = from weatherForecast in _holder
 							where weatherForecast.Date >= dateFrom.Value && weatherForecast.Date <= dateTo.Value
 							select weatherForecast;
-				
-				foreach(var item in values.ToList())
+
+				//ToList, для того чтобы прошло немедленное выполнение запроса, иначе выскакивает exception при удалении элементов
+				foreach (var item in items.ToList())
 				{
 					_holder.Remove(item);
 				}
