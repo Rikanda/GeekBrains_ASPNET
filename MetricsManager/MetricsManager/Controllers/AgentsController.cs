@@ -11,11 +11,11 @@ namespace MetricsManager.Controllers
 	[ApiController]
 	public class AgentsController : ControllerBase
 	{
-		//Отладочный метод для проверки сервера
+		//!DELETE Отладочный метод для проверки сервера
 		[HttpGet("read")]
 		public IActionResult Read()
 		{
-			return Ok("Запуск прошел успешно");
+			return Ok("Запуск MetricsManager прошел успешно");
 		}
 
 		[HttpPost("register")]
