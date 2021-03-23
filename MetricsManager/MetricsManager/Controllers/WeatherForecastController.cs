@@ -37,16 +37,18 @@ namespace MetricsManager.Controllers
 		[HttpPost("create")]
 		public IActionResult Create([FromQuery] DateTime? date, [FromQuery] int? temperature)
 		{
-			if(date.HasValue && temperature.HasValue)
+			if(!date.HasValue || !temperature.HasValue)
 			{
-				var item = from weatherForecast in _holder
-							where weatherForecast.Date == date.Value
-							select weatherForecast;
+				return BadRequest();
+			}
 
-				if(item.Any() != true)
-				{
-					_holder.Add(new WeatherForecast(date.Value, temperature.Value));
-				}
+			var item = from weatherForecast in _holder
+					   where weatherForecast.Date == date.Value
+					   select weatherForecast;
+
+			if (!item.Any())
+			{
+				_holder.Add(new WeatherForecast(date.Value, temperature.Value));
 			}
 			else
 			{
@@ -92,22 +94,21 @@ namespace MetricsManager.Controllers
 		[HttpPut("update")]
 		public IActionResult Update([FromQuery] DateTime? date, [FromQuery] int? temperature)
 		{
-			if (date.HasValue && temperature.HasValue)
-			{
-				try
-				{
-					var updatedWeatherForecast = _holder.Single(weatherForecast => weatherForecast.Date == date.Value);
-					updatedWeatherForecast.TemperatureC = temperature.Value;
-				}
-				catch
-				{
-					return BadRequest();
-				}
-			}
-			else
+			if (!date.HasValue || !temperature.HasValue)
 			{
 				return BadRequest();
 			}
+
+			try
+			{
+				var updatedWeatherForecast = _holder.Single(weatherForecast => weatherForecast.Date == date.Value);
+				updatedWeatherForecast.TemperatureC = temperature.Value;
+			}
+			catch
+			{
+				return BadRequest();
+			}
+
 			return Ok();
 		}
 
@@ -121,21 +122,19 @@ namespace MetricsManager.Controllers
 		[HttpDelete("delete")]
 		public IActionResult Delete([FromQuery] DateTime? dateFrom, [FromQuery] DateTime? dateTo)
 		{
-			if (dateFrom.HasValue && dateTo.HasValue)
-			{
-				var items = from weatherForecast in _holder
-							where weatherForecast.Date >= dateFrom.Value && weatherForecast.Date <= dateTo.Value
-							select weatherForecast;
-
-				//ToList, для того чтобы прошло немедленное выполнение запроса, иначе выскакивает exception при удалении элементов
-				foreach (var item in items.ToList())
-				{
-					_holder.Remove(item);
-				}
-			}
-			else
+			if (!dateFrom.HasValue || !dateTo.HasValue)
 			{
 				return BadRequest();
+			}
+
+			var items = from weatherForecast in _holder
+						where weatherForecast.Date >= dateFrom.Value && weatherForecast.Date <= dateTo.Value
+						select weatherForecast;
+
+			//ToList, для того чтобы прошло немедленное выполнение запроса, иначе выскакивает exception при удалении элементов
+			foreach (var item in items.ToList())
+			{
+				_holder.Remove(item);
 			}
 
 			return Ok();
