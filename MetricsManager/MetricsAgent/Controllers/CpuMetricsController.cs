@@ -1,4 +1,4 @@
-﻿using MetricsAgent.Enums;
+﻿using MetricsManager.Enums;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System;
@@ -16,7 +16,7 @@ namespace MetricsAgent.Controllers
 		[HttpGet("read")]
 		public IActionResult Read()
 		{
-			return Ok("Запуск прошел MetricsAgent успешно");
+			return Ok("Запуск MetricsAgent прошел успешно");
 		}
 
 		[HttpGet("agent/{agentId}/from/{fromTime}/to/{toTime}")]
@@ -32,7 +32,8 @@ namespace MetricsAgent.Controllers
 		public IActionResult GetMetricsByPercentileFromAgent(
 			[FromRoute] int agentId,
 			[FromRoute] TimeSpan fromTime,
-			[FromRoute] TimeSpan toTime)
+			[FromRoute] TimeSpan toTime,
+			[FromRoute] Percentile percentile)
 		{
 			return Ok();
 		}

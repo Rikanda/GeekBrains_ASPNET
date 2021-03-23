@@ -7,15 +7,16 @@ using System.Threading.Tasks;
 
 namespace MetricsManager.Controllers
 {
+
 	[Route("api/[controller]")]
 	[ApiController]
 	public class AgentsController : ControllerBase
 	{
-		//!DELETE Отладочный метод для проверки сервера
+
 		[HttpGet("read")]
 		public IActionResult Read()
 		{
-			return Ok("Запуск MetricsManager прошел успешно");
+			return Ok("Список зарегистрированных в системе агентов");
 		}
 
 		[HttpPost("register")]

@@ -25,7 +25,8 @@ namespace MetricsManager.Controllers
 		public IActionResult GetMetricsByPercentileFromAgent(
 			[FromRoute] int agentId,
 			[FromRoute] TimeSpan fromTime,
-			[FromRoute] TimeSpan toTime)
+			[FromRoute] TimeSpan toTime,
+			[FromRoute] Percentile percentile)
 		{
 			return Ok();
 		}

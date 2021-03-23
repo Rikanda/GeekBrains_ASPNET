@@ -11,5 +11,10 @@ namespace MetricsAgent.Controllers
     [ApiController]
     public class HddMetricsController : ControllerBase
     {
+        [HttpGet("agent/{agentId}/left")]
+        public IActionResult GetMetricsFromAgent([FromRoute] int agentId)
+        {
+            return Ok();
+        }
     }
 }
