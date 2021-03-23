@@ -1,39 +1,145 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
-using System.Threading.Tasks;
 
 namespace MetricsManager.Controllers
 {
-    [ApiController]
-    [Route("[controller]")]
-    public class WeatherForecastController : ControllerBase
-    {
-        private static readonly string[] Summaries = new[]
-        {
-            "Freezing", "Bracing", "Chilly", "Cool", "Mild", "Warm", "Balmy", "Hot", "Sweltering", "Scorching"
-        };
+	[Route("api/[controller]")]
+	[ApiController]
+	public class WeatherForecastController : ControllerBase
+	{
+		#region ---- FIELDS ----
 
-        private readonly ILogger<WeatherForecastController> _logger;
+		/// <summary>Список для хранения значений температуры</summary>
+		private readonly List<WeatherForecast> _holder;
 
-        public WeatherForecastController(ILogger<WeatherForecastController> logger)
-        {
-            _logger = logger;
-        }
+		#endregion
 
-        [HttpGet]
-        public IEnumerable<WeatherForecast> Get()
-        {
-            var rng = new Random();
-            return Enumerable.Range(1, 5).Select(index => new WeatherForecast
-            {
-                Date = DateTime.Now.AddDays(index),
-                TemperatureC = rng.Next(-20, 55),
-                Summary = Summaries[rng.Next(Summaries.Length)]
-            })
-            .ToArray();
-        }
-    }
+		#region ---- CONSTRUCTORS ----
+
+		public WeatherForecastController(List<WeatherForecast> holder)
+		{
+			this._holder = holder;
+		}
+
+		#endregion
+
+		#region ---- METHODS ----
+
+		/// <summary>
+		/// Создает запись в списке с показаниями температуры
+		/// </summary>
+		/// <param name="date">Дата</param>
+		/// <param name="temperature">Значение температуры в градусах Цельсия</param>
+		/// <returns></returns>
+		[HttpPost("create")]
+		public IActionResult Create([FromQuery] DateTime? date, [FromQuery] int? temperature)
+		{
+			if(!date.HasValue || !temperature.HasValue)
+			{
+				return BadRequest();
+			}
+
+			var item = from weatherForecast in _holder
+					   where weatherForecast.Date == date.Value
+					   select weatherForecast;
+
+			if (!item.Any())
+			{
+				_holder.Add(new WeatherForecast(date.Value, temperature.Value));
+			}
+			else
+			{
+				return BadRequest();
+			}
+
+			return Ok();
+		}
+
+
+		/// <summary>
+		/// Выдает значения температуры, за определенный интервал дат
+		/// </summary>
+		/// <param name="dateFrom">Начальная дата</param>
+		/// <param name="dateTo">Конечная дата</param>
+		/// <returns>Список со значениями температур за указанный период</returns>
+		[HttpGet("read")]
+		public IActionResult Read([FromQuery] DateTime? dateFrom, [FromQuery] DateTime? dateTo)
+		{
+			if (!dateFrom.HasValue)
+			{
+				dateFrom = DateTime.MinValue;
+			}
+			if(!dateTo.HasValue)
+			{
+				dateTo = DateTime.MaxValue;
+			}
+
+			var items = from weatherForecast in _holder
+						where weatherForecast.Date >= dateFrom.Value && weatherForecast.Date <= dateTo.Value
+						select weatherForecast;
+
+			return Ok(items);
+		}
+
+
+		/// <summary>
+		/// Изменяет значение температуры в заданную дату
+		/// </summary>
+		/// <param name="date">Дата за которую нужно изменить значение температуры</param>
+		/// <param name="temperature">Новое значение температуры</param>
+		/// <returns></returns>
+		[HttpPut("update")]
+		public IActionResult Update([FromQuery] DateTime? date, [FromQuery] int? temperature)
+		{
+			if (!date.HasValue || !temperature.HasValue)
+			{
+				return BadRequest();
+			}
+
+			try
+			{
+				var updatedWeatherForecast = _holder.Single(weatherForecast => weatherForecast.Date == date.Value);
+				updatedWeatherForecast.TemperatureC = temperature.Value;
+			}
+			catch
+			{
+				return BadRequest();
+			}
+
+			return Ok();
+		}
+
+
+		/// <summary>
+		/// Удаляет из списка показаний температур значение за указанный интервал дат
+		/// </summary>
+		/// <param name="dateFrom">Начальная дата</param>
+		/// <param name="dateTo">Конечная дата</param>
+		/// <returns></returns>
+		[HttpDelete("delete")]
+		public IActionResult Delete([FromQuery] DateTime? dateFrom, [FromQuery] DateTime? dateTo)
+		{
+			if (!dateFrom.HasValue || !dateTo.HasValue)
+			{
+				return BadRequest();
+			}
+
+			var items = from weatherForecast in _holder
+						where weatherForecast.Date >= dateFrom.Value && weatherForecast.Date <= dateTo.Value
+						select weatherForecast;
+
+			//ToList, для того чтобы прошло немедленное выполнение запроса, иначе выскакивает exception при удалении элементов
+			foreach (var item in items.ToList())
+			{
+				_holder.Remove(item);
+			}
+
+			return Ok();
+		}
+
+		#endregion
+	}
 }
