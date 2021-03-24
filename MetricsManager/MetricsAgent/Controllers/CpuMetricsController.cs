@@ -12,13 +12,17 @@ namespace MetricsAgent.Controllers
 	[ApiController]
 	public class CpuMetricsController : ControllerBase
 	{
-		#region ---- !DELETE Временный отладочный метод для проверки сервера ----
+
+#if DEBUG
 		[HttpGet("read")]
 		public IActionResult Read()
 		{
 			return Ok("Запуск MetricsAgent прошел успешно");
 		}
-		#endregion
+#else
+#error НЕ УДАЛЕН ОТЛАДОЧНЫЙ МЕТОД в CpuMetricsController
+#endif
+
 
 		[HttpGet("from/{fromTime}/to/{toTime}")]
 		public IActionResult GetMetricsFromAgent(
