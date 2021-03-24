@@ -5,7 +5,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\MetricsManager\MetricsManager.csproj" />
+    <ProjectReference Include="..\Metrics.Tools\Metrics.Tools.csproj" />
   </ItemGroup>
 
 
