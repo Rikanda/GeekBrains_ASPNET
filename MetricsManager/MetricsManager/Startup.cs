@@ -20,7 +20,6 @@ namespace MetricsManager
 		public void ConfigureServices(IServiceCollection services)
 		{
 			services.AddControllers();
-			services.AddSingleton<List<WeatherForecast>>();//Список для хранения показателей температуры за определенные даты
 		}
 
 		// This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
