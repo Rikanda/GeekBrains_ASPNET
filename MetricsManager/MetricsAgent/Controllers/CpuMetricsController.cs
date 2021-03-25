@@ -12,18 +12,7 @@ namespace MetricsAgent.Controllers
 	[ApiController]
 	public class CpuMetricsController : ControllerBase
 	{
-
-#if DEBUG
-		[HttpGet("read")]
-		public IActionResult Read()
-		{
-			return Ok("Запуск MetricsAgent прошел успешно");
-		}
-#else
-#error НЕ УДАЛЕН ОТЛАДОЧНЫЙ МЕТОД в CpuMetricsController
-#endif
-
-
+	
 		[HttpGet("from/{fromTime}/to/{toTime}")]
 		public IActionResult GetMetricsFromAgent(
 			[FromRoute] TimeSpan fromTime,
