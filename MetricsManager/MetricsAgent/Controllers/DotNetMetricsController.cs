@@ -7,10 +7,10 @@ using System.Threading.Tasks;
 
 namespace MetricsAgent.Controllers
 {
-    [Route("api/metrics/dotnet")]
-    [ApiController]
-    public class DotNetMetricsController : ControllerBase
-    {
+	[Route("api/metrics/dotnet")]
+	[ApiController]
+	public class DotNetMetricsController : ControllerBase
+	{
 
 		[HttpGet("errors-count/from/{fromTime}/to/{toTime}")]
 		public IActionResult GetMetricsFromAgent(

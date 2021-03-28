@@ -7,10 +7,10 @@ using System.Threading.Tasks;
 
 namespace MetricsAgent.Controllers
 {
-    [Route("api/metrics/ram")]
-    [ApiController]
-    public class RamMetricsController : ControllerBase
-    {
+	[Route("api/metrics/ram")]
+	[ApiController]
+	public class RamMetricsController : ControllerBase
+	{
 		[HttpGet("available")]
 		public IActionResult GetMetricsFromAgent()
 		{

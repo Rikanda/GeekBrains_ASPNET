@@ -6,27 +6,27 @@ using Xunit;
 
 namespace MetricsAgentsTests
 {
-    public class RamControllerUnitTests
-    {
-        private RamMetricsController controller;
-        public RamControllerUnitTests()
-        {
-            controller = new RamMetricsController();
-        }
+	public class RamControllerUnitTests
+	{
+		private RamMetricsController controller;
+		public RamControllerUnitTests()
+		{
+			controller = new RamMetricsController();
+		}
 
-        [Fact]
-        public void GetMetricsFromAgent_ReturnsOk()
-        {
-            //Arrange
+		[Fact]
+		public void GetMetricsFromAgent_ReturnsOk()
+		{
+			//Arrange
 
-            //Act
-            var result = controller.GetMetricsFromAgent();
+			//Act
+			var result = controller.GetMetricsFromAgent();
 
-            // Assert
-            _ = Assert.IsAssignableFrom<IActionResult>(result);
-        }
+			// Assert
+			_ = Assert.IsAssignableFrom<IActionResult>(result);
+		}
 
 
 
-    }
+	}
 }

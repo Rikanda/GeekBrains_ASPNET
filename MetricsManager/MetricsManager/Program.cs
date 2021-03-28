@@ -14,7 +14,6 @@ namespace MetricsManager
 			try
 			{
 				logger.Info("---- [BEGIN]----");
-				//Samples
 				
 				CreateHostBuilder(args).Build().Run();
 			}
