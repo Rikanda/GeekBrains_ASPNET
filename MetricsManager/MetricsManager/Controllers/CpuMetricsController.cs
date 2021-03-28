@@ -18,9 +18,7 @@ namespace MetricsManager.Controllers
 		public CpuMetricsController(ILogger<CpuMetricsController> logger)
 		{
 			_logger = logger;
-			_logger.LogInformation("CpuMetricsAgent created");
-
-
+			_logger.LogDebug("CpuMetricsController");
 		}
 
 		[HttpGet("agent/{agentId}/from/{fromTime}/to/{toTime}")]
@@ -29,7 +27,7 @@ namespace MetricsManager.Controllers
 			[FromRoute] TimeSpan fromTime, 
 			[FromRoute] TimeSpan toTime)
 		{
-			_logger.LogInformation("Вызван метод CpuMetricsController, для получения данных от агента.");
+			_logger.LogInformation("Вызван GET метод CpuMetricsFromAgent");
 			return Ok();
 		}
 
