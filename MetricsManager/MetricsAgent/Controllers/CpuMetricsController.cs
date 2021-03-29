@@ -24,13 +24,17 @@ namespace MetricsAgent.Controllers
 		public CpuMetricsController(ILogger<CpuMetricsController> logger, ICpuMetricsRepository repository)
 		{
 			_logger = logger;
-			_logger.LogDebug("CpuMetricsController");
+			_logger.LogDebug("Вызов конструктора");
 			this.repository = repository;
 		}
 
 		[HttpPost("create")]
 		public IActionResult Create([FromBody] CpuMetricCreateRequest request)
 		{
+			_logger.LogDebug("Вызов метода. Параметры:" +
+				$" {nameof(request.Time)} = {request.Time}" +
+				$" {nameof(request.Value)} = {request.Value}");
+
 			repository.Create(new CpuMetric
 			{
 				Time = TimeSpan.FromSeconds(request.Time),
@@ -43,6 +47,8 @@ namespace MetricsAgent.Controllers
 		[HttpGet("all")]
 		public IActionResult GetAll()
 		{
+			_logger.LogDebug("Вызов метода");
+
 			var metrics = repository.GetAll();
 
 			var response = new AllCpuMetricsResponse()
@@ -64,6 +70,10 @@ namespace MetricsAgent.Controllers
 			[FromRoute] TimeSpan fromTime,
 			[FromRoute] TimeSpan toTime)
 		{
+			_logger.LogDebug("Вызов метода. Параметры:" +
+				$" {nameof(fromTime)} = {fromTime}" +
+				$" {nameof(toTime)} = {toTime}");
+
 			_logger.LogInformation("Вызван GET метод CpuMetricsFromAgent");
 			return Ok();
 		}
@@ -74,6 +84,11 @@ namespace MetricsAgent.Controllers
 			[FromRoute] TimeSpan toTime,
 			[FromRoute] Percentile percentile)
 		{
+			_logger.LogDebug("Вызов метода. Параметры:" +
+				$" {nameof(fromTime)} = {fromTime}" +
+				$" {nameof(toTime)} = {toTime}" +
+				$" {nameof(percentile)} = {percentile}");
+
 			return Ok();
 		}
 

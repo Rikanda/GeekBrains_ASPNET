@@ -18,7 +18,7 @@ namespace MetricsManager.Controllers
 		public CpuMetricsController(ILogger<CpuMetricsController> logger)
 		{
 			_logger = logger;
-			_logger.LogDebug("CpuMetricsController");
+			_logger.LogDebug("Вызов конструктора");
 		}
 
 		[HttpGet("agent/{agentId}/from/{fromTime}/to/{toTime}")]
@@ -27,7 +27,11 @@ namespace MetricsManager.Controllers
 			[FromRoute] TimeSpan fromTime, 
 			[FromRoute] TimeSpan toTime)
 		{
-			_logger.LogInformation("Вызван GET метод CpuMetricsFromAgent");
+			_logger.LogDebug("Вызов метода. Параметры:" +
+				$" {nameof(agentId)} = {agentId}" +
+				$" {nameof(fromTime)} = {fromTime}" +
+				$" {nameof(toTime)} = {toTime}");
+
 			return Ok();
 		}
 
@@ -38,6 +42,12 @@ namespace MetricsManager.Controllers
 			[FromRoute] TimeSpan toTime,
 			[FromRoute] Percentile percentile)
 		{
+			_logger.LogDebug("Вызов метода. Параметры:" +
+				$" {nameof(agentId)} = {agentId}" +
+				$" {nameof(fromTime)} = {fromTime}" +
+				$" {nameof(toTime)} = {toTime}" +
+				$" {nameof(percentile)} = {percentile}");
+
 			return Ok();
 		}
 
@@ -46,6 +56,10 @@ namespace MetricsManager.Controllers
 			[FromRoute] TimeSpan fromTime,
 			[FromRoute] TimeSpan toTime)
 		{
+			_logger.LogDebug("Вызов метода. Параметры:" +
+				$" {nameof(fromTime)} = {fromTime}" +
+				$" {nameof(toTime)} = {toTime}");
+
 			return Ok();
 		}
 
@@ -55,6 +69,11 @@ namespace MetricsManager.Controllers
 			[FromRoute] TimeSpan toTime,
 			[FromRoute] Percentile percentile)
 		{
+			_logger.LogDebug("Вызов метода. Параметры:" +
+				$" {nameof(fromTime)} = {fromTime}" +
+				$" {nameof(toTime)} = {toTime}" +
+				$" {nameof(percentile)} = {percentile}");
+
 			return Ok();
 		}
 	}

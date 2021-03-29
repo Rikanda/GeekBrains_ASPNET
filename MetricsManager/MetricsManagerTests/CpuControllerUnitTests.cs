@@ -13,7 +13,6 @@ namespace MetricsManagerTests
 		private CpuMetricsController controller;
 		private Mock<ILogger<CpuMetricsController>> mockLogger;
 
-
 		public CpuControllerUnitTests()
 		{
 			mockLogger = new Mock<ILogger<CpuMetricsController>>();
