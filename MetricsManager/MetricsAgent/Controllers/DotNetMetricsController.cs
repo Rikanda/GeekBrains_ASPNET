@@ -1,10 +1,12 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using MetricsAgent.DAL;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using static MetricsAgent.Responses.DotNetMetricsResponses;
 
 namespace MetricsAgent.Controllers
 {
@@ -13,15 +15,17 @@ namespace MetricsAgent.Controllers
 	public class DotNetMetricsController : ControllerBase
 	{
 		private readonly ILogger<DotNetMetricsController> _logger;
+		private IDotNetMetricsRepository repository;
 
-		public DotNetMetricsController(ILogger<DotNetMetricsController> logger)
+		public DotNetMetricsController(ILogger<DotNetMetricsController> logger, IDotNetMetricsRepository repository)
 		{
 			_logger = logger;
 			_logger.LogDebug("Вызов конструктора");
+			this.repository = repository;
 		}
 
 		[HttpGet("errors-count/from/{fromTime}/to/{toTime}")]
-		public IActionResult GetMetricsFromAgent(
+		public IActionResult GetMetrics(
 			[FromRoute] TimeSpan fromTime,
 			[FromRoute] TimeSpan toTime)
 		{
@@ -29,7 +33,19 @@ namespace MetricsAgent.Controllers
 				$" {nameof(fromTime)} = {fromTime}" +
 				$" {nameof(toTime)} = {toTime}");
 
-			return Ok();
+			var metrics = repository.GetByTimeInterval(fromTime, toTime);
+
+			var response = new AllDotNetMetricsResponse()
+			{
+				Metrics = new List<DotNetMetricDto>()
+			};
+
+			foreach (var metric in metrics)
+			{
+				response.Metrics.Add(new DotNetMetricDto { Time = metric.Time, Value = metric.Value, Id = metric.Id });
+			}
+
+			return Ok(response);
 		}
 	}
 }

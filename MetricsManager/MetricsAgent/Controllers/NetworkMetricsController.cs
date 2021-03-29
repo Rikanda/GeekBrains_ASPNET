@@ -1,10 +1,12 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using MetricsAgent.DAL;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using static MetricsAgent.Responses.NetworkMetricsResponses;
 
 namespace MetricsAgent.Controllers
 {
@@ -13,15 +15,17 @@ namespace MetricsAgent.Controllers
 	public class NetworkMetricsController : ControllerBase
 	{
 		private readonly ILogger<NetworkMetricsController> _logger;
+		private INetworkMetricsRepository repository;
 
-		public NetworkMetricsController(ILogger<NetworkMetricsController> logger)
+		public NetworkMetricsController(ILogger<NetworkMetricsController> logger, INetworkMetricsRepository repository)
 		{
 			_logger = logger;
 			_logger.LogDebug("Вызов конструктора");
+			this.repository = repository;
 		}
 
 		[HttpGet("from/{fromTime}/to/{toTime}")]
-		public IActionResult GetMetricsFromAgent(
+		public IActionResult GetMetrics(
 			[FromRoute] TimeSpan fromTime,
 			[FromRoute] TimeSpan toTime)
 		{
@@ -29,7 +33,19 @@ namespace MetricsAgent.Controllers
 				$" {nameof(fromTime)} = {fromTime}" +
 				$" {nameof(toTime)} = {toTime}");
 
-			return Ok();
+			var metrics = repository.GetByTimeInterval(fromTime, toTime);
+
+			var response = new AllNetworkMetricsResponse()
+			{
+				Metrics = new List<NetworkMetricDto>()
+			};
+
+			foreach (var metric in metrics)
+			{
+				response.Metrics.Add(new NetworkMetricDto { Time = metric.Time, Value = metric.Value, Id = metric.Id });
+			}
+
+			return Ok(response);
 		}
 	}
 }

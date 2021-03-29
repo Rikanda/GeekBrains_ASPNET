@@ -28,28 +28,16 @@ namespace MetricsAgent.Controllers
 			this.repository = repository;
 		}
 
-		[HttpPost("create")]
-		public IActionResult Create([FromBody] CpuMetricCreateRequest request)
+		[HttpGet("from/{fromTime}/to/{toTime}")]
+		public IActionResult GetMetrics(
+			[FromRoute] TimeSpan fromTime,
+			[FromRoute] TimeSpan toTime)
 		{
 			_logger.LogDebug("Вызов метода. Параметры:" +
-				$" {nameof(request.Time)} = {request.Time}" +
-				$" {nameof(request.Value)} = {request.Value}");
+				$" {nameof(fromTime)} = {fromTime}" +
+				$" {nameof(toTime)} = {toTime}");
 
-			repository.Create(new CpuMetric
-			{
-				Time = TimeSpan.FromSeconds(request.Time),
-				Value = request.Value
-			});
-
-			return Ok();
-		}
-
-		[HttpGet("all")]
-		public IActionResult GetAll()
-		{
-			_logger.LogDebug("Вызов метода");
-
-			var metrics = repository.GetAll();
+			var metrics = repository.GetByTimeInterval(fromTime, toTime);
 
 			var response = new AllCpuMetricsResponse()
 			{
@@ -64,22 +52,8 @@ namespace MetricsAgent.Controllers
 			return Ok(response);
 		}
 
-
-		[HttpGet("from/{fromTime}/to/{toTime}")]
-		public IActionResult GetMetricsFromAgent(
-			[FromRoute] TimeSpan fromTime,
-			[FromRoute] TimeSpan toTime)
-		{
-			_logger.LogDebug("Вызов метода. Параметры:" +
-				$" {nameof(fromTime)} = {fromTime}" +
-				$" {nameof(toTime)} = {toTime}");
-
-			_logger.LogInformation("Вызван GET метод CpuMetricsFromAgent");
-			return Ok();
-		}
-
 		[HttpGet("from/{fromTime}/to/{toTime}/percentiles/{percentile}")]
-		public IActionResult GetMetricsByPercentileFromAgent(
+		public IActionResult GetMetricsByPercentile(
 			[FromRoute] TimeSpan fromTime,
 			[FromRoute] TimeSpan toTime,
 			[FromRoute] Percentile percentile)
@@ -89,7 +63,19 @@ namespace MetricsAgent.Controllers
 				$" {nameof(toTime)} = {toTime}" +
 				$" {nameof(percentile)} = {percentile}");
 
-			return Ok();
+			var metrics = repository.GetByTimeInterval(fromTime, toTime);
+
+			var response = new AllCpuMetricsResponse()
+			{
+				Metrics = new List<CpuMetricDto>()
+			};
+
+			foreach (var metric in metrics)
+			{
+				response.Metrics.Add(new CpuMetricDto { Time = metric.Time, Value = metric.Value, Id = metric.Id });
+			}
+
+			return Ok(response);
 		}
 
 	}

@@ -7,31 +7,31 @@ using System.Data.SQLite;
 
 namespace MetricsAgent.DAL
 {
-    // маркировочный интерфейс
-    // необходим, чтобы проверить работу репозитория на тесте-заглушке
-    public interface ICpuMetricsRepository : IRepository<CpuMetric>
+	// маркировочный интерфейс
+	// необходим, чтобы проверить работу репозитория на тесте-заглушке
+	public interface IHddMetricsRepository : IRepository<HddMetric>
 	{
 	}
 
-	public class CpuMetricsRepository : ICpuMetricsRepository
+	public class HddMetricsRepository : IHddMetricsRepository
 	{
 		// наше соединение с базой данных
 		private SQLiteConnection connection;
 
 		// инжектируем соединение с базой данных в наш репозиторий через конструктор
-		public CpuMetricsRepository(SQLiteConnection connection)
+		public HddMetricsRepository(SQLiteConnection connection)
 		{
 			this.connection = connection;
 		}
 
-		public IList<CpuMetric> GetByTimeInterval(TimeSpan fromTime, TimeSpan toTime)
+		public IList<HddMetric> GetByTimeInterval(TimeSpan fromTime, TimeSpan toTime)
 		{
 			using var cmd = new SQLiteCommand(connection);
 
 			// прописываем в команду SQL запрос на получение всех данных из таблицы
-			cmd.CommandText = "SELECT * FROM cpumetrics";
+			cmd.CommandText = "SELECT * FROM HddMetrics";
 
-			var returnList = new List<CpuMetric>();
+			var returnList = new List<HddMetric>();
 
 			using (SQLiteDataReader reader = cmd.ExecuteReader())
 			{
@@ -39,7 +39,7 @@ namespace MetricsAgent.DAL
 				while (reader.Read())
 				{
 					// добавляем объект в список возврата
-					returnList.Add(new CpuMetric
+					returnList.Add(new HddMetric
 					{
 						Id = reader.GetInt32(0),
 						Value = reader.GetInt32(1),

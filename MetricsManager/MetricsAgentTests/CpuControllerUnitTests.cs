@@ -24,37 +24,21 @@ namespace MetricsAgentsTests
 		}
 
 		[Fact]
-		public void Create_ShouldCall_Create_From_Repository()
-		{
-			// устанавливаем параметр заглушки
-			// в заглушке прописываем что в репозиторий прилетит CpuMetric объект
-			mockRepository.Setup(repository => repository.Create(It.IsAny<CpuMetric>())).Verifiable();
-
-			// выполняем действие на контроллере
-			var result = controller.Create(new MetricsAgent.Requests.CpuMetricCreateRequest { Time = 1, Value = 50 });
-
-			// проверяем заглушку на то, что пока работал контроллер
-			// действительно вызвался метод Create репозитория с нужным типом объекта в параметре
-			mockRepository.Verify(repository => repository.Create(It.IsAny<CpuMetric>()), Times.AtMostOnce());
-		}
-
-
-		[Fact]
-		public void GetMetricsFromAgent_ReturnsOk()
+		public void GetMetrics_ReturnsOk()
 		{
 			//Arrange
 			var fromTime = TimeSpan.FromSeconds(0);
 			var toTime = TimeSpan.FromSeconds(100);
 
 			//Act
-			var result = controller.GetMetricsFromAgent(fromTime, toTime);
+			var result = controller.GetMetrics(fromTime, toTime);
 
 			// Assert
 			_ = Assert.IsAssignableFrom<IActionResult>(result);
 		}
 
 		[Fact]
-		public void GetMetricsByPercentileFromAgent_ReturnsOk()
+		public void GetMetricsByPercentile_ReturnsOk()
 		{
 			//Arrange
 			var fromTime = TimeSpan.FromSeconds(0);
@@ -62,7 +46,7 @@ namespace MetricsAgentsTests
 			var percentile = Percentile.P90;
 
 			//Act
-			var result = controller.GetMetricsByPercentileFromAgent(fromTime, toTime, percentile);
+			var result = controller.GetMetricsByPercentile(fromTime, toTime, percentile);
 
 			// Assert
 			_ = Assert.IsAssignableFrom<IActionResult>(result);

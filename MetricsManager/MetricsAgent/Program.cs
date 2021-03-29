@@ -18,7 +18,6 @@ namespace MetricsAgent
 			try
 			{
 				logger.Info("---- [BEGIN]----");
-
 				CreateHostBuilder(args).Build().Run();
 			}
 			// отлов всех исключений в рамках работы приложения
@@ -26,15 +25,12 @@ namespace MetricsAgent
 			{
 				//NLog: устанавливаем отлов исключений
 				logger.Error(exception, "Stopped program because of exception");
-				throw;
 			}
 			finally
 			{
 				// остановка логера 
 				NLog.LogManager.Shutdown();
 			}
-
-			CreateHostBuilder(args).Build().Run();
 		}
 
 		public static IHostBuilder CreateHostBuilder(string[] args) =>

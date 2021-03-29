@@ -30,12 +30,16 @@ namespace MetricsAgent
 			services.AddControllers();
 			ConfigureSqlLiteConnection(services);
 			services.AddScoped<ICpuMetricsRepository, CpuMetricsRepository>();
+			services.AddScoped<IDotNetMetricsRepository, DotNetMetricsRepository>();
+			services.AddScoped<IHddMetricsRepository, HddMetricsRepository>();
+			services.AddScoped<INetworkMetricsRepository, NetworkMetricsRepository>();
+			services.AddScoped<IRamMetricsRepository, RamMetricsRepository>();
 		}
 
 		private void ConfigureSqlLiteConnection(IServiceCollection services)
 		{
 			string connectionString = "Data Source = metrics.db";
-			  var connection = new SQLiteConnection(connectionString);
+			var connection = new SQLiteConnection(connectionString);
 			connection.Open();
 			PrepareSchema(connection);
 			services.AddSingleton(connection);
@@ -45,15 +49,32 @@ namespace MetricsAgent
 		{
 			using (var command = new SQLiteCommand(connection))
 			{
-				// задаем новый текст команды для выполнения
-				// удаляем таблицу с метриками если она существует в базе данных
-				command.CommandText = "DROP TABLE IF EXISTS cpumetrics";
-				// отправляем запрос в базу данных
-				command.ExecuteNonQuery();
+				// имена таблиц
+				List<string> tablesNames = new List<string>
+				{
+					"cpumetrics",
+					"dotnetmetrics",
+					"hddmetrics",
+					"networkmetrics",
+					"rammetrics",
+				};
+
+				foreach(string name in tablesNames)
+				{
+					command.CommandText = $"DROP TABLE IF EXISTS {name}";
+					command.ExecuteNonQuery();
+					command.CommandText = @$"CREATE TABLE {name}(id INTEGER PRIMARY KEY, value INT, time INT)";
+					command.ExecuteNonQuery();
+
+					//Забиваем базу данных фигней для тестов
+					for (int i = 0; i < 10; i++)
+					{
+						command.CommandText = @$"INSERT INTO {name}(value, time) VALUES({i*10+tablesNames.IndexOf(name)},{i+1})";
+						command.ExecuteNonQuery();
+					}
+				}
 
 
-				command.CommandText = @"CREATE TABLE cpumetrics(id INTEGER PRIMARY KEY, value INT, time INT)";
-				command.ExecuteNonQuery();
 			}
 		}
 

@@ -20,12 +20,12 @@ namespace MetricsAgentsTests
 		}
 
 		[Fact]
-		public void GetMetricsFromAgent_ReturnsOk()
+		public void GetMetrics_ReturnsOk()
 		{
 			//Arrange
 
 			//Act
-			var result = controller.GetMetricsFromAgent();
+			var result = controller.GetMetrics();
 
 			// Assert
 			_ = Assert.IsAssignableFrom<IActionResult>(result);

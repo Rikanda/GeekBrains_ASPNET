@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using MetricsAgent.DAL;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using System;
@@ -13,15 +14,17 @@ namespace MetricsAgent.Controllers
 	public class HddMetricsController : ControllerBase
 	{
 		private readonly ILogger<HddMetricsController> _logger;
+		private IHddMetricsRepository repository;
 
-		public HddMetricsController(ILogger<HddMetricsController> logger)
+		public HddMetricsController(ILogger<HddMetricsController> logger, IHddMetricsRepository repository)
 		{
 			_logger = logger;
 			_logger.LogDebug("Вызов конструктора");
+			this.repository = repository;
 		}
 
 		[HttpGet("agent/left")]
-		public IActionResult GetMetricsFromAgent()
+		public IActionResult GetMetrics()
 		{
 			_logger.LogDebug("Вызов метода");
 
