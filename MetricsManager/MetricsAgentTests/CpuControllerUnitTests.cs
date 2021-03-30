@@ -1,7 +1,6 @@
 using Metrics.Tools;
 using MetricsAgent.Controllers;
 using MetricsAgent.DAL;
-using MetricsAgent.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Moq;
@@ -27,8 +26,8 @@ namespace MetricsAgentsTests
 		public void GetMetrics_ReturnsOk()
 		{
 			//Arrange
-			var fromTime = TimeSpan.FromSeconds(0);
-			var toTime = TimeSpan.FromSeconds(100);
+			var fromTime = DateTimeOffset.MinValue;
+			var toTime = DateTimeOffset.Now;
 
 			//Act
 			var result = controller.GetMetrics(fromTime, toTime);
@@ -41,8 +40,8 @@ namespace MetricsAgentsTests
 		public void GetMetricsByPercentile_ReturnsOk()
 		{
 			//Arrange
-			var fromTime = TimeSpan.FromSeconds(0);
-			var toTime = TimeSpan.FromSeconds(100);
+			var fromTime = DateTimeOffset.MinValue;
+			var toTime = DateTimeOffset.Now;
 			var percentile = Percentile.P90;
 
 			//Act

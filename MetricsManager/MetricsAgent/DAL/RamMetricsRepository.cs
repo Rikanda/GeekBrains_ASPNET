@@ -16,7 +16,7 @@ namespace MetricsAgent.DAL
 	public class RamMetricsRepository : IRamMetricsRepository
 	{
 		// наше соединение с базой данных
-		private SQLiteConnection connection;
+		private readonly SQLiteConnection connection;
 
 		// инжектируем соединение с базой данных в наш репозиторий через конструктор
 		public RamMetricsRepository(SQLiteConnection connection)
@@ -24,12 +24,14 @@ namespace MetricsAgent.DAL
 			this.connection = connection;
 		}
 
-		public IList<RamMetric> GetByTimeInterval(TimeSpan fromTime, TimeSpan toTime)
+		public IList<RamMetric> GetByTimeInterval(DateTimeOffset fromTime, DateTimeOffset toTime)
 		{
 			using var cmd = new SQLiteCommand(connection);
 
 			// прописываем в команду SQL запрос на получение всех данных из таблицы
-			cmd.CommandText = "SELECT * FROM RamMetrics";
+			cmd.CommandText = "SELECT * FROM rammetrics WHERE (time >= @fromtime AND time <= @totime)";
+			cmd.Parameters.AddWithValue("@fromtime", fromTime.ToUnixTimeSeconds());
+			cmd.Parameters.AddWithValue("@totime", toTime.ToUnixTimeSeconds());
 
 			var returnList = new List<RamMetric>();
 
@@ -43,13 +45,35 @@ namespace MetricsAgent.DAL
 					{
 						Id = reader.GetInt32(0),
 						Value = reader.GetInt32(1),
-						// налету преобразуем прочитанные секунды в метку времени
 						Time = TimeSpan.FromSeconds(reader.GetInt32(2))
 					});
 				}
 			}
 
 			return returnList;
+		}
+
+		public RamMetric GetLast()
+		{
+			using var cmd = new SQLiteCommand(connection);
+
+			// прописываем в команду SQL запрос на получение всех данных из таблицы
+			cmd.CommandText = "SELECT * FROM rammetrics WHERE (time = (SELECT MAX(time) FROM rammetrics))";
+
+			var returnItem = new RamMetric();
+
+			using (SQLiteDataReader reader = cmd.ExecuteReader())
+			{
+				// пока есть что читать -- читаем
+				while (reader.Read())
+				{
+					returnItem.Id = reader.GetInt32(0);
+					returnItem.Value = reader.GetInt32(1);
+					returnItem.Time = TimeSpan.FromSeconds(reader.GetInt32(2));
+				}
+			}
+
+			return returnItem;
 		}
 	}
 }

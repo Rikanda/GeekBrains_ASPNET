@@ -6,6 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using static MetricsAgent.Responses.RamMetricsResponses;
 
 namespace MetricsAgent.Controllers
 {
@@ -14,7 +15,7 @@ namespace MetricsAgent.Controllers
 	public class RamMetricsController : ControllerBase
 	{
 		private readonly ILogger<RamMetricsController> _logger;
-		private IRamMetricsRepository repository;
+		private readonly IRamMetricsRepository repository;
 
 		public RamMetricsController(ILogger<RamMetricsController> logger, IRamMetricsRepository repository)
 		{
@@ -28,7 +29,16 @@ namespace MetricsAgent.Controllers
 		{
 			_logger.LogDebug("Вызов метода");
 
-			return Ok();
+			var metric = repository.GetLast();
+
+			RamMetricDto response = null;
+
+			if (metric != null)
+			{
+				response = new RamMetricDto { Time = metric.Time, Value = metric.Value, Id = metric.Id };
+			}
+
+			return Ok(response);
 		}
 	}
 }

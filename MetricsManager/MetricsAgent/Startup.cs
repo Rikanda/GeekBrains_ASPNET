@@ -38,13 +38,17 @@ namespace MetricsAgent
 
 		private void ConfigureSqlLiteConnection(IServiceCollection services)
 		{
-			string connectionString = "Data Source = metrics.db";
+			string connectionString = "Data Source=:memory:"; 
 			var connection = new SQLiteConnection(connectionString);
 			connection.Open();
 			PrepareSchema(connection);
 			services.AddSingleton(connection);
 		}
 
+		/// <summary>
+		/// Создание базы данных и заполнение ее информацией для тестов
+		/// </summary>
+		/// <param name="connection">Соединение с базой</param>
 		private void PrepareSchema(SQLiteConnection connection)
 		{
 			using (var command = new SQLiteCommand(connection))
@@ -69,7 +73,8 @@ namespace MetricsAgent
 					//Забиваем базу данных фигней для тестов
 					for (int i = 0; i < 10; i++)
 					{
-						command.CommandText = @$"INSERT INTO {name}(value, time) VALUES({i*10+tablesNames.IndexOf(name)},{i+1})";
+						DateTimeOffset time = new DateTime(2000 + i, 1, 1);
+						command.CommandText = @$"INSERT INTO {name}(value, time) VALUES({i*10+tablesNames.IndexOf(name)},{time.ToUnixTimeSeconds()})";
 						command.ExecuteNonQuery();
 					}
 				}

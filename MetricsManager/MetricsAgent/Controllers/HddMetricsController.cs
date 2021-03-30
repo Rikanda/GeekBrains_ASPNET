@@ -6,6 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using static MetricsAgent.Responses.HddMetricsResponses;
 
 namespace MetricsAgent.Controllers
 {
@@ -14,7 +15,7 @@ namespace MetricsAgent.Controllers
 	public class HddMetricsController : ControllerBase
 	{
 		private readonly ILogger<HddMetricsController> _logger;
-		private IHddMetricsRepository repository;
+		private readonly IHddMetricsRepository repository;
 
 		public HddMetricsController(ILogger<HddMetricsController> logger, IHddMetricsRepository repository)
 		{
@@ -28,7 +29,16 @@ namespace MetricsAgent.Controllers
 		{
 			_logger.LogDebug("Вызов метода");
 
-			return Ok();
+			var metric = repository.GetLast();
+
+			HddMetricDto response = null;
+			
+			if(metric != null)
+			{
+				response = new HddMetricDto { Time = metric.Time, Value = metric.Value, Id = metric.Id };
+			}
+
+			return Ok(response);
 		}
 	}
 }

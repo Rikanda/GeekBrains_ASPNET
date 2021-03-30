@@ -15,7 +15,7 @@ namespace MetricsAgent.Controllers
 	public class DotNetMetricsController : ControllerBase
 	{
 		private readonly ILogger<DotNetMetricsController> _logger;
-		private IDotNetMetricsRepository repository;
+		private readonly IDotNetMetricsRepository repository;
 
 		public DotNetMetricsController(ILogger<DotNetMetricsController> logger, IDotNetMetricsRepository repository)
 		{
@@ -26,8 +26,8 @@ namespace MetricsAgent.Controllers
 
 		[HttpGet("errors-count/from/{fromTime}/to/{toTime}")]
 		public IActionResult GetMetrics(
-			[FromRoute] TimeSpan fromTime,
-			[FromRoute] TimeSpan toTime)
+			[FromRoute] DateTimeOffset fromTime,
+			[FromRoute] DateTimeOffset toTime)
 		{
 			_logger.LogDebug("Вызов метода. Параметры:" +
 				$" {nameof(fromTime)} = {fromTime}" +
@@ -40,9 +40,12 @@ namespace MetricsAgent.Controllers
 				Metrics = new List<DotNetMetricDto>()
 			};
 
-			foreach (var metric in metrics)
+			if (metrics != null)
 			{
-				response.Metrics.Add(new DotNetMetricDto { Time = metric.Time, Value = metric.Value, Id = metric.Id });
+				foreach (var metric in metrics)
+				{
+					response.Metrics.Add(new DotNetMetricDto { Time = metric.Time, Value = metric.Value, Id = metric.Id });
+				}
 			}
 
 			return Ok(response);

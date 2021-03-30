@@ -7,6 +7,7 @@ namespace MetricsAgent.DAL
 {
 	public interface IRepository<T> where T : class
 	{
-		IList<T> GetByTimeInterval(TimeSpan fromTime, TimeSpan toTime);
+		IList<T> GetByTimeInterval(DateTimeOffset fromTime, DateTimeOffset toTime);
+		T GetLast();
 	}
 }

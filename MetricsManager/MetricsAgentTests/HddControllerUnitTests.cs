@@ -1,5 +1,6 @@
 ﻿using Metrics.Tools;
 using MetricsAgent.Controllers;
+using MetricsAgent.DAL;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Moq;
@@ -12,11 +13,13 @@ namespace MetricsAgentsTests
 	{
 		private HddMetricsController controller;
 		private Mock<ILogger<HddMetricsController>> mockLogger;
+		private Mock<IHddMetricsRepository> mockRepository;
 
 		public HddControllerUnitTests()
 		{
 			mockLogger = new Mock<ILogger<HddMetricsController>>();
-			controller = new HddMetricsController(mockLogger.Object);
+			mockRepository = new Mock<IHddMetricsRepository>();
+			controller = new HddMetricsController(mockLogger.Object, mockRepository.Object);
 		}
 
 		[Fact]

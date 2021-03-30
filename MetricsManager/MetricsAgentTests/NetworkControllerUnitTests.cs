@@ -1,5 +1,6 @@
 ﻿using Metrics.Tools;
 using MetricsAgent.Controllers;
+using MetricsAgent.DAL;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Moq;
@@ -12,19 +13,21 @@ namespace MetricsAgentsTests
 	{
 		private NetworkMetricsController controller;
 		private Mock<ILogger<NetworkMetricsController>> mockLogger;
+		private Mock<INetworkMetricsRepository> mockRepository;
 
 		public NetworkControllerUnitTests()
 		{
 			mockLogger = new Mock<ILogger<NetworkMetricsController>>();
-			controller = new NetworkMetricsController(mockLogger.Object);
+			mockRepository = new Mock<INetworkMetricsRepository>();
+			controller = new NetworkMetricsController(mockLogger.Object, mockRepository.Object);
 		}
 
 		[Fact]
 		public void GetMetrics_ReturnsOk()
 		{
 			//Arrange
-			var fromTime = TimeSpan.FromSeconds(0);
-			var toTime = TimeSpan.FromSeconds(100);
+			var fromTime = DateTimeOffset.MinValue;
+			var toTime = DateTimeOffset.Now;
 
 			//Act
 			var result = controller.GetMetrics(fromTime, toTime);
