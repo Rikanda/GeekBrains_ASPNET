@@ -33,10 +33,7 @@ namespace MetricsAgent.Controllers
 
 			RamMetricDto response = null;
 
-			if (metric != null)
-			{
-				response = new RamMetricDto { Time = metric.Time, Value = metric.Value, Id = metric.Id };
-			}
+			response = new RamMetricDto { Time = metric.Time, Value = metric.Value, Id = metric.Id };
 
 			return Ok(response);
 		}

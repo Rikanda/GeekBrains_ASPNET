@@ -32,11 +32,8 @@ namespace MetricsAgent.Controllers
 			var metric = repository.GetLast();
 
 			HddMetricDto response = null;
-			
-			if(metric != null)
-			{
-				response = new HddMetricDto { Time = metric.Time, Value = metric.Value, Id = metric.Id };
-			}
+
+			response = new HddMetricDto { Time = metric.Time, Value = metric.Value, Id = metric.Id };
 
 			return Ok(response);
 		}
