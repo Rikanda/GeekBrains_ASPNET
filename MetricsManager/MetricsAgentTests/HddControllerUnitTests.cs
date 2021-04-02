@@ -8,6 +8,7 @@ using Moq;
 using System;
 using System.Collections.Generic;
 using Xunit;
+using static MetricsAgent.Responses.HddMetricsResponses;
 
 namespace MetricsAgentsTests
 {
@@ -32,15 +33,31 @@ namespace MetricsAgentsTests
 			var mockMetric = new HddMetric() { Id = 1, Time = TimeSpan.Zero, Value = 100 };
 			mockRepository.
 				Setup(repository => repository.GetLast()).
-				Returns(mockMetric); ;
+				Returns(mockMetric);
 
 			//Act
 			var result = controller.GetMetrics();
 
-			var response = (result as OkObjectResult).Value;
+			var response = (result as OkObjectResult).Value as HddMetricDto;
+
+			//сравнение полученных значений с ожидаемыми значениями
+			bool check = true;
+			if (response != null)
+			{
+				if ((mockMetric.Id != response.Id) ||
+					(mockMetric.Value != response.Value) ||
+					(mockMetric.Time != response.Time))
+				{
+					check = false;
+				}
+			}
+			else
+			{
+				check = false;
+			}
 
 			// Assert
-			Assert.True(response != null);
+			Assert.True(check);
 		}
 
 

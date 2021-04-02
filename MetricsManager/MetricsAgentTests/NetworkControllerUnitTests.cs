@@ -32,19 +32,42 @@ namespace MetricsAgentsTests
 			var fromTime = DateTimeOffset.MinValue;
 			var toTime = DateTimeOffset.Now;
 
-			//фейковая метрика возвращаемая репозиторием
-			var mockMetrics = new List<NetworkMetric>() { { new NetworkMetric() { Id = 1, Time = TimeSpan.Zero, Value = 100 } } };
+			//фейковые метрики возвращаемые репозиторием
+			var mockMetrics = new List<NetworkMetric>()
+			{
+				{ new NetworkMetric() { Id = 1, Time = TimeSpan.FromDays(5), Value = 100 } },
+				{ new NetworkMetric() { Id = 2, Time = TimeSpan.FromDays(10), Value = 100 } }
+			};
 			mockRepository.
 				Setup(repository => repository.GetByTimeInterval(It.IsAny<DateTimeOffset>(), It.IsAny<DateTimeOffset>())).
-				Returns(mockMetrics); ;
+				Returns(mockMetrics);
 
 			//Act
 			var result = controller.GetMetrics(fromTime, toTime);
 
-			var response = (result as OkObjectResult).Value as AllNetworkMetricsResponse;
+			var response = ((result as OkObjectResult).Value as AllNetworkMetricsResponse).Metrics;
+
+			//сравнение полученных значений с ожидаемыми значениями
+			bool check = true;
+			if (mockMetrics.Count == response.Count)
+			{
+				for (int i = 0; i < mockMetrics.Count; i++)
+				{
+					if ((mockMetrics[i].Id != response[i].Id) ||
+						(mockMetrics[i].Value != response[i].Value) ||
+						(mockMetrics[i].Time != response[i].Time))
+					{
+						check = false;
+					}
+				}
+			}
+			else
+			{
+				check = false;
+			}
 
 			// Assert
-			Assert.True(response.Metrics.Count != 0);
+			Assert.True(check);
 		}
 
 
