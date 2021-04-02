@@ -38,7 +38,7 @@ namespace MetricsAgent
 
 		private void ConfigureSqlLiteConnection(IServiceCollection services)
 		{
-			string connectionString = "Data Source=:memory:"; 
+			string connectionString = "Data Source=metrics.db"; 
 			var connection = new SQLiteConnection(connectionString);
 			connection.Open();
 			PrepareSchema(connection);
@@ -67,7 +67,7 @@ namespace MetricsAgent
 				{
 					command.CommandText = $"DROP TABLE IF EXISTS {name}";
 					command.ExecuteNonQuery();
-					command.CommandText = @$"CREATE TABLE {name}(id INTEGER PRIMARY KEY, value INT, time INT)";
+					command.CommandText = @$"CREATE TABLE {name}(id INTEGER PRIMARY KEY, value INT, time INT64)";
 					command.ExecuteNonQuery();
 
 					//«абиваем базу данных фигней дл€ тестов

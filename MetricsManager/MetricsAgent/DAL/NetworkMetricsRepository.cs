@@ -4,76 +4,68 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Data.SQLite;
+using Dapper;
+using MetricsAgent.DAL;
 
 namespace MetricsAgent.DAL
 {
-	// маркировочный интерфейс
-	// необходим, чтобы проверить работу репозитория на тесте-заглушке
+	//Маркировочный интерфейс
+	//Необходим, чтобы проверить работу репозитория на тесте-заглушке
 	public interface INetworkMetricsRepository : IRepository<NetworkMetric>
 	{
 	}
 
 	public class NetworkMetricsRepository : INetworkMetricsRepository
 	{
-		// наше соединение с базой данных
-		private readonly SQLiteConnection connection;
+		//Имя таблицы с которой работаем
+		private const string TableName = "networkmetrics";
 
-		// инжектируем соединение с базой данных в наш репозиторий через конструктор
-		public NetworkMetricsRepository(SQLiteConnection connection)
+		//Строка подключения
+		private const string ConnectionString = @"Data Source=metrics.db; Version=3;Pooling=True;Max Pool Size=100;";
+
+		//Инжектируем соединение с базой данных в наш репозиторий через конструктор
+		public NetworkMetricsRepository()
 		{
-			this.connection = connection;
+			//Добавляем парсилку типа TimeSpan в качестве подсказки для SQLite
+			SqlMapper.AddTypeHandler(new TimeSpanHandler());
 		}
 
+		/// <summary>
+		/// Возвращает список с метриками за заданный интервал времени
+		/// </summary>
+		/// <param name="fromTime">Начало временного интервала</param>
+		/// <param name="toTime">Конец временного интервала</param>
+		/// <returns>Список с метриками за заданный интервал времени</returns>
 		public IList<NetworkMetric> GetByTimeInterval(DateTimeOffset fromTime, DateTimeOffset toTime)
 		{
-			using var cmd = new SQLiteCommand(connection);
-
-			// прописываем в команду SQL запрос на получение всех данных из таблицы
-			cmd.CommandText = "SELECT * FROM networkmetrics WHERE (time >= @fromtime AND time <= @totime)";
-			cmd.Parameters.AddWithValue("@fromtime", fromTime.ToUnixTimeSeconds());
-			cmd.Parameters.AddWithValue("@totime", toTime.ToUnixTimeSeconds());
-
 			var returnList = new List<NetworkMetric>();
-
-			using (SQLiteDataReader reader = cmd.ExecuteReader())
+			using (var connection = new SQLiteConnection(ConnectionString))
 			{
-				// пока есть что читать -- читаем
-				while (reader.Read())
+				return connection.Query<NetworkMetric>(
+				"SELECT * " +
+				$"FROM {TableName} " +
+				"WHERE (time >= @fromTime AND time <= @toTime)",
+				new
 				{
-					// добавляем объект в список возврата
-					returnList.Add(new NetworkMetric
-					{
-						Id = reader.GetInt32(0),
-						Value = reader.GetInt32(1),
-						Time = TimeSpan.FromSeconds(reader.GetInt32(2))
-					});
-				}
+					fromTime = fromTime.ToUnixTimeSeconds(),
+					toTime = toTime.ToUnixTimeSeconds(),
+				}).ToList();
 			}
-
-			return returnList;
 		}
 
+		/// <summary>
+		/// Извлекает последнюю по дате метрику из базы данных
+		/// </summary>
+		/// <returns>Последняя по времени метрика из базы данных</returns>
 		public NetworkMetric GetLast()
 		{
-			using var cmd = new SQLiteCommand(connection);
-
-			// прописываем в команду SQL запрос на получение всех данных из таблицы
-			cmd.CommandText = "SELECT * FROM networkmetrics WHERE (time = (SELECT MAX(time) FROM networkmetrics))";
-
-			var returnItem = new NetworkMetric();
-
-			using (SQLiteDataReader reader = cmd.ExecuteReader())
+			using (var connection = new SQLiteConnection(ConnectionString))
 			{
-				// пока есть что читать -- читаем
-				while (reader.Read())
-				{
-					returnItem.Id = reader.GetInt32(0);
-					returnItem.Value = reader.GetInt32(1);
-					returnItem.Time = TimeSpan.FromSeconds(reader.GetInt32(2));
-				}
+				return connection.QuerySingle<NetworkMetric>(
+				"SELECT * " +
+				$"FROM {TableName} " +
+				$"WHERE time = (SELECT MAX (time) FROM {TableName})");
 			}
-
-			return returnItem;
 		}
 	}
 }
