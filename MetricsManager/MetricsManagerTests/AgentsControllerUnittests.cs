@@ -1,70 +1,75 @@
 ﻿using Metrics.Tools;
 using MetricsManager.Controllers;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
+using Moq;
 using System;
 using Xunit;
 
 namespace MetricsManagerTests
 {
-    public class AgentsControllerUnitTests
-    {
-        private AgentsController controller;
-        public AgentsControllerUnitTests()
-        {
-            controller = new AgentsController();
-        }
+	public class AgentsControllerUnitTests
+	{
+		private AgentsController controller;
+		private Mock<ILogger<AgentsController>> mockLogger;
 
-        [Fact]
-        public void Read_ReturnsOk()
-        {
-            //Arrange
+		public AgentsControllerUnitTests()
+		{
+			mockLogger = new Mock<ILogger<AgentsController>>();
+			controller = new AgentsController(mockLogger.Object);
+		}
 
-            //Act
-            var result = controller.Read();
+		[Fact]
+		public void Read_ReturnsOk()
+		{
+			//Arrange
 
-            // Assert
-            _ = Assert.IsAssignableFrom<IActionResult>(result);
-        }
+			//Act
+			var result = controller.Read();
 
-        [Fact]
-        public void RegistrAgent_ReturnsOk()
-        {
-            //Arrange
-            var agentInfo = new AgentInfo() { AgentId = 101, AgentAddress = new Uri("http://AgentAdressUri") };
+			// Assert
+			_ = Assert.IsAssignableFrom<IActionResult>(result);
+		}
 
-            //Act
-            var result = controller.RegisterAgent(agentInfo);
+		[Fact]
+		public void RegistrAgent_ReturnsOk()
+		{
+			//Arrange
+			var agentInfo = new AgentInfo() { AgentId = 101, AgentAddress = new Uri("http://AgentAdressUri") };
 
-            // Assert
-            _ = Assert.IsAssignableFrom<IActionResult>(result);
-        }
+			//Act
+			var result = controller.RegisterAgent(agentInfo);
 
-        [Fact]
-        public void EnableAgentById_ReturnsOk()
-        {
-            //Arrange
-            var agentId = 1;
+			// Assert
+			_ = Assert.IsAssignableFrom<IActionResult>(result);
+		}
 
-            //Act
-            var result = controller.EnableAgentById(agentId);
+		[Fact]
+		public void EnableAgentById_ReturnsOk()
+		{
+			//Arrange
+			var agentId = 1;
 
-            // Assert
-            _ = Assert.IsAssignableFrom<IActionResult>(result);
-        }
+			//Act
+			var result = controller.EnableAgentById(agentId);
 
-        [Fact]
-        public void DisableAgentById_ReturnsOk()
-        {
-            //Arrange
-            var agentId = 1;
+			// Assert
+			_ = Assert.IsAssignableFrom<IActionResult>(result);
+		}
 
-            //Act
-            var result = controller.DisableAgentById(agentId);
+		[Fact]
+		public void DisableAgentById_ReturnsOk()
+		{
+			//Arrange
+			var agentId = 1;
 
-            // Assert
-            _ = Assert.IsAssignableFrom<IActionResult>(result);
-        }
+			//Act
+			var result = controller.DisableAgentById(agentId);
+
+			// Assert
+			_ = Assert.IsAssignableFrom<IActionResult>(result);
+		}
 
 
-    }
+	}
 }

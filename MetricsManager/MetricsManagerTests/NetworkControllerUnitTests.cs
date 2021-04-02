@@ -1,77 +1,82 @@
 ﻿using Metrics.Tools;
 using MetricsManager.Controllers;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
+using Moq;
 using System;
 using Xunit;
 
 namespace MetricsManagerTests
 {
-    public class NetworkControllerUnitTests
-    {
-        private NetworkMetricsController controller;
-        public NetworkControllerUnitTests()
-        {
-            controller = new NetworkMetricsController();
-        }
+	public class NetworkControllerUnitTests
+	{
+		private NetworkMetricsController controller;
+		private Mock<ILogger<NetworkMetricsController>> mockLogger;
 
-        [Fact]
-        public void GetMetricsFromAgent_ReturnsOk()
-        {
-            //Arrange
-            var agentId = 1;
-            var fromTime = TimeSpan.FromSeconds(0);
-            var toTime = TimeSpan.FromSeconds(100);
+		public NetworkControllerUnitTests()
+		{
+			mockLogger = new Mock<ILogger<NetworkMetricsController>>();
+			controller = new NetworkMetricsController(mockLogger.Object);
+		}
 
-            //Act
-            var result = controller.GetMetricsFromAgent(agentId, fromTime, toTime);
+		[Fact]
+		public void GetMetricsFromAgent_ReturnsOk()
+		{
+			//Arrange
+			var agentId = 1;
+			var fromTime = TimeSpan.FromSeconds(0);
+			var toTime = TimeSpan.FromSeconds(100);
 
-            // Assert
-            _ = Assert.IsAssignableFrom<IActionResult>(result);
-        }
+			//Act
+			var result = controller.GetMetricsFromAgent(agentId, fromTime, toTime);
 
-        [Fact]
-        public void GetMetricsByPercentileFromAgent_ReturnsOk()
-        {
-            //Arrange
-            var agentId = 1;
-            var fromTime = TimeSpan.FromSeconds(0);
-            var toTime = TimeSpan.FromSeconds(100);
-            var percentile = Percentile.P90;
+			// Assert
+			_ = Assert.IsAssignableFrom<IActionResult>(result);
+		}
 
-            //Act
-            var result = controller.GetMetricsByPercentileFromAgent(agentId, fromTime, toTime, percentile);
+		[Fact]
+		public void GetMetricsByPercentileFromAgent_ReturnsOk()
+		{
+			//Arrange
+			var agentId = 1;
+			var fromTime = TimeSpan.FromSeconds(0);
+			var toTime = TimeSpan.FromSeconds(100);
+			var percentile = Percentile.P90;
 
-            // Assert
-            _ = Assert.IsAssignableFrom<IActionResult>(result);
-        }
+			//Act
+			var result = controller.GetMetricsByPercentileFromAgent(agentId, fromTime, toTime, percentile);
 
-        [Fact]
-        public void GetMetricsFromAllCluster_ReturnsOk()
-        {
-            //Arrange
-            var fromTime = TimeSpan.FromSeconds(0);
-            var toTime = TimeSpan.FromSeconds(100);
+			// Assert
+			_ = Assert.IsAssignableFrom<IActionResult>(result);
+		}
 
-            //Act
-            var result = controller.GetMetricsFromAllCluster(fromTime, toTime);
+		[Fact]
+		public void GetMetricsFromAllCluster_ReturnsOk()
+		{
+			//Arrange
+			var fromTime = TimeSpan.FromSeconds(0);
+			var toTime = TimeSpan.FromSeconds(100);
 
-            // Assert
-            _ = Assert.IsAssignableFrom<IActionResult>(result);
-        }
+			//Act
+			var result = controller.GetMetricsFromAllCluster(fromTime, toTime);
 
-        [Fact]
-        public void GetMetricsByPercentileFromAllCluster_ReturnsOk()
-        {
-            //Arrange
-            var fromTime = TimeSpan.FromSeconds(0);
-            var toTime = TimeSpan.FromSeconds(100);
-            var percentile = Percentile.P90;
+			// Assert
+			_ = Assert.IsAssignableFrom<IActionResult>(result);
+		}
 
-            //Act
-            var result = controller.GetMetricsByPercentileFromAllCluster(fromTime, toTime, percentile);
+		[Fact]
+		public void GetMetricsByPercentileFromAllCluster_ReturnsOk()
+		{
+			//Arrange
+			var fromTime = TimeSpan.FromSeconds(0);
+			var toTime = TimeSpan.FromSeconds(100);
+			var percentile = Percentile.P90;
 
-            // Assert
-            _ = Assert.IsAssignableFrom<IActionResult>(result);
-        }
-    }
+			//Act
+			var result = controller.GetMetricsByPercentileFromAllCluster(fromTime, toTime, percentile);
+
+			// Assert
+			_ = Assert.IsAssignableFrom<IActionResult>(result);
+		}
+	}
 }
