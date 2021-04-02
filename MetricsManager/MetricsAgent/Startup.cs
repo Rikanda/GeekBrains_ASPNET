@@ -12,11 +12,15 @@ using System.Linq;
 using System.Threading.Tasks;
 using MetricsAgent.DAL;
 using System.Data.SQLite;
+using Dapper;
 
 namespace MetricsAgent
 {
 	public class Startup
 	{
+		//Строка подключения к базе данных
+		private const string ConnectionString = @"Data Source=metrics.db; Version=3;Pooling=True;Max Pool Size=100;";
+
 		public Startup(IConfiguration configuration)
 		{
 			Configuration = configuration;
@@ -38,11 +42,11 @@ namespace MetricsAgent
 
 		private void ConfigureSqlLiteConnection(IServiceCollection services)
 		{
-			string connectionString = "Data Source=metrics.db"; 
-			var connection = new SQLiteConnection(connectionString);
-			connection.Open();
-			PrepareSchema(connection);
-			services.AddSingleton(connection);
+			using (var connection = new SQLiteConnection(ConnectionString))
+			{
+				connection.Open();
+				PrepareSchema(connection);
+			}
 		}
 
 		/// <summary>
@@ -65,21 +69,16 @@ namespace MetricsAgent
 
 				foreach(string name in tablesNames)
 				{
-					command.CommandText = $"DROP TABLE IF EXISTS {name}";
-					command.ExecuteNonQuery();
-					command.CommandText = @$"CREATE TABLE {name}(id INTEGER PRIMARY KEY, value INT, time INT64)";
-					command.ExecuteNonQuery();
+					connection.Execute($"DROP TABLE IF EXISTS {name}");
+					connection.Execute(@$"CREATE TABLE {name}(id INTEGER PRIMARY KEY, value INT, time INT64)");
 
 					//Забиваем базу данных фигней для тестов
 					for (int i = 0; i < 10; i++)
 					{
 						DateTimeOffset time = new DateTime(2000 + i, 1, 1);
-						command.CommandText = @$"INSERT INTO {name}(value, time) VALUES({i*10+tablesNames.IndexOf(name)},{time.ToUnixTimeSeconds()})";
-						command.ExecuteNonQuery();
+						connection.Execute(@$"INSERT INTO {name}(value, time) VALUES({i*10+tablesNames.IndexOf(name)},{time.ToUnixTimeSeconds()})");
 					}
 				}
-
-
 			}
 		}
 
