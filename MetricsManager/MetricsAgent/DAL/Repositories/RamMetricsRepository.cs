@@ -1,31 +1,36 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
 using System.Data.SQLite;
 using Dapper;
-using MetricsAgent.DAL;
 
 namespace MetricsAgent.DAL
 {
-	//Маркировочный интерфейс
-	//Необходим, чтобы проверить работу репозитория на тесте-заглушке
+	/// <summary>
+	/// Маркировочный интерфейс. Необходим, чтобы проверить работу репозитория на тесте-заглушке 
+	/// </summary>
 	public interface IRamMetricsRepository : IRepository<RamMetric>
 	{
 	}
 
+	/// <summary>
+	/// Репозиторий для обработки Ram метрик
+	/// </summary>
 	public class RamMetricsRepository : IRamMetricsRepository
 	{
-		//Имя таблицы с которой работаем
+		/// <summary>
+		/// Имя таблицы с которой работаем
+		/// </summary>
 		private const string TableName = "rammetrics";
 
-		//Строка подключения
+		/// <summary>
+		/// Строка подключения
+		/// </summary>
 		private const string ConnectionString = @"Data Source=metrics.db; Version=3;Pooling=True;Max Pool Size=100;";
 
-		//Инжектируем соединение с базой данных в наш репозиторий через конструктор
 		public RamMetricsRepository()
 		{
-			//Добавляем парсилку типа TimeSpan в качестве подсказки для SQLite
+			// Добавляем парсилку типа TimeSpan в качестве подсказки для SQLite
 			SqlMapper.AddTypeHandler(new TimeSpanHandler());
 		}
 

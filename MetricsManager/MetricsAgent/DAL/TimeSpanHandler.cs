@@ -4,7 +4,9 @@ using System;
 
 namespace MetricsAgent.DAL
 {
-	// задаем хэндлер для парсинга значений в TimeSpan если таковые попадутся в наших классах моделей
+	/// <summary>
+	/// Хэндлер для парсинга значений в TimeSpan если таковые попадаются в классах моделей
+	/// </summary>
 	public class TimeSpanHandler : SqlMapper.TypeHandler<TimeSpan>
 	{
 		public override TimeSpan Parse(object value)

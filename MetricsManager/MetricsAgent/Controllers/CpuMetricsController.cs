@@ -1,32 +1,39 @@
 ﻿using MetricsAgent.DAL;
-using MetricsAgent.Requests;
 using MetricsAgent.Responses;
 using Metrics.Tools;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
-using System.Data.SQLite;
-using System.Linq;
-using System.Threading.Tasks;
+using AutoMapper;
 
 namespace MetricsAgent.Controllers
 {
+	/// <summary>
+	/// Контроллер для обработки Cpu метрик
+	/// </summary>
 	[Route("api/metrics/cpu")]
 	[ApiController]
 	public class CpuMetricsController : ControllerBase
 	{
 		private readonly ILogger<CpuMetricsController> _logger;
-		private readonly ICpuMetricsRepository repository;
+		private readonly ICpuMetricsRepository _repository;
+		private readonly IMapper _mapper;
 
-		public CpuMetricsController(ILogger<CpuMetricsController> logger, ICpuMetricsRepository repository)
+		public CpuMetricsController(ILogger<CpuMetricsController> logger, ICpuMetricsRepository repository, IMapper mapper)
 		{
 			_logger = logger;
 			_logger.LogDebug("Вызов конструктора");
-			this.repository = repository;
+			_repository = repository;
+			_mapper = mapper;
 		}
 
+		/// <summary>
+		/// Получение CPU метрик за заданный промежуток времени
+		/// </summary>
+		/// <param name="fromTime">Начало временного промежутка</param>
+		/// <param name="toTime">Конец временного промежутка</param>
+		/// <returns>Список метрик за заданный интервал времени</returns>
 		[HttpGet("from/{fromTime}/to/{toTime}")]
 		public IActionResult GetMetrics(
 			[FromRoute] DateTimeOffset fromTime,
@@ -36,7 +43,7 @@ namespace MetricsAgent.Controllers
 				$" {nameof(fromTime)} = {fromTime}" +
 				$" {nameof(toTime)} = {toTime}");
 
-			var metrics = repository.GetByTimeInterval(fromTime, toTime);
+			var metrics = _repository.GetByTimeInterval(fromTime, toTime);
 
 			var response = new AllCpuMetricsResponse()
 			{
@@ -45,7 +52,7 @@ namespace MetricsAgent.Controllers
 
 			foreach (var metric in metrics)
 			{
-				response.Metrics.Add(new CpuMetricDto { Time = metric.Time, Value = metric.Value, Id = metric.Id });
+				response.Metrics.Add(_mapper.Map<CpuMetricDto>(metric));
 			}
 
 			return Ok(response);

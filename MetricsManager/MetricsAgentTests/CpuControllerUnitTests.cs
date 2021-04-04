@@ -1,4 +1,6 @@
+using AutoMapper;
 using Metrics.Tools;
+using MetricsAgent;
 using MetricsAgent.Controllers;
 using MetricsAgent.DAL;
 using MetricsAgent.Responses;
@@ -7,9 +9,7 @@ using Microsoft.Extensions.Logging;
 using Moq;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using Xunit;
-using static MetricsAgent.Responses.DotNetMetricsResponses;
 
 namespace MetricsAgentsTests
 {
@@ -23,7 +23,12 @@ namespace MetricsAgentsTests
 		{
 			mockLogger = new Mock<ILogger<CpuMetricsController>>();
 			mockRepository = new Mock<ICpuMetricsRepository>();
-			controller = new CpuMetricsController(mockLogger.Object, mockRepository.Object);
+
+			var myProfile = new MapperProfile();
+			var configuration = new MapperConfiguration(cfg => cfg.AddProfile(myProfile));
+			var mapper = new Mapper(configuration);
+
+			controller = new CpuMetricsController(mockLogger.Object, mockRepository.Object, mapper);
 		}
 
 		[Fact]

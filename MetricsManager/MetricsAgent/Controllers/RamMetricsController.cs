@@ -1,39 +1,44 @@
 ﻿using MetricsAgent.DAL;
-using Microsoft.AspNetCore.Http;
+using MetricsAgent.Responses;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using static MetricsAgent.Responses.RamMetricsResponses;
+using AutoMapper;
 
 namespace MetricsAgent.Controllers
 {
+	/// <summary>
+	/// Контроллер для обработки Ram метрик
+	/// </summary>
 	[Route("api/metrics/ram")]
 	[ApiController]
 	public class RamMetricsController : ControllerBase
 	{
 		private readonly ILogger<RamMetricsController> _logger;
-		private readonly IRamMetricsRepository repository;
+		private readonly IRamMetricsRepository _repository;
+		private readonly IMapper _mapper;
 
-		public RamMetricsController(ILogger<RamMetricsController> logger, IRamMetricsRepository repository)
+		public RamMetricsController(ILogger<RamMetricsController> logger, IRamMetricsRepository repository, IMapper mapper)
 		{
 			_logger = logger;
 			_logger.LogDebug("Вызов конструктора");
-			this.repository = repository;
+			_repository = repository;
+			_mapper = mapper;
 		}
 
+		/// <summary>
+		/// Получение последней собранной Ram метрики из базы данных
+		/// </summary>
+		/// <returns>Последняя собранная метрика из базы данных</returns>
 		[HttpGet("available")]
 		public IActionResult GetMetrics()
 		{
 			_logger.LogDebug("Вызов метода");
 
-			var metric = repository.GetLast();
+			var metric = _repository.GetLast();
 
 			RamMetricDto response = null;
 
-			response = new RamMetricDto { Time = metric.Time, Value = metric.Value, Id = metric.Id };
+			response = _mapper.Map<RamMetricDto>(metric);
 
 			return Ok(response);
 		}

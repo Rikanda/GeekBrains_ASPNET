@@ -1,22 +1,23 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace MetricsAgent.Responses
 {
-	public class NetworkMetricsResponses
+	/// <summary>
+	/// Контейнер для передачи списка метрик в ответе от сервера
+	/// </summary>
+	public class AllNetworkMetricsResponse
 	{
-		public class AllNetworkMetricsResponse
-		{
-			public List<NetworkMetricDto> Metrics { get; set; }
-		}
+		public List<NetworkMetricDto> Metrics { get; set; }
+	}
 
-		public class NetworkMetricDto
-		{
-			public TimeSpan Time { get; set; }
-			public int Value { get; set; }
-			public int Id { get; set; }
-		}
+	/// <summary>
+	/// Контейнер для передачи метрики в ответе от сервера
+	/// </summary>
+	public class NetworkMetricDto
+	{
+		public TimeSpan Time { get; set; }
+		public int Value { get; set; }
+		public int Id { get; set; }
 	}
 }

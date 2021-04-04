@@ -1,24 +1,22 @@
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.HttpsPolicy;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using MetricsAgent.DAL;
 using System.Data.SQLite;
 using Dapper;
+using AutoMapper;
 
 namespace MetricsAgent
 {
 	public class Startup
 	{
-		//Строка подключения к базе данных
+		/// <summary>
+		/// Строка для подключения к базе данных
+		/// </summary>
 		private const string ConnectionString = @"Data Source=metrics.db; Version=3;Pooling=True;Max Pool Size=100;";
 
 		public Startup(IConfiguration configuration)
@@ -32,15 +30,24 @@ namespace MetricsAgent
 		public void ConfigureServices(IServiceCollection services)
 		{
 			services.AddControllers();
-			ConfigureSqlLiteConnection(services);
+
+			ConfigureSqlLiteConnection();
+
 			services.AddScoped<ICpuMetricsRepository, CpuMetricsRepository>();
 			services.AddScoped<IDotNetMetricsRepository, DotNetMetricsRepository>();
 			services.AddScoped<IHddMetricsRepository, HddMetricsRepository>();
 			services.AddScoped<INetworkMetricsRepository, NetworkMetricsRepository>();
 			services.AddScoped<IRamMetricsRepository, RamMetricsRepository>();
+
+			var mapperConfiguration = new MapperConfiguration(mp => mp.AddProfile(new MapperProfile()));
+			var mapper = mapperConfiguration.CreateMapper();
+			services.AddSingleton(mapper);
 		}
 
-		private void ConfigureSqlLiteConnection(IServiceCollection services)
+		/// <summary>
+		/// Коншфигурирование и создание подключения к базе данных
+		/// </summary>
+		private void ConfigureSqlLiteConnection()
 		{
 			using (var connection = new SQLiteConnection(ConnectionString))
 			{
