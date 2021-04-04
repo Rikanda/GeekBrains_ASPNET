@@ -1,5 +1,4 @@
-﻿using MetricsAgent.Models;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -11,20 +10,20 @@ namespace MetricsAgent.DAL
 {
 	//Маркировочный интерфейс
 	//Необходим, чтобы проверить работу репозитория на тесте-заглушке
-	public interface IHddMetricsRepository : IRepository<HddMetric>
+	public interface ICpuMetricsRepository : IRepository<CpuMetric>
 	{
 	}
 
-	public class HddMetricsRepository : IHddMetricsRepository
+	public class CpuMetricsRepository : ICpuMetricsRepository
 	{
 		//Имя таблицы с которой работаем
-		private const string TableName = "hddmetrics";
+		private const string TableName = "cpumetrics";
 
 		//Строка подключения
 		private const string ConnectionString = @"Data Source=metrics.db; Version=3;Pooling=True;Max Pool Size=100;";
 
 		//Инжектируем соединение с базой данных в наш репозиторий через конструктор
-		public HddMetricsRepository()
+		public CpuMetricsRepository()
 		{
 			//Добавляем парсилку типа TimeSpan в качестве подсказки для SQLite
 			SqlMapper.AddTypeHandler(new TimeSpanHandler());
@@ -36,12 +35,12 @@ namespace MetricsAgent.DAL
 		/// <param name="fromTime">Начало временного интервала</param>
 		/// <param name="toTime">Конец временного интервала</param>
 		/// <returns>Список с метриками за заданный интервал времени</returns>
-		public IList<HddMetric> GetByTimeInterval(DateTimeOffset fromTime, DateTimeOffset toTime)
+		public IList<CpuMetric> GetByTimeInterval(DateTimeOffset fromTime, DateTimeOffset toTime)
 		{
-			var returnList = new List<HddMetric>();
+			var returnList = new List<CpuMetric>();
 			using (var connection = new SQLiteConnection(ConnectionString))
 			{
-				return connection.Query<HddMetric>(
+				return connection.Query<CpuMetric>(
 				"SELECT * " +
 				$"FROM {TableName} " +
 				"WHERE (time >= @fromTime AND time <= @toTime)",
@@ -57,11 +56,11 @@ namespace MetricsAgent.DAL
 		/// Извлекает последнюю по дате метрику из базы данных
 		/// </summary>
 		/// <returns>Последняя по времени метрика из базы данных</returns>
-		public HddMetric GetLast()
+		public CpuMetric GetLast()
 		{
 			using (var connection = new SQLiteConnection(ConnectionString))
 			{
-				return connection.QuerySingle<HddMetric>(
+				return connection.QuerySingle<CpuMetric>(
 				"SELECT * " +
 				$"FROM {TableName} " +
 				$"WHERE time = (SELECT MAX (time) FROM {TableName})");

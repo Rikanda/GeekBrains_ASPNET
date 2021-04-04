@@ -1,7 +1,6 @@
 using Metrics.Tools;
 using MetricsAgent.Controllers;
 using MetricsAgent.DAL;
-using MetricsAgent.Models;
 using MetricsAgent.Responses;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;

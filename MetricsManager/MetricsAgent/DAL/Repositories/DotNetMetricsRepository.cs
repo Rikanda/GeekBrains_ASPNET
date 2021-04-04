@@ -1,5 +1,4 @@
-﻿using MetricsAgent.Models;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -11,20 +10,20 @@ namespace MetricsAgent.DAL
 {
 	//Маркировочный интерфейс
 	//Необходим, чтобы проверить работу репозитория на тесте-заглушке
-	public interface INetworkMetricsRepository : IRepository<NetworkMetric>
+	public interface IDotNetMetricsRepository : IRepository<DotNetMetric>
 	{
 	}
 
-	public class NetworkMetricsRepository : INetworkMetricsRepository
+	public class DotNetMetricsRepository : IDotNetMetricsRepository
 	{
 		//Имя таблицы с которой работаем
-		private const string TableName = "networkmetrics";
+		private const string TableName = "dotnetmetrics";
 
 		//Строка подключения
 		private const string ConnectionString = @"Data Source=metrics.db; Version=3;Pooling=True;Max Pool Size=100;";
 
 		//Инжектируем соединение с базой данных в наш репозиторий через конструктор
-		public NetworkMetricsRepository()
+		public DotNetMetricsRepository()
 		{
 			//Добавляем парсилку типа TimeSpan в качестве подсказки для SQLite
 			SqlMapper.AddTypeHandler(new TimeSpanHandler());
@@ -36,12 +35,12 @@ namespace MetricsAgent.DAL
 		/// <param name="fromTime">Начало временного интервала</param>
 		/// <param name="toTime">Конец временного интервала</param>
 		/// <returns>Список с метриками за заданный интервал времени</returns>
-		public IList<NetworkMetric> GetByTimeInterval(DateTimeOffset fromTime, DateTimeOffset toTime)
+		public IList<DotNetMetric> GetByTimeInterval(DateTimeOffset fromTime, DateTimeOffset toTime)
 		{
-			var returnList = new List<NetworkMetric>();
+			var returnList = new List<DotNetMetric>();
 			using (var connection = new SQLiteConnection(ConnectionString))
 			{
-				return connection.Query<NetworkMetric>(
+				return connection.Query<DotNetMetric>(
 				"SELECT * " +
 				$"FROM {TableName} " +
 				"WHERE (time >= @fromTime AND time <= @toTime)",
@@ -57,11 +56,11 @@ namespace MetricsAgent.DAL
 		/// Извлекает последнюю по дате метрику из базы данных
 		/// </summary>
 		/// <returns>Последняя по времени метрика из базы данных</returns>
-		public NetworkMetric GetLast()
+		public DotNetMetric GetLast()
 		{
 			using (var connection = new SQLiteConnection(ConnectionString))
 			{
-				return connection.QuerySingle<NetworkMetric>(
+				return connection.QuerySingle<DotNetMetric>(
 				"SELECT * " +
 				$"FROM {TableName} " +
 				$"WHERE time = (SELECT MAX (time) FROM {TableName})");
