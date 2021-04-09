@@ -9,6 +9,7 @@ using MetricsAgent.DAL;
 using System.Data.SQLite;
 using Dapper;
 using AutoMapper;
+using FluentMigrator.Runner;
 
 namespace MetricsAgent
 {
@@ -31,7 +32,7 @@ namespace MetricsAgent
 		{
 			services.AddControllers();
 
-			ConfigureSqlLiteConnection();
+			//ConfigureSqlLiteConnection();
 
 			services.AddScoped<ICpuMetricsRepository, CpuMetricsRepository>();
 			services.AddScoped<IDotNetMetricsRepository, DotNetMetricsRepository>();
@@ -42,55 +43,18 @@ namespace MetricsAgent
 			var mapperConfiguration = new MapperConfiguration(mp => mp.AddProfile(new MapperProfile()));
 			var mapper = mapperConfiguration.CreateMapper();
 			services.AddSingleton(mapper);
-		}
 
-		/// <summary>
-		/// Коншфигурирование и создание подключения к базе данных
-		/// </summary>
-		private void ConfigureSqlLiteConnection()
-		{
-			using (var connection = new SQLiteConnection(ConnectionString))
-			{
-				connection.Open();
-				PrepareSchema(connection);
-			}
-		}
+			services.AddFluentMigratorCore()
+				.ConfigureRunner(rb => rb.AddSQLite() // добавляем поддержку SQLite 
+					.WithGlobalConnectionString(ConnectionString)// устанавливаем строку подключения
+					.ScanIn(typeof(Startup).Assembly).For.Migrations())// подсказываем где искать классы с миграциями
+				.AddLogging(lb => lb.AddFluentMigratorConsole());
 
-		/// <summary>
-		/// Создание базы данных и заполнение ее информацией для тестов
-		/// </summary>
-		/// <param name="connection">Соединение с базой</param>
-		private void PrepareSchema(SQLiteConnection connection)
-		{
-			using (var command = new SQLiteCommand(connection))
-			{
-				// имена таблиц
-				List<string> tablesNames = new List<string>
-				{
-					"cpumetrics",
-					"dotnetmetrics",
-					"hddmetrics",
-					"networkmetrics",
-					"rammetrics",
-				};
 
-				foreach(string name in tablesNames)
-				{
-					connection.Execute($"DROP TABLE IF EXISTS {name}");
-					connection.Execute(@$"CREATE TABLE {name}(id INTEGER PRIMARY KEY, value INT, time INT64)");
-
-					//Забиваем базу данных фигней для тестов
-					for (int i = 0; i < 10; i++)
-					{
-						DateTimeOffset time = new DateTime(2000 + i, 1, 1);
-						connection.Execute(@$"INSERT INTO {name}(value, time) VALUES({i*10+tablesNames.IndexOf(name)},{time.ToUnixTimeSeconds()})");
-					}
-				}
-			}
 		}
 
 		// This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-		public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+		public void Configure(IApplicationBuilder app, IWebHostEnvironment env, IMigrationRunner migrationRunner)
 		{
 			if (env.IsDevelopment())
 			{
@@ -107,6 +71,8 @@ namespace MetricsAgent
 			{
 				endpoints.MapControllers();
 			});
+
+			migrationRunner.MigrateUp();
 		}
 	}
 }
