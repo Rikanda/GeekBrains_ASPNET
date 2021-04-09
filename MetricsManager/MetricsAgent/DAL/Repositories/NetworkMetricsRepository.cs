@@ -35,6 +35,26 @@ namespace MetricsAgent.DAL
 		}
 
 		/// <summary>
+		/// Записывает метрику в базу данных
+		/// </summary>
+		/// <param name="metric">Метрика для записи</param>
+		public void Create(NetworkMetric metric)
+		{
+			using (var connection = new SQLiteConnection(ConnectionString))
+			{
+				connection.Execute(
+				$"INSERT INTO {TableName}" +
+				$"(Value, Time)" +
+				$"VALUES (@value, @time);",
+				new
+				{
+					value = metric.Value,
+					time = metric.Time.TotalSeconds,
+				});
+			}
+		}
+
+		/// <summary>
 		/// Возвращает список с метриками за заданный интервал времени
 		/// </summary>
 		/// <param name="fromTime">Начало временного интервала</param>

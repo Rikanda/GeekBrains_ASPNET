@@ -18,5 +18,7 @@ namespace MetricsAgent.DAL
 		/// </summary>
 		/// <returns>Последняя собранная метрика из базы данных</returns>
 		T GetLast();
+
+		void Create(T metric);
 	}
 }

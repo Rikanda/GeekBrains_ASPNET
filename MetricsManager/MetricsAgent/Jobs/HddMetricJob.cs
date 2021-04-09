@@ -9,26 +9,26 @@ using System.Threading.Tasks;
 namespace MetricsAgent.Jobs
 {
 	/// <summary>
-	/// Задача сбора Cpu метрик
+	/// Задача сбора Hdd метрик
 	/// </summary>
-	public class CpuMetricJob : IJob
+	public class HddMetricJob : IJob
 	{
 		// Инжектируем DI провайдер
 		private readonly IServiceProvider _provider;
-		private ICpuMetricsRepository _repository;
+		private IHddMetricsRepository _repository;
 
 		/// <summary>Имя категории счетчика</summary>
-		private readonly string categoryName = "Processor";
+		private readonly string categoryName = "LogicalDisk";
 		/// <summary>Имя счетчика</summary>
-		private readonly string counterName = "% Processor Time";
+		private readonly string counterName = "Free Megabytes";
 		/// <summary>Счетчик</summary>
 		private PerformanceCounter _counter;
 
 
-		public CpuMetricJob(IServiceProvider provider)
+		public HddMetricJob(IServiceProvider provider)
 		{
 			_provider = provider;
-			_repository = _provider.GetService<ICpuMetricsRepository>();
+			_repository = _provider.GetService<IHddMetricsRepository>();
 
 			_counter = new PerformanceCounter(categoryName, counterName, "_Total");
 
@@ -43,7 +43,7 @@ namespace MetricsAgent.Jobs
 			var time = TimeSpan.FromSeconds(DateTimeOffset.UtcNow.ToUnixTimeSeconds());
 
 			// Запись метрики в репозиторий
-			_repository.Create(new CpuMetric { Time = time, Value = value });
+			_repository.Create(new HddMetric { Time = time, Value = value });
 
 			return Task.CompletedTask;
 		}

@@ -9,28 +9,28 @@ using System.Threading.Tasks;
 namespace MetricsAgent.Jobs
 {
 	/// <summary>
-	/// Задача сбора Cpu метрик
+	/// Задача сбора Ram метрик
 	/// </summary>
-	public class CpuMetricJob : IJob
+	public class RamMetricJob : IJob
 	{
 		// Инжектируем DI провайдер
 		private readonly IServiceProvider _provider;
-		private ICpuMetricsRepository _repository;
+		private IRamMetricsRepository _repository;
 
 		/// <summary>Имя категории счетчика</summary>
-		private readonly string categoryName = "Processor";
+		private readonly string categoryName = "Memory";
 		/// <summary>Имя счетчика</summary>
-		private readonly string counterName = "% Processor Time";
+		private readonly string counterName = "Available MBytes";
 		/// <summary>Счетчик</summary>
 		private PerformanceCounter _counter;
 
 
-		public CpuMetricJob(IServiceProvider provider)
+		public RamMetricJob(IServiceProvider provider)
 		{
 			_provider = provider;
-			_repository = _provider.GetService<ICpuMetricsRepository>();
+			_repository = _provider.GetService<IRamMetricsRepository>();
 
-			_counter = new PerformanceCounter(categoryName, counterName, "_Total");
+			_counter = new PerformanceCounter(categoryName, counterName);
 
 		}
 
@@ -43,7 +43,7 @@ namespace MetricsAgent.Jobs
 			var time = TimeSpan.FromSeconds(DateTimeOffset.UtcNow.ToUnixTimeSeconds());
 
 			// Запись метрики в репозиторий
-			_repository.Create(new CpuMetric { Time = time, Value = value });
+			_repository.Create(new RamMetric { Time = time, Value = value });
 
 			return Task.CompletedTask;
 		}

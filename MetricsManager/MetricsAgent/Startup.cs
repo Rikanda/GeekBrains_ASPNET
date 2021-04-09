@@ -37,10 +37,10 @@ namespace MetricsAgent
 			services.AddControllers();
 
 			services.AddSingleton<ICpuMetricsRepository, CpuMetricsRepository>();
-			services.AddScoped<IDotNetMetricsRepository, DotNetMetricsRepository>();
-			services.AddScoped<IHddMetricsRepository, HddMetricsRepository>();
-			services.AddScoped<INetworkMetricsRepository, NetworkMetricsRepository>();
-			services.AddScoped<IRamMetricsRepository, RamMetricsRepository>();
+			services.AddSingleton<IDotNetMetricsRepository, DotNetMetricsRepository>();
+			services.AddSingleton<IHddMetricsRepository, HddMetricsRepository>();
+			services.AddSingleton<INetworkMetricsRepository, NetworkMetricsRepository>();
+			services.AddSingleton<IRamMetricsRepository, RamMetricsRepository>();
 
 			var mapperConfiguration = new MapperConfiguration(mp => mp.AddProfile(new MapperProfile()));
 			var mapper = mapperConfiguration.CreateMapper();
@@ -56,8 +56,25 @@ namespace MetricsAgent
 			services.AddSingleton<ISchedulerFactory, StdSchedulerFactory>();
 
 			services.AddSingleton<CpuMetricJob>();
+			services.AddSingleton<DotNetMetricJob>();
+			services.AddSingleton<HddMetricJob>();
+			services.AddSingleton<NetworkMetricJob>();
+			services.AddSingleton<RamMetricJob>();
+
 			services.AddSingleton(new JobSchedule(
 				jobType: typeof(CpuMetricJob),
+				cronExpression: "0/5 * * * * ?"));
+			services.AddSingleton(new JobSchedule(
+				jobType: typeof(DotNetMetricJob),
+				cronExpression: "0/5 * * * * ?"));
+			services.AddSingleton(new JobSchedule(
+				jobType: typeof(HddMetricJob),
+				cronExpression: "0/5 * * * * ?"));
+			services.AddSingleton(new JobSchedule(
+				jobType: typeof(NetworkMetricJob),
+				cronExpression: "0/5 * * * * ?"));
+			services.AddSingleton(new JobSchedule(
+				jobType: typeof(RamMetricJob),
 				cronExpression: "0/5 * * * * ?"));
 
 			services.AddHostedService<QuartzHostedService>();
