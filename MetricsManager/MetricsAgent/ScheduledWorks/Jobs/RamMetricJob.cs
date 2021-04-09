@@ -2,34 +2,35 @@
 using Microsoft.Extensions.DependencyInjection;
 using Quartz;
 using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Threading.Tasks;
 
-namespace MetricsAgent.Jobs
+namespace MetricsAgent.ScheduledWorks
 {
 	/// <summary>
-	/// Задача сбора Hdd метрик
+	/// Задача сбора Ram метрик
 	/// </summary>
-	public class HddMetricJob : IJob
+	public class RamMetricJob : IJob
 	{
 		// Инжектируем DI провайдер
 		private readonly IServiceProvider _provider;
-		private IHddMetricsRepository _repository;
+		private IRamMetricsRepository _repository;
 
 		/// <summary>Имя категории счетчика</summary>
-		private readonly string categoryName = "LogicalDisk";
+		private readonly string categoryName = "Memory";
 		/// <summary>Имя счетчика</summary>
-		private readonly string counterName = "Free Megabytes";
+		private readonly string counterName = "Available MBytes";
 		/// <summary>Счетчик</summary>
 		private PerformanceCounter _counter;
 
 
-		public HddMetricJob(IServiceProvider provider)
+		public RamMetricJob(IServiceProvider provider)
 		{
 			_provider = provider;
-			_repository = _provider.GetService<IHddMetricsRepository>();
+			_repository = _provider.GetService<IRamMetricsRepository>();
 
-			_counter = new PerformanceCounter(categoryName, counterName, "_Total");
+			_counter = new PerformanceCounter(categoryName, counterName);
 
 		}
 
@@ -42,7 +43,7 @@ namespace MetricsAgent.Jobs
 			var time = TimeSpan.FromSeconds(DateTimeOffset.UtcNow.ToUnixTimeSeconds());
 
 			// Запись метрики в репозиторий
-			_repository.Create(new HddMetric { Time = time, Value = value });
+			_repository.Create(new RamMetric { Time = time, Value = value });
 
 			return Task.CompletedTask;
 		}

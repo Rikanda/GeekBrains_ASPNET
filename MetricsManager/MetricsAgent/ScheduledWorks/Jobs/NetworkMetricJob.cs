@@ -6,7 +6,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Threading.Tasks;
 
-namespace MetricsAgent.Jobs
+namespace MetricsAgent.ScheduledWorks
 {
 	/// <summary>
 	/// Задача сбора Network метрик

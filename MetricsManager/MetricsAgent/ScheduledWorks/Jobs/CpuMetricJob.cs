@@ -5,31 +5,31 @@ using System;
 using System.Diagnostics;
 using System.Threading.Tasks;
 
-namespace MetricsAgent.Jobs
+namespace MetricsAgent.ScheduledWorks
 {
 	/// <summary>
-	/// Задача сбора DotNet метрик
+	/// Задача сбора Cpu метрик
 	/// </summary>
-	public class DotNetMetricJob : IJob
+	public class CpuMetricJob : IJob
 	{
 		// Инжектируем DI провайдер
 		private readonly IServiceProvider _provider;
-		private IDotNetMetricsRepository _repository;
+		private ICpuMetricsRepository _repository;
 
 		/// <summary>Имя категории счетчика</summary>
-		private readonly string categoryName = ".NET CLR Memory";
+		private readonly string categoryName = "Processor";
 		/// <summary>Имя счетчика</summary>
-		private readonly string counterName = "# Bytes in all Heaps";
+		private readonly string counterName = "% Processor Time";
 		/// <summary>Счетчик</summary>
 		private PerformanceCounter _counter;
 
 
-		public DotNetMetricJob(IServiceProvider provider)
+		public CpuMetricJob(IServiceProvider provider)
 		{
 			_provider = provider;
-			_repository = _provider.GetService<IDotNetMetricsRepository>();
+			_repository = _provider.GetService<ICpuMetricsRepository>();
 
-			_counter = new PerformanceCounter(categoryName, counterName, "_Global_");
+			_counter = new PerformanceCounter(categoryName, counterName, "_Total");
 
 		}
 
@@ -42,7 +42,7 @@ namespace MetricsAgent.Jobs
 			var time = TimeSpan.FromSeconds(DateTimeOffset.UtcNow.ToUnixTimeSeconds());
 
 			// Запись метрики в репозиторий
-			_repository.Create(new DotNetMetric { Time = time, Value = value });
+			_repository.Create(new CpuMetric { Time = time, Value = value });
 
 			return Task.CompletedTask;
 		}
