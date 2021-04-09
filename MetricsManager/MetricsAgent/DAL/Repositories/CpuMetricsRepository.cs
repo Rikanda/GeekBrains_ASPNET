@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Data.SQLite;
 using Dapper;
+using MetricsAgent.SQLsettings;
 
 namespace MetricsAgent.DAL
 {
@@ -19,19 +20,15 @@ namespace MetricsAgent.DAL
 	public class CpuMetricsRepository : ICpuMetricsRepository
 	{
 		/// <summary>
-		/// Имя таблицы с которой работаем
+		/// Объект с именами и настройками базы данных
 		/// </summary>
-		private const string TableName = "cpumetrics";
+		private readonly IMySqlSettings mySql;
 
-		/// <summary>
-		/// Строка подключения
-		/// </summary>
-		private const string ConnectionString = @"Data Source=metrics.db; Version=3;Pooling=True;Max Pool Size=100;";
-
-		public CpuMetricsRepository()
+		public CpuMetricsRepository(IMySqlSettings mySqlSettings)
 		{
 			// Добавляем парсилку типа TimeSpan в качестве подсказки для SQLite
 			SqlMapper.AddTypeHandler(new TimeSpanHandler());
+			mySql = mySqlSettings;
 		}
 
 		/// <summary>
@@ -40,11 +37,11 @@ namespace MetricsAgent.DAL
 		/// <param name="metric">Метрика для записи</param>
 		public void Create(CpuMetric metric)
 		{
-			using (var connection = new SQLiteConnection(ConnectionString))
+			using (var connection = new SQLiteConnection(mySql.ConnectionString))
 			{
 				connection.Execute(
-				$"INSERT INTO {TableName}" +
-				$"(Value, Time)" +
+				$"INSERT INTO {mySql[Tables.CpuMetric]}" +
+				$"({mySql[Rows.Value]}, {mySql[Rows.Time]})" +
 				$"VALUES (@value, @time);",
 				new
 				{
@@ -63,12 +60,12 @@ namespace MetricsAgent.DAL
 		public IList<CpuMetric> GetByTimeInterval(DateTimeOffset fromTime, DateTimeOffset toTime)
 		{
 			var returnList = new List<CpuMetric>();
-			using (var connection = new SQLiteConnection(ConnectionString))
+			using (var connection = new SQLiteConnection(mySql.ConnectionString))
 			{
 				return connection.Query<CpuMetric>(
 				"SELECT * " +
-				$"FROM {TableName} " +
-				"WHERE (time >= @fromTime AND time <= @toTime)",
+				$"FROM {mySql[Tables.CpuMetric]} " +
+				$"WHERE ({mySql[Rows.Time]} >= @fromTime AND {mySql[Rows.Time]} <= @toTime)",
 				new
 				{
 					fromTime = fromTime.ToUnixTimeSeconds(),
@@ -83,12 +80,12 @@ namespace MetricsAgent.DAL
 		/// <returns>Последняя по времени метрика из базы данных</returns>
 		public CpuMetric GetLast()
 		{
-			using (var connection = new SQLiteConnection(ConnectionString))
+			using (var connection = new SQLiteConnection(mySql.ConnectionString))
 			{
 				return connection.QuerySingle<CpuMetric>(
 				"SELECT * " +
-				$"FROM {TableName} " +
-				$"WHERE time = (SELECT MAX (time) FROM {TableName})");
+				$"FROM {mySql[Tables.CpuMetric]} " +
+				$"WHERE {mySql[Rows.Time]} = (SELECT MAX ({mySql[Rows.Time]}) FROM {mySql[Tables.CpuMetric]})");
 			}
 		}
 

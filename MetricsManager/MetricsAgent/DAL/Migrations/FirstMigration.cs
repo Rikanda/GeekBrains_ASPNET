@@ -1,4 +1,5 @@
 ﻿using FluentMigrator;
+using MetricsAgent.SQLsettings;
 using System;
 using System.Collections.Generic;
 
@@ -8,32 +9,32 @@ namespace MetricsAgent.DAL.Migrations
 	[Migration(1)]
 	public class FirstMigration : Migration
 	{
-		private readonly List<string> tablesNames = new List<string>
-			{
-				"cpumetrics",
-				"dotnetmetrics",
-				"hddmetrics",
-				"networkmetrics",
-				"rammetrics",
-			};
+		/// <summary>
+		/// Объект с именами и настройками базы данных
+		/// </summary>
+		private readonly IMySqlSettings mySql;
+
+		public FirstMigration(IMySqlSettings mySqlSettings)
+		{
+			mySql = mySqlSettings;
+		}
 
 		public override void Up()
 		{
-			foreach(string tableName in tablesNames)
+			foreach(Tables tableName in Enum.GetValues(typeof(Tables)))
 			{
-				Create.Table(tableName)
-					.WithColumn("Id").AsInt64().PrimaryKey().Identity()
-					.WithColumn("Value").AsInt32()
-					.WithColumn("Time").AsInt64();
+				Create.Table(mySql[tableName])
+					.WithColumn(mySql[Rows.Id]).AsInt64().PrimaryKey().Identity()
+					.WithColumn(mySql[Rows.Value]).AsInt32()
+					.WithColumn(mySql[Rows.Time]).AsInt64();
 			}
-
 		}
 
 		public override void Down()
 		{
-			foreach (string tableName in tablesNames)
+			foreach (Tables tableName in Enum.GetValues(typeof(Tables)))
 			{
-				Delete.Table(tableName);
+				Delete.Table(mySql[tableName]);
 			}
 
 		}

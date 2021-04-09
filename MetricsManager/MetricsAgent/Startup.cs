@@ -14,6 +14,7 @@ using Quartz;
 using Quartz.Spi;
 using MetricsAgent.Jobs;
 using Quartz.Impl;
+using MetricsAgent.SQLsettings;
 
 namespace MetricsAgent
 {
@@ -45,6 +46,8 @@ namespace MetricsAgent
 			var mapperConfiguration = new MapperConfiguration(mp => mp.AddProfile(new MapperProfile()));
 			var mapper = mapperConfiguration.CreateMapper();
 			services.AddSingleton(mapper);
+
+			services.AddSingleton<IMySqlSettings, MySqlSettings>();
 
 			services.AddFluentMigratorCore()
 				.ConfigureRunner(rb => rb.AddSQLite() // добавляем поддержку SQLite 

@@ -19,6 +19,10 @@ namespace MetricsAgent.DAL
 		/// <returns>Последняя собранная метрика из базы данных</returns>
 		T GetLast();
 
+		/// <summary>
+		/// Записывает значение метрики в базу данных
+		/// </summary>
+		/// <param name="metric">Метрика для занесения в базу данных</param>
 		void Create(T metric);
 	}
 }
