@@ -1,14 +1,14 @@
-﻿using Metrics.Tools;
+﻿using AutoMapper;
+using MetricsAgent;
 using MetricsAgent.Controllers;
 using MetricsAgent.DAL;
-using MetricsAgent.Models;
+using MetricsAgent.Responses;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Moq;
 using System;
 using System.Collections.Generic;
 using Xunit;
-using static MetricsAgent.Responses.NetworkMetricsResponses;
 
 namespace MetricsAgentsTests
 {
@@ -22,7 +22,12 @@ namespace MetricsAgentsTests
 		{
 			mockLogger = new Mock<ILogger<NetworkMetricsController>>();
 			mockRepository = new Mock<INetworkMetricsRepository>();
-			controller = new NetworkMetricsController(mockLogger.Object, mockRepository.Object);
+
+			var myProfile = new MapperProfile();
+			var configuration = new MapperConfiguration(cfg => cfg.AddProfile(myProfile));
+			var mapper = new Mapper(configuration);
+
+			controller = new NetworkMetricsController(mockLogger.Object, mockRepository.Object, mapper);
 		}
 
 		[Fact]
