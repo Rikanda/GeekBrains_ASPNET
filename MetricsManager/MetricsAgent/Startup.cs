@@ -10,6 +10,10 @@ using System.Data.SQLite;
 using Dapper;
 using AutoMapper;
 using FluentMigrator.Runner;
+using Quartz;
+using Quartz.Spi;
+using MetricsAgent.Jobs;
+using Quartz.Impl;
 
 namespace MetricsAgent
 {
@@ -32,9 +36,7 @@ namespace MetricsAgent
 		{
 			services.AddControllers();
 
-			//ConfigureSqlLiteConnection();
-
-			services.AddScoped<ICpuMetricsRepository, CpuMetricsRepository>();
+			services.AddSingleton<ICpuMetricsRepository, CpuMetricsRepository>();
 			services.AddScoped<IDotNetMetricsRepository, DotNetMetricsRepository>();
 			services.AddScoped<IHddMetricsRepository, HddMetricsRepository>();
 			services.AddScoped<INetworkMetricsRepository, NetworkMetricsRepository>();
@@ -50,7 +52,15 @@ namespace MetricsAgent
 					.ScanIn(typeof(Startup).Assembly).For.Migrations())// подсказываем где искать классы с миграциями
 				.AddLogging(lb => lb.AddFluentMigratorConsole());
 
+			services.AddSingleton<IJobFactory, SingletonJobFactory>();
+			services.AddSingleton<ISchedulerFactory, StdSchedulerFactory>();
 
+			services.AddSingleton<CpuMetricJob>();
+			services.AddSingleton(new JobSchedule(
+				jobType: typeof(CpuMetricJob),
+				cronExpression: "0/5 * * * * ?"));
+
+			services.AddHostedService<QuartzHostedService>();
 		}
 
 		// This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
