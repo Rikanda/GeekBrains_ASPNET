@@ -1,5 +1,4 @@
 using AutoMapper;
-using Metrics.Tools;
 using MetricsAgent;
 using MetricsAgent.Controllers;
 using MetricsAgent.DAL;
@@ -78,21 +77,6 @@ namespace MetricsAgentsTests
 
 			// Assert
 			Assert.True(check);
-		}
-
-		[Fact]
-		public void GetMetricsByPercentile_ReturnsOk()
-		{
-			//Arrange
-			var fromTime = DateTimeOffset.MinValue;
-			var toTime = DateTimeOffset.Now;
-			var percentile = Percentile.P90;
-
-			//Act
-			var result = controller.GetMetricsByPercentile(fromTime, toTime, percentile);
-
-			// Assert
-			_ = Assert.IsAssignableFrom<IActionResult>(result);
 		}
 
 	}

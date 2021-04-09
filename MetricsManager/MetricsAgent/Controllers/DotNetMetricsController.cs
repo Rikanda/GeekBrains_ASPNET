@@ -33,7 +33,7 @@ namespace MetricsAgent.Controllers
 		/// </summary>
 		/// <param name="request">Запрос на выдачу метрик с интервалом времени</param>
 		/// <returns>Список метрик за заданный интервал времени</returns>
-		[HttpGet("errors-count/from/{request.fromTime}/to/{request.toTime}")]
+		[HttpGet("from/{request.fromTime}/to/{request.toTime}")]
 		public IActionResult GetMetrics([FromRoute] DotNetMetricGetByIntervalRequest request)
 		{
 			_logger.LogDebug("Вызов метода. Параметры:" +

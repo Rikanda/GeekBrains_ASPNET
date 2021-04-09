@@ -39,7 +39,7 @@ namespace MetricsAgent.DAL
 		{
 			using (var connection = new SQLiteConnection(mySql.ConnectionString))
 			{
-				connection.Execute(
+				connection.ExecuteAsync(
 				$"INSERT INTO {mySql[Tables.NetworkMetric]}" +
 				$"({mySql[Columns.Value]}, {mySql[Columns.Time]})" +
 				$"VALUES (@value, @time);",

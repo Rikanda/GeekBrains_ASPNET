@@ -1,12 +1,10 @@
-﻿using MetricsAgent.DAL;
-using MetricsAgent.Responses;
+﻿using AutoMapper;
+using MetricsAgent.DAL;
 using MetricsAgent.Requests;
-using Metrics.Tools;
+using MetricsAgent.Responses;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
-using System;
 using System.Collections.Generic;
-using AutoMapper;
 
 namespace MetricsAgent.Controllers
 {
@@ -54,20 +52,6 @@ namespace MetricsAgent.Controllers
 			}
 
 			return Ok(response);
-		}
-
-		[HttpGet("from/{fromTime}/to/{toTime}/percentiles/{percentile}")]
-		public IActionResult GetMetricsByPercentile(
-			[FromRoute] DateTimeOffset fromTime,
-			[FromRoute] DateTimeOffset toTime,
-			[FromRoute] Percentile percentile)
-		{
-			_logger.LogDebug("Вызов метода. Параметры:" +
-				$" {nameof(fromTime)} = {fromTime}" +
-				$" {nameof(toTime)} = {toTime}" +
-				$" {nameof(percentile)} = {percentile}");
-
-			return Ok();
 		}
 
 	}
