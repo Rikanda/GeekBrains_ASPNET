@@ -3,6 +3,7 @@ using Metrics.Tools;
 using MetricsAgent;
 using MetricsAgent.Controllers;
 using MetricsAgent.DAL;
+using MetricsAgent.Requests;
 using MetricsAgent.Responses;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
@@ -32,11 +33,14 @@ namespace MetricsAgentsTests
 		}
 
 		[Fact]
-		public void GetMetrics_ReturnsOk()
+		public void GetMetricsByInterval_ReturnsCorrectMetrics()
 		{
 			//Arrange
-			var fromTime = DateTimeOffset.MinValue;
-			var toTime = DateTimeOffset.Now;
+			var request = new CpuMetricGetByIntervalRequest() 
+			{ 
+				fromTime = DateTimeOffset.MinValue, 
+				toTime = DateTimeOffset.Now 
+			};
 
 			//фейковые метрики возвращаемые репозиторием
 			var mockMetrics = new List<CpuMetric>()
@@ -50,7 +54,7 @@ namespace MetricsAgentsTests
 				Returns(mockMetrics);
 
 			//Act
-			var result = controller.GetMetrics(fromTime, toTime);
+			var result = controller.GetMetrics(request);
 
 			var response = ((result as OkObjectResult).Value as AllCpuMetricsResponse).Metrics;
 

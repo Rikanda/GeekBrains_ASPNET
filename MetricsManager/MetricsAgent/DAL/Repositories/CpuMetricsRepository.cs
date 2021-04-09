@@ -41,7 +41,7 @@ namespace MetricsAgent.DAL
 			{
 				connection.Execute(
 				$"INSERT INTO {mySql[Tables.CpuMetric]}" +
-				$"({mySql[Rows.Value]}, {mySql[Rows.Time]})" +
+				$"({mySql[Columns.Value]}, {mySql[Columns.Time]})" +
 				$"VALUES (@value, @time);",
 				new
 				{
@@ -65,7 +65,7 @@ namespace MetricsAgent.DAL
 				return connection.Query<CpuMetric>(
 				"SELECT * " +
 				$"FROM {mySql[Tables.CpuMetric]} " +
-				$"WHERE ({mySql[Rows.Time]} >= @fromTime AND {mySql[Rows.Time]} <= @toTime)",
+				$"WHERE ({mySql[Columns.Time]} >= @fromTime AND {mySql[Columns.Time]} <= @toTime)",
 				new
 				{
 					fromTime = fromTime.ToUnixTimeSeconds(),
@@ -85,7 +85,7 @@ namespace MetricsAgent.DAL
 				return connection.QuerySingle<CpuMetric>(
 				"SELECT * " +
 				$"FROM {mySql[Tables.CpuMetric]} " +
-				$"WHERE {mySql[Rows.Time]} = (SELECT MAX ({mySql[Rows.Time]}) FROM {mySql[Tables.CpuMetric]})");
+				$"WHERE {mySql[Columns.Time]} = (SELECT MAX ({mySql[Columns.Time]}) FROM {mySql[Tables.CpuMetric]})");
 			}
 		}
 

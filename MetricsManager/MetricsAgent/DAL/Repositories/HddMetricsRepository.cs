@@ -41,7 +41,7 @@ namespace MetricsAgent.DAL
 			{
 				connection.Execute(
 				$"INSERT INTO {mySql[Tables.HddMetric]}" +
-				$"({mySql[Rows.Value]}, {mySql[Rows.Time]})" +
+				$"({mySql[Columns.Value]}, {mySql[Columns.Time]})" +
 				$"VALUES (@value, @time);",
 				new
 				{
@@ -65,7 +65,7 @@ namespace MetricsAgent.DAL
 				return connection.Query<HddMetric>(
 				"SELECT * " +
 				$"FROM {mySql[Tables.HddMetric]} " +
-				$"WHERE ({mySql[Rows.Time]} >= @fromTime AND {mySql[Rows.Time]} <= @toTime)",
+				$"WHERE ({mySql[Columns.Time]} >= @fromTime AND {mySql[Columns.Time]} <= @toTime)",
 				new
 				{
 					fromTime = fromTime.ToUnixTimeSeconds(),
@@ -85,7 +85,7 @@ namespace MetricsAgent.DAL
 				return connection.QuerySingle<HddMetric>(
 				"SELECT * " +
 				$"FROM {mySql[Tables.HddMetric]} " +
-				$"WHERE {mySql[Rows.Time]} = (SELECT MAX ({mySql[Rows.Time]}) FROM {mySql[Tables.HddMetric]})");
+				$"WHERE {mySql[Columns.Time]} = (SELECT MAX ({mySql[Columns.Time]}) FROM {mySql[Tables.HddMetric]})");
 			}
 		}
 

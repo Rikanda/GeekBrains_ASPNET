@@ -16,7 +16,7 @@ namespace MetricsAgent.SQLsettings
 	}
 
 	/// <summary> Ключи имен рядов </summary>
-	public enum Rows
+	public enum Columns
 	{
 		Id,
 		Value,
@@ -38,11 +38,11 @@ namespace MetricsAgent.SQLsettings
 
 
 		/// <summary>Словарь для хранения имен рядов в таблицах</summary>
-		private Dictionary<Rows, string> rowsNames = new Dictionary<Rows, string>
+		private Dictionary<Columns, string> rowsNames = new Dictionary<Columns, string>
 		{
-			{Rows.Id, "id" },
-			{Rows.Value, "value" },
-			{Rows.Time, "time" },
+			{Columns.Id, "id" },
+			{Columns.Value, "value" },
+			{Columns.Time, "time" },
 		};
 
 		/// <summary> Строка для подключения к базе данных </summary>
@@ -65,7 +65,7 @@ namespace MetricsAgent.SQLsettings
 			}
 		}
 
-		public string this[Rows key]
+		public string this[Columns key]
 		{
 			get
 			{

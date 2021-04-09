@@ -6,7 +6,7 @@ namespace MetricsAgent.Requests
 	/// <summary>
 	/// Контейнер для запроса метрик из базы
 	/// </summary>
-	public class CpuMetricGetByIntervalRequest
+	public class DotNetMetricGetByIntervalRequest
 	{
 		[FromRoute]
 		public DateTimeOffset fromTime { get; set; }

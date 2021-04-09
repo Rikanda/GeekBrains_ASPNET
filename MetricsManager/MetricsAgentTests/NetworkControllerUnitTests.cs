@@ -2,6 +2,7 @@
 using MetricsAgent;
 using MetricsAgent.Controllers;
 using MetricsAgent.DAL;
+using MetricsAgent.Requests;
 using MetricsAgent.Responses;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
@@ -31,24 +32,27 @@ namespace MetricsAgentsTests
 		}
 
 		[Fact]
-		public void GetMetrics_ReturnsOk()
+		public void GetMetricsByInterval_ReturnsCorrectMetrics()
 		{
 			//Arrange
-			var fromTime = DateTimeOffset.MinValue;
-			var toTime = DateTimeOffset.Now;
+			var request = new NetworkMetricGetByIntervalRequest()
+			{
+				fromTime = DateTimeOffset.MinValue,
+				toTime = DateTimeOffset.Now
+			};
 
 			//фейковые метрики возвращаемые репозиторием
 			var mockMetrics = new List<NetworkMetric>()
 			{
-				{ new NetworkMetric() { Id = 1, Time = TimeSpan.FromDays(5), Value = 100 } },
-				{ new NetworkMetric() { Id = 2, Time = TimeSpan.FromDays(10), Value = 100 } }
+				{ new NetworkMetric() { Time = TimeSpan.FromDays(5), Value = 100 } },
+				{ new NetworkMetric() { Time = TimeSpan.FromDays(10), Value = 100 } }
 			};
 			mockRepository.
 				Setup(repository => repository.GetByTimeInterval(It.IsAny<DateTimeOffset>(), It.IsAny<DateTimeOffset>())).
 				Returns(mockMetrics);
 
 			//Act
-			var result = controller.GetMetrics(fromTime, toTime);
+			var result = controller.GetMetrics(request);
 
 			var response = ((result as OkObjectResult).Value as AllNetworkMetricsResponse).Metrics;
 
@@ -58,8 +62,7 @@ namespace MetricsAgentsTests
 			{
 				for (int i = 0; i < mockMetrics.Count; i++)
 				{
-					if ((mockMetrics[i].Id != response[i].Id) ||
-						(mockMetrics[i].Value != response[i].Value) ||
+					if ((mockMetrics[i].Value != response[i].Value) ||
 						(mockMetrics[i].Time != response[i].Time))
 					{
 						check = false;

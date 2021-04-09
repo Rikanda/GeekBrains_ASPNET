@@ -24,9 +24,9 @@ namespace MetricsAgent.DAL.Migrations
 			foreach(Tables tableName in Enum.GetValues(typeof(Tables)))
 			{
 				Create.Table(mySql[tableName])
-					.WithColumn(mySql[Rows.Id]).AsInt64().PrimaryKey().Identity()
-					.WithColumn(mySql[Rows.Value]).AsInt32()
-					.WithColumn(mySql[Rows.Time]).AsInt64();
+					.WithColumn(mySql[Columns.Id]).AsInt64().PrimaryKey().Identity()
+					.WithColumn(mySql[Columns.Value]).AsInt32()
+					.WithColumn(mySql[Columns.Time]).AsInt64();
 			}
 		}
 

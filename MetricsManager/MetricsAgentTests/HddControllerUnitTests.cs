@@ -2,11 +2,13 @@
 using MetricsAgent;
 using MetricsAgent.Controllers;
 using MetricsAgent.DAL;
+using MetricsAgent.Requests;
 using MetricsAgent.Responses;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Moq;
 using System;
+using System.Collections.Generic;
 using Xunit;
 
 namespace MetricsAgentsTests
@@ -30,11 +32,59 @@ namespace MetricsAgentsTests
 		}
 
 		[Fact]
-		public void GetMetrics_ReturnsOk()
+		public void GetMetricsByInterval_ReturnsCorrectMetrics()
+		{
+			//Arrange
+			var request = new HddMetricGetByIntervalRequest()
+			{
+				fromTime = DateTimeOffset.MinValue,
+				toTime = DateTimeOffset.Now
+			};
+
+			//фейковые метрики возвращаемые репозиторием
+			var mockMetrics = new List<HddMetric>()
+			{
+				{ new HddMetric() {Time = TimeSpan.FromDays(5), Value = 100 } },
+				{ new HddMetric() {Time = TimeSpan.FromDays(10), Value = 100 } }
+			};
+
+			mockRepository.
+				Setup(repository => repository.GetByTimeInterval(It.IsAny<DateTimeOffset>(), It.IsAny<DateTimeOffset>())).
+				Returns(mockMetrics);
+
+			//Act
+			var result = controller.GetMetrics(request);
+
+			var response = ((result as OkObjectResult).Value as AllHddMetricsResponse).Metrics;
+
+			//сравнение полученных значений с ожидаемыми значениями
+			bool check = true;
+			if (mockMetrics.Count == response.Count)
+			{
+				for (int i = 0; i < mockMetrics.Count; i++)
+				{
+					if ((mockMetrics[i].Value != response[i].Value) ||
+						(mockMetrics[i].Time != response[i].Time))
+					{
+						check = false;
+					}
+				}
+			}
+			else
+			{
+				check = false;
+			}
+
+			// Assert
+			Assert.True(check);
+		}
+
+		[Fact]
+		public void GetMetricsLast_ReturnsCorrectMetrics()
 		{
 			//Arrange
 			//фейковая метрика возвращаемая репозиторием
-			var mockMetric = new HddMetric() { Id = 1, Time = TimeSpan.Zero, Value = 100 };
+			var mockMetric = new HddMetric() { Time = TimeSpan.Zero, Value = 100 };
 			mockRepository.
 				Setup(repository => repository.GetLast()).
 				Returns(mockMetric);
@@ -48,8 +98,7 @@ namespace MetricsAgentsTests
 			bool check = true;
 			if (response != null)
 			{
-				if ((mockMetric.Id != response.Id) ||
-					(mockMetric.Value != response.Value) ||
+				if ((mockMetric.Value != response.Value) ||
 					(mockMetric.Time != response.Time))
 				{
 					check = false;

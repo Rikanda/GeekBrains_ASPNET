@@ -21,6 +21,6 @@ namespace MetricsAgent.SQLsettings
 		/// <summary> Индексатор для имен рядов </summary>
 		/// <param name="key">Ключ для имени ряда</param>
 		/// <returns>Имя ряда по ключу</returns>
-		public string this[Rows key] { get; }
+		public string this[Columns key] { get; }
 	}
 }
