@@ -41,8 +41,8 @@ namespace MetricsAgentsTests
 			//фейковые метрики возвращаемые репозиторием
 			var mockMetrics = new List<CpuMetric>()
 			{
-				{ new CpuMetric() { Id = 1, Time = TimeSpan.FromDays(5), Value = 100 } },
-				{ new CpuMetric() { Id = 2, Time = TimeSpan.FromDays(10), Value = 100 } }
+				{ new CpuMetric() {Time = TimeSpan.FromDays(5), Value = 100 } },
+				{ new CpuMetric() {Time = TimeSpan.FromDays(10), Value = 100 } }
 			};
 
 			mockRepository.
@@ -60,8 +60,7 @@ namespace MetricsAgentsTests
 			{
 				for (int i = 0; i < mockMetrics.Count; i++)
 				{
-					if ((mockMetrics[i].Id != response[i].Id) ||
-						(mockMetrics[i].Value != response[i].Value) ||
+					if ((mockMetrics[i].Value != response[i].Value) ||
 						(mockMetrics[i].Time != response[i].Time))
 					{
 						check = false;
