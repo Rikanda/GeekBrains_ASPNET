@@ -9,15 +9,21 @@ using MetricsAgent.DAL;
 using System.Data.SQLite;
 using Dapper;
 using AutoMapper;
+using FluentMigrator.Runner;
+using Quartz;
+using Quartz.Spi;
+using MetricsAgent.ScheduledWorks;
+using Quartz.Impl;
+using MetricsAgent.SQLsettings;
 
 namespace MetricsAgent
 {
 	public class Startup
 	{
 		/// <summary>
-		/// Строка для подключения к базе данных
+		/// Периодичность запуска задач по сбору метрик
 		/// </summary>
-		private const string ConnectionString = @"Data Source=metrics.db; Version=3;Pooling=True;Max Pool Size=100;";
+		private const string CronExpression = "0/5 * * * * ?";
 
 		public Startup(IConfiguration configuration)
 		{
@@ -29,68 +35,75 @@ namespace MetricsAgent
 		// This method gets called by the runtime. Use this method to add services to the container.
 		public void ConfigureServices(IServiceCollection services)
 		{
+			// Контроллеры
 			services.AddControllers();
 
-			ConfigureSqlLiteConnection();
+			// Репозитории
+			services.AddSingleton<ICpuMetricsRepository, CpuMetricsRepository>();
+			services.AddSingleton<IDotNetMetricsRepository, DotNetMetricsRepository>();
+			services.AddSingleton<IHddMetricsRepository, HddMetricsRepository>();
+			services.AddSingleton<INetworkMetricsRepository, NetworkMetricsRepository>();
+			services.AddSingleton<IRamMetricsRepository, RamMetricsRepository>();
 
-			services.AddScoped<ICpuMetricsRepository, CpuMetricsRepository>();
-			services.AddScoped<IDotNetMetricsRepository, DotNetMetricsRepository>();
-			services.AddScoped<IHddMetricsRepository, HddMetricsRepository>();
-			services.AddScoped<INetworkMetricsRepository, NetworkMetricsRepository>();
-			services.AddScoped<IRamMetricsRepository, RamMetricsRepository>();
-
+			// Маппер
 			var mapperConfiguration = new MapperConfiguration(mp => mp.AddProfile(new MapperProfile()));
 			var mapper = mapperConfiguration.CreateMapper();
 			services.AddSingleton(mapper);
+
+			// Настройки для базы данных
+			services.AddSingleton<IMySqlSettings, MySqlSettings>();
+
+			// Мигратор
+			services.AddFluentMigratorCore()
+				.ConfigureRunner(rb => rb.AddSQLite() // добавляем поддержку SQLite 
+					.WithGlobalConnectionString(new MySqlSettings().ConnectionString)// устанавливаем строку подключения
+					.ScanIn(typeof(Startup).Assembly).For.Migrations())// подсказываем где искать классы с миграциями
+				.AddLogging(lb => lb.AddFluentMigratorConsole());
+
+			// Настройка сбора метрик по расписанию
+			JobsSheduleSettings(services);
 		}
 
 		/// <summary>
-		/// Коншфигурирование и создание подключения к базе данных
+		/// Настройка сбора метрик по расписанию
 		/// </summary>
-		private void ConfigureSqlLiteConnection()
+		/// <param name="services"></param>
+		private void JobsSheduleSettings(IServiceCollection services)
 		{
-			using (var connection = new SQLiteConnection(ConnectionString))
-			{
-				connection.Open();
-				PrepareSchema(connection);
-			}
-		}
+			// Планировщики заданий
+			services.AddSingleton<IJobFactory, SingletonJobFactory>();
+			services.AddSingleton<ISchedulerFactory, StdSchedulerFactory>();
 
-		/// <summary>
-		/// Создание базы данных и заполнение ее информацией для тестов
-		/// </summary>
-		/// <param name="connection">Соединение с базой</param>
-		private void PrepareSchema(SQLiteConnection connection)
-		{
-			using (var command = new SQLiteCommand(connection))
-			{
-				// имена таблиц
-				List<string> tablesNames = new List<string>
-				{
-					"cpumetrics",
-					"dotnetmetrics",
-					"hddmetrics",
-					"networkmetrics",
-					"rammetrics",
-				};
+			// Задачи для разных метрик
+			services.AddSingleton<CpuMetricJob>();
+			services.AddSingleton<DotNetMetricJob>();
+			services.AddSingleton<HddMetricJob>();
+			services.AddSingleton<NetworkMetricJob>();
+			services.AddSingleton<RamMetricJob>();
 
-				foreach(string name in tablesNames)
-				{
-					connection.Execute($"DROP TABLE IF EXISTS {name}");
-					connection.Execute(@$"CREATE TABLE {name}(id INTEGER PRIMARY KEY, value INT, time INT64)");
+			// Периодичность запуска задач
+			services.AddSingleton(new JobSchedule(
+				jobType: typeof(CpuMetricJob),
+				cronExpression: CronExpression));
+			services.AddSingleton(new JobSchedule(
+				jobType: typeof(DotNetMetricJob),
+				cronExpression: CronExpression));
+			services.AddSingleton(new JobSchedule(
+				jobType: typeof(HddMetricJob),
+				cronExpression: CronExpression));
+			services.AddSingleton(new JobSchedule(
+				jobType: typeof(NetworkMetricJob),
+				cronExpression: CronExpression));
+			services.AddSingleton(new JobSchedule(
+				jobType: typeof(RamMetricJob),
+				cronExpression: CronExpression));
 
-					//Забиваем базу данных фигней для тестов
-					for (int i = 0; i < 10; i++)
-					{
-						DateTimeOffset time = new DateTime(2000 + i, 1, 1);
-						connection.Execute(@$"INSERT INTO {name}(value, time) VALUES({i*10+tablesNames.IndexOf(name)},{time.ToUnixTimeSeconds()})");
-					}
-				}
-			}
+			// Сервис для запуска задач с помощью Quarz
+			services.AddHostedService<QuartzHostedService>();
 		}
 
 		// This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-		public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+		public void Configure(IApplicationBuilder app, IWebHostEnvironment env, IMigrationRunner migrationRunner)
 		{
 			if (env.IsDevelopment())
 			{
@@ -107,6 +120,8 @@ namespace MetricsAgent
 			{
 				endpoints.MapControllers();
 			});
+
+			migrationRunner.MigrateUp();
 		}
 	}
 }

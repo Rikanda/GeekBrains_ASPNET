@@ -5,6 +5,7 @@ using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using AutoMapper;
+using MetricsAgent.Requests;
 
 namespace MetricsAgent.Controllers
 {
@@ -30,19 +31,16 @@ namespace MetricsAgent.Controllers
 		/// <summary>
 		/// Получение Network метрик за заданный промежуток времени
 		/// </summary>
-		/// <param name="fromTime">Начало временного промежутка</param>
-		/// <param name="toTime">Конец временного промежутка</param>
+		/// <param name="request">Запрос на выдачу метрик с интервалом времени</param>
 		/// <returns>Список метрик за заданный интервал времени</returns>
-		[HttpGet("from/{fromTime}/to/{toTime}")]
-		public IActionResult GetMetrics(
-			[FromRoute] DateTimeOffset fromTime,
-			[FromRoute] DateTimeOffset toTime)
+		[HttpGet("from/{request.fromTime}/to/{request.toTime}")]
+		public IActionResult GetMetrics([FromRoute] NetworkMetricGetByIntervalRequest request)
 		{
 			_logger.LogDebug("Вызов метода. Параметры:" +
-				$" {nameof(fromTime)} = {fromTime}" +
-				$" {nameof(toTime)} = {toTime}");
+				$" {nameof(request.fromTime)} = {request.fromTime}" +
+				$" {nameof(request.toTime)} = {request.toTime}");
 
-			var metrics = _repository.GetByTimeInterval(fromTime, toTime);
+			var metrics = _repository.GetByTimeInterval(request.fromTime, request.toTime);
 
 			var response = new AllNetworkMetricsResponse()
 			{
@@ -56,5 +54,6 @@ namespace MetricsAgent.Controllers
 
 			return Ok(response);
 		}
+
 	}
 }

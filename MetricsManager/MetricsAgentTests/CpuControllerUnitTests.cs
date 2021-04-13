@@ -1,8 +1,8 @@
 using AutoMapper;
-using Metrics.Tools;
 using MetricsAgent;
 using MetricsAgent.Controllers;
 using MetricsAgent.DAL;
+using MetricsAgent.Requests;
 using MetricsAgent.Responses;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
@@ -32,17 +32,20 @@ namespace MetricsAgentsTests
 		}
 
 		[Fact]
-		public void GetMetrics_ReturnsOk()
+		public void GetMetricsByInterval_ReturnsCorrectMetrics()
 		{
 			//Arrange
-			var fromTime = DateTimeOffset.MinValue;
-			var toTime = DateTimeOffset.Now;
+			var request = new CpuMetricGetByIntervalRequest() 
+			{ 
+				fromTime = DateTimeOffset.MinValue, 
+				toTime = DateTimeOffset.Now 
+			};
 
 			//фейковые метрики возвращаемые репозиторием
 			var mockMetrics = new List<CpuMetric>()
 			{
-				{ new CpuMetric() { Id = 1, Time = TimeSpan.FromDays(5), Value = 100 } },
-				{ new CpuMetric() { Id = 2, Time = TimeSpan.FromDays(10), Value = 100 } }
+				{ new CpuMetric() {Time = TimeSpan.FromDays(5), Value = 100 } },
+				{ new CpuMetric() {Time = TimeSpan.FromDays(10), Value = 100 } }
 			};
 
 			mockRepository.
@@ -50,7 +53,7 @@ namespace MetricsAgentsTests
 				Returns(mockMetrics);
 
 			//Act
-			var result = controller.GetMetrics(fromTime, toTime);
+			var result = controller.GetMetrics(request);
 
 			var response = ((result as OkObjectResult).Value as AllCpuMetricsResponse).Metrics;
 
@@ -60,8 +63,7 @@ namespace MetricsAgentsTests
 			{
 				for (int i = 0; i < mockMetrics.Count; i++)
 				{
-					if ((mockMetrics[i].Id != response[i].Id) ||
-						(mockMetrics[i].Value != response[i].Value) ||
+					if ((mockMetrics[i].Value != response[i].Value) ||
 						(mockMetrics[i].Time != response[i].Time))
 					{
 						check = false;
@@ -75,21 +77,6 @@ namespace MetricsAgentsTests
 
 			// Assert
 			Assert.True(check);
-		}
-
-		[Fact]
-		public void GetMetricsByPercentile_ReturnsOk()
-		{
-			//Arrange
-			var fromTime = DateTimeOffset.MinValue;
-			var toTime = DateTimeOffset.Now;
-			var percentile = Percentile.P90;
-
-			//Act
-			var result = controller.GetMetricsByPercentile(fromTime, toTime, percentile);
-
-			// Assert
-			_ = Assert.IsAssignableFrom<IActionResult>(result);
 		}
 
 	}
