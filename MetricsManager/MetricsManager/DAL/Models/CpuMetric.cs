@@ -16,6 +16,9 @@ namespace MetricsManager.DAL
 		}
 	}
 
+	/// <summary>
+	/// Контейнер для метрики
+	/// </summary>
 	public class CpuMetric
 	{
 		public int AgentId { get; set; }

@@ -24,8 +24,8 @@ namespace MetricsManagerTests
 		{
 			//Arrange
 			var agentId = 1;
-			var fromTime = TimeSpan.FromSeconds(0);
-			var toTime = TimeSpan.FromSeconds(100);
+			var fromTime = DateTimeOffset.MinValue;
+			var toTime = DateTimeOffset.UtcNow;
 
 			//Act
 			var result = controller.GetMetricsFromAgent(agentId, fromTime, toTime);
@@ -39,8 +39,8 @@ namespace MetricsManagerTests
 		{
 			//Arrange
 			var agentId = 1;
-			var fromTime = TimeSpan.FromSeconds(0);
-			var toTime = TimeSpan.FromSeconds(100);
+			var fromTime = DateTimeOffset.MinValue;
+			var toTime = DateTimeOffset.UtcNow;
 			var percentile = Percentile.P90;
 
 			//Act
@@ -54,8 +54,8 @@ namespace MetricsManagerTests
 		public void GetMetricsFromAllCluster_ReturnsOk()
 		{
 			//Arrange
-			var fromTime = TimeSpan.FromSeconds(0);
-			var toTime = TimeSpan.FromSeconds(100);
+			var fromTime = DateTimeOffset.MinValue;
+			var toTime = DateTimeOffset.UtcNow;
 
 			//Act
 			var result = controller.GetMetricsFromAllCluster(fromTime, toTime);
@@ -68,8 +68,8 @@ namespace MetricsManagerTests
 		public void GetMetricsByPercentileFromAllCluster_ReturnsOk()
 		{
 			//Arrange
-			var fromTime = TimeSpan.FromSeconds(0);
-			var toTime = TimeSpan.FromSeconds(100);
+			var fromTime = DateTimeOffset.MinValue;
+			var toTime = DateTimeOffset.UtcNow;
 			var percentile = Percentile.P90;
 
 			//Act

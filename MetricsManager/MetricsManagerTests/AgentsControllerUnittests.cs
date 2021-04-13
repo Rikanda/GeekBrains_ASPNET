@@ -1,5 +1,7 @@
-﻿using Metrics.Tools;
+﻿using AutoMapper;
+using Metrics.Tools;
 using MetricsManager.Controllers;
+using MetricsManager.DAL;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Moq;
@@ -12,11 +14,14 @@ namespace MetricsManagerTests
 	{
 		private AgentsController controller;
 		private Mock<ILogger<AgentsController>> mockLogger;
+		private Mock<IAgentsRepository> mockRepository;
+		private Mock<IMapper> mockMapper;
 
 		public AgentsControllerUnitTests()
 		{
 			mockLogger = new Mock<ILogger<AgentsController>>();
-			controller = new AgentsController(mockLogger.Object);
+			controller = new AgentsController(mockLogger.Object, mockRepository.Object, mockMapper.Object);
+
 		}
 
 		[Fact]
@@ -35,7 +40,7 @@ namespace MetricsManagerTests
 		public void RegistrAgent_ReturnsOk()
 		{
 			//Arrange
-			var agentInfo = new AgentInfo() { AgentId = 101, AgentAddress = new Uri("http://AgentAdressUri") };
+			var agentInfo = new AgentInfo() { AgentId = 101, AgentUri = "http://AgentAdressUri" };
 
 			//Act
 			var result = controller.RegisterAgent(agentInfo);
