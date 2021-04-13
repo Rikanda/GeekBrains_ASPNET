@@ -11,6 +11,11 @@ namespace MetricsManager
 	{
 		public MapperProfile()
 		{
+			//CreateMap<CpuMetricDto, CpuMetric>().
+			//	ForMember(dbModel => dbModel.Time, _ => _.MapFrom((src, dst) => TimeSpan.FromSeconds((long)src));
+
+
+			CreateMap<AgentInfo, AgentInfoDto>();
 			CreateMap<CpuMetric, CpuMetricDto>();
 			//CreateMap<DotNetMetric, DotNetMetricDto>();
 			//CreateMap<HddMetric, HddMetricDto>();

@@ -26,8 +26,8 @@ namespace MetricsManager.DAL
 
 		public CpuMetricsRepository(IMySqlSettings mySqlSettings)
 		{
-			// Добавляем парсилку типа TimeSpan в качестве подсказки для SQLite
-			SqlMapper.AddTypeHandler(new TimeSpanHandler());
+			// Добавляем парсилку типа DateTimeOffset в качестве подсказки для SQLite
+			SqlMapper.AddTypeHandler(new DateTimeOffsetHandler());
 			mySql = mySqlSettings;
 		}
 
@@ -46,7 +46,7 @@ namespace MetricsManager.DAL
 				new
 				{
 					value = metric.Value,
-					time = metric.Time.TotalSeconds,
+					time = metric.Time.ToUnixTimeSeconds(),
 					agentId = metric.AgentId,
 				});
 
@@ -71,14 +71,14 @@ namespace MetricsManager.DAL
 				"SELECT * " +
 				$"FROM {mySql[Tables.CpuMetric]} " +
 				$"WHERE (" +
-				$"{mySql[Columns.Time]} >= @fromTime " +
-				$"AND {mySql[Columns.Time]} <= @toTime " +
-				$"AND {mySql[Columns.Time]} == @agentId)",
+				$"{mySql[Columns.AgentId]} == @agentId) " +
+				$"AND {mySql[Columns.Time]} >= @fromTime " +
+				$"AND {mySql[Columns.Time]} <= @toTime ",
 				new
 				{
+					agentId = agentId,
 					fromTime = fromTime.ToUnixTimeSeconds(),
 					toTime = toTime.ToUnixTimeSeconds(),
-					agentId = agentId,
 				}).ToList();
 			}
 		}
@@ -91,18 +91,22 @@ namespace MetricsManager.DAL
 		{
 			using (var connection = new SQLiteConnection(mySql.ConnectionString))
 			{
-				return connection.QuerySingle<CpuMetric>(
-				"SELECT * " +
+				var resp = connection.QueryFirst<CpuMetric>(
+				$"SELECT * " + 
 				$"FROM {mySql[Tables.CpuMetric]} " +
-				$"WHERE (" +
-				$"{mySql[Columns.Time]} == @agentId " +
-				$"AND {mySql[Columns.Time]} = (SELECT MAX ({mySql[Columns.Time]}) FROM {mySql[Tables.CpuMetric]}))",
+				$"WHERE ({mySql[Columns.AgentId]}, {mySql[Columns.Time]}) " +
+				$"IN (SELECT {mySql[Columns.AgentId]}, MAX({mySql[Columns.Time]}) " +
+				$"FROM {mySql[Tables.CpuMetric]} WHERE {mySql[Columns.AgentId]} == @agentId);",
 				new
 				{
 					agentId = agentId
 				});
+				return resp;
 			}
 		}
+
+	//select* from cpumetric
+	//where(agentId, time) in (select agentId, max(time) from cpumetric where agentId == 1);
 
 
 	}

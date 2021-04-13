@@ -1,7 +1,9 @@
-﻿using FluentMigrator;
+﻿using Dapper;
+using FluentMigrator;
 using MetricsManager.SQLsettings;
 using System;
 using System.Collections.Generic;
+using System.Data.SQLite;
 
 namespace MetricsManager.DAL.Migrations
 {
@@ -21,6 +23,11 @@ namespace MetricsManager.DAL.Migrations
 
 		public override void Up()
 		{
+			Create.Table(mySql.AgentsTable)
+				.WithColumn(mySql[Columns.Id]).AsInt64().PrimaryKey().Identity()
+				.WithColumn(mySql[Columns.AgentId]).AsInt32()
+				.WithColumn(mySql[Columns.AgentUri]).AsString();
+
 			foreach (Tables tableName in Enum.GetValues(typeof(Tables)))
 			{
 				Create.Table(mySql[tableName])
@@ -37,7 +44,8 @@ namespace MetricsManager.DAL.Migrations
 			{
 				Delete.Table(mySql[tableName]);
 			}
-
+			
+			Delete.Table(mySql.AgentsTable);
 		}
 	}
 }

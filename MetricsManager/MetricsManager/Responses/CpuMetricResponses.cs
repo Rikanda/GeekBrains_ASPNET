@@ -17,7 +17,7 @@ namespace MetricsManager.Responses
 	public class CpuMetricDto
 	{
 		public int AgentId { get; set; }
-		public TimeSpan Time { get; set; }
+		public DateTimeOffset Time { get; set; }
 		public int Value { get; set; }
 	}
 }

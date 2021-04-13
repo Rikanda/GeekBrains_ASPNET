@@ -13,6 +13,9 @@ namespace MetricsManager.SQLsettings
 		/// <summary> Строка подключения к базе данных </summary>
 		public string ConnectionString { get; }
 
+		/// <summary> Название таблицы с данными об агентах </summary>
+		public string AgentsTable { get; }
+
 		/// <summary> Индексатор для имен таблиц </summary>
 		/// <param name="key">Ключ для имени таблицы</param>
 		/// <returns>Имя таблицы по ключу</returns>

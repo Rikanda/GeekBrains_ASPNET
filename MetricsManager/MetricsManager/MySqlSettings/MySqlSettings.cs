@@ -38,6 +38,8 @@ namespace MetricsManager.SQLsettings
 			{Tables.RamMetric, "rammetric" },
 		};
 
+		/// <summary>Название таблицы с информацией об агентах</summary>
+		private const string agentsTable = "agents";
 
 		/// <summary>Словарь для хранения имен рядов в таблицах</summary>
 		private Dictionary<Columns, string> rowsNames = new Dictionary<Columns, string>
@@ -58,6 +60,14 @@ namespace MetricsManager.SQLsettings
 			get
 			{
 				return connectionString;
+			}
+		}
+
+		public string AgentsTable
+		{
+			get
+			{
+				return agentsTable;
 			}
 		}
 
