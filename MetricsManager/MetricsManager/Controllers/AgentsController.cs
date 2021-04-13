@@ -36,12 +36,9 @@ namespace MetricsManager.Controllers
 
 			var allAgentsInfo = _repository.GetAllAgentsInfo();
 
-			var response = new AllAgentsInfoResponse()
-			{
-				Agents = new List<AgentInfoDto>()
-			};
+			var response = new AllAgentsInfoResponse();
 
-			foreach (var agentInfo in allAgentsInfo)
+			foreach (var agentInfo in allAgentsInfo.Agents)
 			{
 				response.Agents.Add(_mapper.Map<AgentInfoDto>(agentInfo));
 			}

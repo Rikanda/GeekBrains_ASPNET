@@ -50,14 +50,14 @@ namespace MetricsManager.DAL
 
 		}
 
-		public IList<AgentInfo> GetAllAgentsInfo()
+		public AllAgentsInfo GetAllAgentsInfo()
 		{
-			var agentsInfo = new List<AgentInfo>();
+			var agentsInfo = new AllAgentsInfo();
 			using (var connection = new SQLiteConnection(mySql.ConnectionString))
 			{
 				try
 				{
-					agentsInfo = connection.Query<AgentInfo>(
+					agentsInfo.Agents = connection.Query<AgentInfo>(
 					"SELECT * " +
 					$"FROM {mySql.AgentsTable} ").ToList();
 

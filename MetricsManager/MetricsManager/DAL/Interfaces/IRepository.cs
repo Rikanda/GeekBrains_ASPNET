@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Metrics.Tools;
+using System;
 using System.Collections.Generic;
 
 namespace MetricsManager.DAL
@@ -13,6 +14,16 @@ namespace MetricsManager.DAL
 		/// <param name="toTime">Конец временного промежутка</param>
 		/// <returns>Список метрик за указанный промежуток времени</returns>
 		T GetByTimeInterval(int agentId, DateTimeOffset fromTime, DateTimeOffset toTime);
+
+		/// <summary>
+		/// Извлекает метрики из базы за указанный временной промежуток
+		/// </summary>
+		/// <param name="agentId">Id агента</param>
+		/// <param name="fromTime">Начало временного промежутка</param>
+		/// <param name="toTime">Конец временного промежутка</param>
+		/// <param name="percentile">Перцентиль</param>
+		/// <returns>Метрику за указанный промежуток времени для указанного перцентиля</returns>
+		T GetByTimeIntervalPercentile(int agentId, DateTimeOffset fromTime, DateTimeOffset toTime, Percentile percentile);
 
 		/// <summary>
 		/// Извлекает последнюю собранную метрику из базы данных

@@ -9,6 +9,11 @@ namespace MetricsManager.DAL
 	public class AllCpuMetrics
 	{
 		public List<CpuMetric> Metrics { get; set; }
+
+		public AllCpuMetrics()
+		{
+			Metrics = new List<CpuMetric>();
+		}
 	}
 
 	public class CpuMetric

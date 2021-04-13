@@ -9,6 +9,12 @@ namespace MetricsManager.Responses
 	public class AllAgentsInfoResponse
 	{
 		public List<AgentInfoDto> Agents { get; set; }
+
+		public AllAgentsInfoResponse()
+		{
+			Agents = new List<AgentInfoDto>();
+		}
+
 	}
 
 	/// <summary>

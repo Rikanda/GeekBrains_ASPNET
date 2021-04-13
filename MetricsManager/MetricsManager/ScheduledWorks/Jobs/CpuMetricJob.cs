@@ -48,7 +48,7 @@ namespace MetricsManager.ScheduledWorks
 			var allAgentsInfo = _agentsRepository.GetAllAgentsInfo();
 
 			//Обрабатываем каждого агента в списке
-			foreach (var agentInfo in allAgentsInfo)
+			foreach (var agentInfo in allAgentsInfo.Agents)
 			{
 				//Временная метка, когда для текущего агента была снята последняя метрика
 				var lastMetric = _cpuRepository.GetLast(agentInfo.AgentId);
@@ -77,7 +77,7 @@ namespace MetricsManager.ScheduledWorks
 					}
 
 					// Перекладываем данные из Response в модели метрик
-					var recievedMetrics = new AllCpuMetrics() { Metrics = new List<CpuMetric>() };
+					var recievedMetrics = new AllCpuMetrics();
 					foreach (var metricDto in response.Metrics)
 					{
 						recievedMetrics.Metrics.Add(new CpuMetric

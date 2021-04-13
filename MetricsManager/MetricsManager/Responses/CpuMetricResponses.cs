@@ -9,6 +9,12 @@ namespace MetricsManager.Responses
 	public class AllCpuMetricsResponse
 	{
 		public List<CpuMetricDto> Metrics { get; set; }
+
+		public AllCpuMetricsResponse()
+		{
+			Metrics = new List<CpuMetricDto>();
+		}
+
 	}
 
 	/// <summary>

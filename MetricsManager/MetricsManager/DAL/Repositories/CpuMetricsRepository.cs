@@ -5,6 +5,7 @@ using System.Data.SQLite;
 using Dapper;
 using MetricsManager.SQLsettings;
 using Microsoft.Extensions.Logging;
+using Metrics.Tools;
 
 namespace MetricsManager.DAL
 {
@@ -82,7 +83,7 @@ namespace MetricsManager.DAL
 		/// <returns>Список с метриками за заданный интервал времени</returns>
 		public AllCpuMetrics GetByTimeInterval(int agentId, DateTimeOffset fromTime, DateTimeOffset toTime)
 		{
-			var metrics = new AllCpuMetrics() { Metrics = new List<CpuMetric>() };
+			var metrics = new AllCpuMetrics();
 			using (var connection = new SQLiteConnection(mySql.ConnectionString))
 			{
 				try
@@ -109,13 +110,54 @@ namespace MetricsManager.DAL
 			}
 		}
 
+
+		public AllCpuMetrics GetByTimeIntervalPercentile(
+			int agentId, 
+			DateTimeOffset fromTime, 
+			DateTimeOffset toTime, 
+			Percentile percentile)
+		{
+			var metrics = new AllCpuMetrics();
+			using (var connection = new SQLiteConnection(mySql.ConnectionString))
+			{
+				try
+				{
+					metrics.Metrics = connection.Query<CpuMetric>(
+					"SELECT * " +
+					$"FROM {mySql[Tables.CpuMetric]} " +
+					$"WHERE (" +
+					$"{mySql[Columns.AgentId]} == @agentId) " +
+					$"AND {mySql[Columns.Time]} >= @fromTime " +
+					$"AND {mySql[Columns.Time]} <= @toTime " +
+					$"ORDER BY {mySql[Columns.Value]}",
+					new
+					{
+						agentId = agentId,
+						fromTime = fromTime.ToUnixTimeSeconds(),
+						toTime = toTime.ToUnixTimeSeconds(),
+					}).ToList();
+				}
+				catch (Exception ex)
+				{
+					_logger.LogDebug(ex.Message);
+				}
+			}
+
+			var percentileIndex = ((int)percentile * metrics.Metrics.Count / 100 );
+
+			var returnMetrics = new AllCpuMetrics();
+			returnMetrics.Metrics.Add(metrics.Metrics[percentileIndex-1]);
+
+			return returnMetrics;
+		}
+
 		/// <summary>
 		/// Извлекает последнюю по дате метрику из базы данных
 		/// </summary>
 		/// <returns>Последняя по времени метрика из базы данных</returns>
 		public AllCpuMetrics GetLast(int agentId)
 		{
-			var metrics = new AllCpuMetrics() { Metrics = new List<CpuMetric>() };
+			var metrics = new AllCpuMetrics();
 			using (var connection = new SQLiteConnection(mySql.ConnectionString))
 			{
 				try

@@ -9,7 +9,7 @@ namespace MetricsManager.DAL
 		/// Возвращает список с данными по всем зарегистрированным агентам
 		/// </summary>
 		/// <returns>Список с данными по всем зарегистрированным агентам</returns>
-		IList<AgentInfo> GetAllAgentsInfo();
+		AllAgentsInfo GetAllAgentsInfo();
 
 		/// <summary>
 		/// Возвращает данные агента с указанным Id
