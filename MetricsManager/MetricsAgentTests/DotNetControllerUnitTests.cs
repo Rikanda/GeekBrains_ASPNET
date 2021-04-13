@@ -45,8 +45,8 @@ namespace MetricsAgentsTests
 			//фейковые метрики возвращаемые репозиторием
 			var mockMetrics = new List<DotNetMetric>()
 			{
-				{ new DotNetMetric() { Time = TimeSpan.FromDays(5), Value = 100 } },
-				{ new DotNetMetric() { Time = TimeSpan.FromDays(10), Value = 100 } }
+				{ new DotNetMetric() {Time = DateTimeOffset.MinValue, Value = 100 } },
+				{ new DotNetMetric() {Time = DateTimeOffset.UtcNow, Value = 121 } }
 			};
 			mockRepository.
 				Setup(repository => repository.GetByTimeInterval(It.IsAny<DateTimeOffset>(), It.IsAny<DateTimeOffset>())).

@@ -44,8 +44,8 @@ namespace MetricsAgentsTests
 			//фейковые метрики возвращаемые репозиторием
 			var mockMetrics = new List<NetworkMetric>()
 			{
-				{ new NetworkMetric() { Time = TimeSpan.FromDays(5), Value = 100 } },
-				{ new NetworkMetric() { Time = TimeSpan.FromDays(10), Value = 100 } }
+				{ new NetworkMetric() { Time = DateTimeOffset.MinValue, Value = 100 } },
+				{ new NetworkMetric() { Time = DateTimeOffset.UtcNow, Value = 121 } }
 			};
 			mockRepository.
 				Setup(repository => repository.GetByTimeInterval(It.IsAny<DateTimeOffset>(), It.IsAny<DateTimeOffset>())).

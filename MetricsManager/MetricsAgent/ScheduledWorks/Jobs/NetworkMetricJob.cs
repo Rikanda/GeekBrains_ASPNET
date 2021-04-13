@@ -49,7 +49,7 @@ namespace MetricsAgent.ScheduledWorks
 			}
 
 			// Время когда была собрана метрика
-			var time = TimeSpan.FromSeconds(DateTimeOffset.UtcNow.ToUnixTimeSeconds());
+			var time = DateTimeOffset.UtcNow;
 
 			// Запись метрики в репозиторий
 			_repository.Create(new NetworkMetric { Time = time, Value = value });

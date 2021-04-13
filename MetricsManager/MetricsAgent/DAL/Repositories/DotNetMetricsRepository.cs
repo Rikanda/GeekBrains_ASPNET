@@ -26,8 +26,8 @@ namespace MetricsAgent.DAL
 
 		public DotNetMetricsRepository(IMySqlSettings mySqlSettings)
 		{
-			// Добавляем парсилку типа TimeSpan в качестве подсказки для SQLite
-			SqlMapper.AddTypeHandler(new TimeSpanHandler());
+			// Добавляем парсилку типа DateTimeOffset в качестве подсказки для SQLite
+			SqlMapper.AddTypeHandler(new DateTimeOffsetHandler());
 			mySql = mySqlSettings;
 		}
 
@@ -46,7 +46,7 @@ namespace MetricsAgent.DAL
 				new
 				{
 					value = metric.Value,
-					time = metric.Time.TotalSeconds,
+					time = metric.Time.ToUnixTimeSeconds(),
 				});
 			}
 		}

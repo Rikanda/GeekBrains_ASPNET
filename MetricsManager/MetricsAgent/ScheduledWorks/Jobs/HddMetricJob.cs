@@ -39,7 +39,7 @@ namespace MetricsAgent.ScheduledWorks
 			int value = Convert.ToInt32(_counter.NextValue());
 
 			// Время когда была собрана метрика
-			var time = TimeSpan.FromSeconds(DateTimeOffset.UtcNow.ToUnixTimeSeconds());
+			var time = DateTimeOffset.UtcNow;
 
 			// Запись метрики в репозиторий
 			_repository.Create(new HddMetric { Time = time, Value = value });

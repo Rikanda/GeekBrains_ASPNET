@@ -16,7 +16,7 @@ namespace MetricsAgent.Responses
 	/// </summary>
 	public class DotNetMetricDto
 	{
-		public TimeSpan Time { get; set; }
+		public DateTimeOffset Time { get; set; }
 		public int Value { get; set; }
 	}
 }

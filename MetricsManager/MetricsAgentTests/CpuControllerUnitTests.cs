@@ -44,8 +44,8 @@ namespace MetricsAgentsTests
 			//фейковые метрики возвращаемые репозиторием
 			var mockMetrics = new List<CpuMetric>()
 			{
-				{ new CpuMetric() {Time = TimeSpan.FromDays(5), Value = 100 } },
-				{ new CpuMetric() {Time = TimeSpan.FromDays(10), Value = 100 } }
+				{ new CpuMetric() {Time = DateTimeOffset.MinValue, Value = 100 } },
+				{ new CpuMetric() {Time = DateTimeOffset.UtcNow, Value = 121 } }
 			};
 
 			mockRepository.
