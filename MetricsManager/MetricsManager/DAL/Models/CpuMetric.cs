@@ -4,7 +4,7 @@ using System.Collections.Generic;
 namespace MetricsManager.DAL
 {
 	/// <summary>
-	/// Контейнер для передачи списка с информацие об агентах
+	/// Контейнер для передачи списка с метриками
 	/// </summary>
 	public class AllCpuMetrics
 	{

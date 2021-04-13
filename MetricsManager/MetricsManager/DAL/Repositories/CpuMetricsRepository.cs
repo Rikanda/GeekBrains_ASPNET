@@ -82,23 +82,29 @@ namespace MetricsManager.DAL
 		/// <returns>Список с метриками за заданный интервал времени</returns>
 		public AllCpuMetrics GetByTimeInterval(int agentId, DateTimeOffset fromTime, DateTimeOffset toTime)
 		{
-			var returnList = new List<CpuMetric>();
+			var metrics = new AllCpuMetrics() { Metrics = new List<CpuMetric>() };
 			using (var connection = new SQLiteConnection(mySql.ConnectionString))
 			{
-				var metrics = new AllCpuMetrics() { Metrics = new List<CpuMetric>() };
-				metrics.Metrics = connection.Query<CpuMetric>(
-				"SELECT * " +
-				$"FROM {mySql[Tables.CpuMetric]} " +
-				$"WHERE (" +
-				$"{mySql[Columns.AgentId]} == @agentId) " +
-				$"AND {mySql[Columns.Time]} >= @fromTime " +
-				$"AND {mySql[Columns.Time]} <= @toTime ",
-				new
+				try
 				{
-					agentId = agentId,
-					fromTime = fromTime.ToUnixTimeSeconds(),
-					toTime = toTime.ToUnixTimeSeconds(),
-				}).ToList();
+					metrics.Metrics = connection.Query<CpuMetric>(
+					"SELECT * " +
+					$"FROM {mySql[Tables.CpuMetric]} " +
+					$"WHERE (" +
+					$"{mySql[Columns.AgentId]} == @agentId) " +
+					$"AND {mySql[Columns.Time]} >= @fromTime " +
+					$"AND {mySql[Columns.Time]} <= @toTime ",
+					new
+					{
+						agentId = agentId,
+						fromTime = fromTime.ToUnixTimeSeconds(),
+						toTime = toTime.ToUnixTimeSeconds(),
+					}).ToList();
+				}
+				catch (Exception ex)
+				{
+					_logger.LogDebug(ex.Message);
+				}
 				return metrics;
 			}
 		}
@@ -109,9 +115,9 @@ namespace MetricsManager.DAL
 		/// <returns>Последняя по времени метрика из базы данных</returns>
 		public AllCpuMetrics GetLast(int agentId)
 		{
+			var metrics = new AllCpuMetrics() { Metrics = new List<CpuMetric>() };
 			using (var connection = new SQLiteConnection(mySql.ConnectionString))
 			{
-				var metrics = new AllCpuMetrics() { Metrics = new List<CpuMetric>() };
 				try
 				{
 					metrics.Metrics.Add(
@@ -126,8 +132,9 @@ namespace MetricsManager.DAL
 							agentId = agentId
 						}));
 				}
-				catch
+				catch (Exception ex)
 				{
+					_logger.LogDebug(ex.Message);
 				}
 
 				return metrics;
