@@ -20,4 +20,22 @@ namespace MetricsManager.Responses
 		public DateTimeOffset Time { get; set; }
 		public int Value { get; set; }
 	}
+
+	/// <summary>
+	/// Контейнер для передачи списка метрик в ответе от сервера
+	/// </summary>
+	public class AllAgentCpuMetricsResponse
+	{
+		public List<CpuAgentMetricDto> Metrics { get; set; }
+	}
+
+	/// <summary>
+	/// Контейнер для передачи метрики в ответе от сервера
+	/// </summary>
+	public class CpuAgentMetricDto
+	{
+		public DateTimeOffset Time { get; set; }
+		public int Value { get; set; }
+	}
+
 }

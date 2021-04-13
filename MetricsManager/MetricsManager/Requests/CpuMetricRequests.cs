@@ -15,5 +15,19 @@ namespace MetricsManager.Requests
 		[FromRoute]
 		public DateTimeOffset toTime { get; set; }
 	}
+
+	/// <summary>
+	/// Контейнер для запроса метрик из базы
+	/// </summary>
+	public class CpuMetricGetByIntervalRequestByClient
+	{
+		[FromRoute]
+		public string agentUri { get; set; }
+		[FromRoute]
+		public DateTimeOffset fromTime { get; set; }
+		[FromRoute]
+		public DateTimeOffset toTime { get; set; }
+	}
+
 }
 

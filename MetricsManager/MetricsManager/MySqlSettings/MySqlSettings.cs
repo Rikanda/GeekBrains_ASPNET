@@ -52,7 +52,8 @@ namespace MetricsManager.SQLsettings
 		};
 
 		/// <summary> Строка для подключения к базе данных </summary>
-		private readonly string connectionString = @"Data Source=metrics.db; Version=3;Pooling=True;Max Pool Size=100;journal mode=Wal;";
+		//private readonly string connectionString = @"Data Source=metrics.db; Version=3;Pooling=True;Max Pool Size=100;journal mode=Wal;";
+		private readonly string connectionString = @"Data Source=metrics.db; Version=3;Pooling=True;Max Pool Size=100;";
 
 
 		public string ConnectionString

@@ -12,7 +12,7 @@ namespace MetricsManager.DAL
 		/// <param name="fromTime">Начало временного промежутка</param>
 		/// <param name="toTime">Конец временного промежутка</param>
 		/// <returns>Список метрик за указанный промежуток времени</returns>
-		IList<T> GetByTimeInterval(int agentId, DateTimeOffset fromTime, DateTimeOffset toTime);
+		T GetByTimeInterval(int agentId, DateTimeOffset fromTime, DateTimeOffset toTime);
 
 		/// <summary>
 		/// Извлекает последнюю собранную метрику из базы данных
@@ -24,7 +24,7 @@ namespace MetricsManager.DAL
 		/// <summary>
 		/// Записывает значение метрики в базу данных
 		/// </summary>
-		/// <param name="metric">Метрика для занесения в базу данных</param>
-		void Create(T metric);
+		/// <param name="metrics">Метрика для занесения в базу данных</param>
+		void Create(T metrics);
 	}
 }

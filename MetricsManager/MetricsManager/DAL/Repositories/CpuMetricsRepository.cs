@@ -4,13 +4,14 @@ using System.Linq;
 using System.Data.SQLite;
 using Dapper;
 using MetricsManager.SQLsettings;
+using Microsoft.Extensions.Logging;
 
 namespace MetricsManager.DAL
 {
 	/// <summary>
 	/// Маркировочный интерфейс. Необходим, чтобы проверить работу репозитория на тесте-заглушке 
 	/// </summary>
-	public interface ICpuMetricsRepository : IRepository<CpuMetric>
+	public interface ICpuMetricsRepository : IRepository<AllCpuMetrics>
 	{
 	}
 
@@ -23,34 +24,51 @@ namespace MetricsManager.DAL
 		/// Объект с именами и настройками базы данных
 		/// </summary>
 		private readonly IMySqlSettings mySql;
+		private readonly ILogger _logger;
 
-		public CpuMetricsRepository(IMySqlSettings mySqlSettings)
+		public CpuMetricsRepository(IMySqlSettings mySqlSettings, ILogger<CpuMetricsRepository> logger)
 		{
 			// Добавляем парсилку типа DateTimeOffset в качестве подсказки для SQLite
 			SqlMapper.AddTypeHandler(new DateTimeOffsetHandler());
 			mySql = mySqlSettings;
+			_logger = logger;
 		}
 
 		/// <summary>
 		/// Записывает метрику в базу данных
 		/// </summary>
-		/// <param name="metric">Метрика для записи</param>
-		public void Create(CpuMetric metric)
+		/// <param name="metrics">Список метрик для записи</param>
+		public void Create(AllCpuMetrics metrics)
 		{
 			using (var connection = new SQLiteConnection(mySql.ConnectionString))
 			{
-				connection.ExecuteAsync(
-				$"INSERT INTO {mySql[Tables.CpuMetric]}" +
-				$"({mySql[Columns.AgentId]}, {mySql[Columns.Value]}, {mySql[Columns.Time]})" +
-				$"VALUES (@agentid, @value, @time);",
-				new
+				connection.Open();
+				using (var transaction = connection.BeginTransaction())
 				{
-					value = metric.Value,
-					time = metric.Time.ToUnixTimeSeconds(),
-					agentId = metric.AgentId,
-				});
+					try
+					{
+						foreach(var metric in metrics.Metrics)
+						{
+							connection.ExecuteAsync(
+							$"INSERT INTO {mySql[Tables.CpuMetric]}" +
+							$"({mySql[Columns.AgentId]}, {mySql[Columns.Value]}, {mySql[Columns.Time]})" +
+							$"VALUES (@agentid, @value, @time);",
+							new
+							{
+								value = metric.Value,
+								time = metric.Time.ToUnixTimeSeconds(),
+								agentId = metric.AgentId,
+							});
+						}
+						transaction.Commit();
+					}
+					catch(Exception ex)
+					{
+						transaction.Rollback();
+						_logger.LogDebug(ex.Message);
+					}
 
-
+				}
 
 			}
 		}
@@ -62,12 +80,13 @@ namespace MetricsManager.DAL
 		/// <param name="fromTime">Начало временного интервала</param>
 		/// <param name="toTime">Конец временного интервала</param>
 		/// <returns>Список с метриками за заданный интервал времени</returns>
-		public IList<CpuMetric> GetByTimeInterval(int agentId, DateTimeOffset fromTime, DateTimeOffset toTime)
+		public AllCpuMetrics GetByTimeInterval(int agentId, DateTimeOffset fromTime, DateTimeOffset toTime)
 		{
 			var returnList = new List<CpuMetric>();
 			using (var connection = new SQLiteConnection(mySql.ConnectionString))
 			{
-				return connection.Query<CpuMetric>(
+				var metrics = new AllCpuMetrics() { Metrics = new List<CpuMetric>() };
+				metrics.Metrics = connection.Query<CpuMetric>(
 				"SELECT * " +
 				$"FROM {mySql[Tables.CpuMetric]} " +
 				$"WHERE (" +
@@ -80,6 +99,7 @@ namespace MetricsManager.DAL
 					fromTime = fromTime.ToUnixTimeSeconds(),
 					toTime = toTime.ToUnixTimeSeconds(),
 				}).ToList();
+				return metrics;
 			}
 		}
 
@@ -87,27 +107,32 @@ namespace MetricsManager.DAL
 		/// Извлекает последнюю по дате метрику из базы данных
 		/// </summary>
 		/// <returns>Последняя по времени метрика из базы данных</returns>
-		public CpuMetric GetLast(int agentId)
+		public AllCpuMetrics GetLast(int agentId)
 		{
 			using (var connection = new SQLiteConnection(mySql.ConnectionString))
 			{
-				var resp = connection.QueryFirst<CpuMetric>(
-				$"SELECT * " + 
-				$"FROM {mySql[Tables.CpuMetric]} " +
-				$"WHERE ({mySql[Columns.AgentId]}, {mySql[Columns.Time]}) " +
-				$"IN (SELECT {mySql[Columns.AgentId]}, MAX({mySql[Columns.Time]}) " +
-				$"FROM {mySql[Tables.CpuMetric]} WHERE {mySql[Columns.AgentId]} == @agentId);",
-				new
+				var metrics = new AllCpuMetrics() { Metrics = new List<CpuMetric>() };
+				try
 				{
-					agentId = agentId
-				});
-				return resp;
+					metrics.Metrics.Add(
+						connection.QueryFirst<CpuMetric>(
+						$"SELECT * " +
+						$"FROM {mySql[Tables.CpuMetric]} " +
+						$"WHERE ({mySql[Columns.AgentId]}, {mySql[Columns.Time]}) " +
+						$"IN (SELECT {mySql[Columns.AgentId]}, MAX({mySql[Columns.Time]}) " +
+						$"FROM {mySql[Tables.CpuMetric]} WHERE {mySql[Columns.AgentId]} == @agentId);",
+						new
+						{
+							agentId = agentId
+						}));
+				}
+				catch
+				{
+				}
+
+				return metrics;
 			}
 		}
-
-	//select* from cpumetric
-	//where(agentId, time) in (select agentId, max(time) from cpumetric where agentId == 1);
-
 
 	}
 }

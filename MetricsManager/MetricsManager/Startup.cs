@@ -6,6 +6,7 @@ using Microsoft.Extensions.Hosting;
 using System;
 using System.Collections.Generic;
 using MetricsManager.DAL;
+using MetricsManager.Client;
 using System.Data.SQLite;
 using Dapper;
 using AutoMapper;
@@ -24,7 +25,7 @@ namespace MetricsManager
 		/// <summary>
 		/// Периодичность запуска задач по сбору метрик
 		/// </summary>
-		private const string CronExpression = "0 * * ? * *";
+		private const string CronExpression = "0/5 * * * * ?";
 
 		public Startup(IConfiguration configuration)
 		{
@@ -55,6 +56,11 @@ namespace MetricsManager
 			// Настройки для базы данных
 			services.AddSingleton<IMySqlSettings, MySqlSettings>();
 
+			// HTTP client
+			//services.AddHttpClient();
+			// Клиенты для запросов к Агентам метрик
+			services.AddHttpClient<IMetricsManagerClient, MetricsManagerClient>();
+
 			// Мигратор
 			services.AddFluentMigratorCore()
 				.ConfigureRunner(rb => rb.AddSQLite() // добавляем поддержку SQLite 
@@ -64,40 +70,6 @@ namespace MetricsManager
 
 			// Настройка сбора метрик по расписанию
 			JobsSheduleSettings(services);
-
-			// !DEBUG
-			PrepareSchema();
-
-		}
-
-		private void PrepareSchema()
-		{
-			//! DEBUG Тестовые данные по агентам
-			var mySql = new MySqlSettings();
-
-			using (var connection = new SQLiteConnection(mySql.ConnectionString))
-			{
-				connection.ExecuteAsync(
-				$"INSERT INTO {mySql.AgentsTable}" +
-				$"({mySql[Columns.AgentId]}, {mySql[Columns.AgentUri]})" +
-				$"VALUES (@agentId, @agentUri);",
-				new
-				{
-					agentId = 1,
-					agentUri = "https://localhost:5001",
-				});
-
-				connection.ExecuteAsync(
-				$"INSERT INTO {mySql.AgentsTable}" +
-				$"({mySql[Columns.AgentId]}, {mySql[Columns.AgentUri]})" +
-				$"VALUES (@agentId, @agentUri);",
-				new
-				{
-					agentId = 2,
-					agentUri = "https://localhost:5003",
-				});
-
-			}
 
 		}
 
@@ -114,12 +86,10 @@ namespace MetricsManager
 			// Задачи для разных метрик
 			services.AddSingleton<CpuMetricJob>();
 
-			string debugCronExpression = "* 31/5 * ? * * *";
-
 			// Периодичность запуска задач
 			services.AddSingleton(new JobSchedule(
 				jobType: typeof(CpuMetricJob),
-				cronExpression: debugCronExpression));
+				cronExpression: CronExpression));
 
 			// Сервис для запуска задач с помощью Quarz
 			services.AddHostedService<QuartzHostedService>();
@@ -133,7 +103,7 @@ namespace MetricsManager
 				app.UseDeveloperExceptionPage();
 			}
 
-			app.UseHttpsRedirection();
+			//app.UseHttpsRedirection();
 
 			app.UseRouting();
 

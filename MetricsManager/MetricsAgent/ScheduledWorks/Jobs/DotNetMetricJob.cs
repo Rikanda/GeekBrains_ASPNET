@@ -10,6 +10,7 @@ namespace MetricsAgent.ScheduledWorks
 	/// <summary>
 	/// Задача сбора DotNet метрик
 	/// </summary>
+	[DisallowConcurrentExecution]
 	public class DotNetMetricJob : IJob
 	{
 		// Инжектируем DI провайдер

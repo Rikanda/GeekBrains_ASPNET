@@ -11,6 +11,7 @@ namespace MetricsAgent.ScheduledWorks
 	/// <summary>
 	/// Задача сбора Ram метрик
 	/// </summary>
+	[DisallowConcurrentExecution]
 	public class RamMetricJob : IJob
 	{
 		// Инжектируем DI провайдер

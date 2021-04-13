@@ -10,6 +10,7 @@ namespace MetricsAgent.ScheduledWorks
 	/// <summary>
 	/// Задача сбора Hdd метрик
 	/// </summary>
+	[DisallowConcurrentExecution]
 	public class HddMetricJob : IJob
 	{
 		// Инжектируем DI провайдер

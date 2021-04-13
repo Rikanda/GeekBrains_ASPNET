@@ -36,6 +36,12 @@ namespace MetricsManager.DAL.Migrations
 					.WithColumn(mySql[Columns.Value]).AsInt32()
 					.WithColumn(mySql[Columns.Time]).AsInt64();
 			}
+
+			//! DEBUG Тестовые данные по агентам
+			Insert.IntoTable(mySql.AgentsTable)
+				.Row(new { AgentId = 1, AgentUri = "http://localhost:5000" });
+			Insert.IntoTable(mySql.AgentsTable)
+				.Row(new { AgentId = 2, AgentUri = "http://localhost:5000" });
 		}
 
 		public override void Down()

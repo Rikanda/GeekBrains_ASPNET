@@ -44,7 +44,7 @@ namespace MetricsManager.Controllers
 				Metrics = new List<CpuMetricDto>()
 			};
 
-			foreach (var metric in metrics)
+			foreach (var metric in metrics.Metrics)
 			{
 				response.Metrics.Add(_mapper.Map<CpuMetricDto>(metric));
 			}
