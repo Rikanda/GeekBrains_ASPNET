@@ -27,13 +27,6 @@ namespace MetricsManager.Responses
 		public int Value { get; set; }
 	}
 
-	/// <summary>
-	/// Контейнер для передачи списка метрик в ответе от сервера
-	/// </summary>
-	public class AllAgentHddMetricsResponse
-	{
-		public List<CpuMetricFromAgentDto> Metrics { get; set; }
-	}
 
 	/// <summary>
 	/// Контейнер для передачи метрики в ответе от сервера

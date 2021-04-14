@@ -65,7 +65,7 @@ namespace MetricsManager.ScheduledWorks
 				};
 
 				// Делаем запрос к Агенту метрик и получаем список метрик
-				var response = _client.GetHddMetrics(request);
+				var response = _client.GetMetrics<HddMetricFromAgentDto>(request, ApiNames.Hdd);
 
 				if (response != null)
 				{

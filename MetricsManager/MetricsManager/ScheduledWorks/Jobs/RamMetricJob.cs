@@ -65,7 +65,7 @@ namespace MetricsManager.ScheduledWorks
 				};
 
 				// Делаем запрос к Агенту метрик и получаем список метрик
-				var response = _client.GetRamMetrics(request);
+				var response = _client.GetMetrics<RamMetricFromAgentDto>(request, ApiNames.Ram);
 
 				if (response != null)
 				{

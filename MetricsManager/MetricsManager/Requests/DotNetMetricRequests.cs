@@ -30,7 +30,7 @@ namespace MetricsManager.Requests
 	/// <summary>
 	/// Контейнер для запроса метрик из базы
 	/// </summary>
-	public class DotNetMetricGetByIntervalRequestByClient
+	public class DotNetMetricGetByIntervalRequestByClient : IMetricGetByIntervalRequestByClient
 	{
 		[FromRoute]
 		public string agentUri { get; set; }
