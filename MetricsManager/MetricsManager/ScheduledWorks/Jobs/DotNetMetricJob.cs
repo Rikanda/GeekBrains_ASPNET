@@ -17,21 +17,21 @@ namespace MetricsManager.ScheduledWorks
 	/// Задача сбора Cpu метрик
 	/// </summary>
 	[DisallowConcurrentExecution]
-	public class CpuMetricJob : IJob
+	public class DotNetMetricJob : IJob
 	{
 		// Инжектируем DI провайдер
 		private readonly IServiceProvider _provider;
-		private ICpuMetricsRepository _repository;
+		private IDotNetMetricsRepository _repository;
 		private IAgentsRepository _agentsRepository;
 		private IMapper _mapper;
 		private IMetricsManagerClient _client;
 		private readonly ILogger _logger;
 
 
-		public CpuMetricJob(IServiceProvider provider, IMapper mapper, IMetricsManagerClient client, ILogger<CpuMetricJob> logger)
+		public DotNetMetricJob(IServiceProvider provider, IMapper mapper, IMetricsManagerClient client, ILogger<DotNetMetricJob> logger)
 		{
 			_provider = provider;
-			_repository = _provider.GetService<ICpuMetricsRepository>();
+			_repository = _provider.GetService<IDotNetMetricsRepository>();
 			_agentsRepository = _provider.GetService<IAgentsRepository>();
 			_mapper = mapper;
 			_client = client;
@@ -42,7 +42,7 @@ namespace MetricsManager.ScheduledWorks
 
 		public Task Execute(IJobExecutionContext context)
 		{
-			_logger.LogDebug("== CpuMetricJob START - " +
+			_logger.LogDebug("== DotNetMetricJob START - " +
 				$"Time {DateTimeOffset.UtcNow}");
 			//Получаем из репозитория агентов список всех агентов
 			var allAgentsInfo = _agentsRepository.GetAllAgentsInfo();
@@ -57,7 +57,7 @@ namespace MetricsManager.ScheduledWorks
 
 				// Создаем запрос для получения от текущего агента метрик за период времени
 				// от последней проверки до текущего момента
-				var request = new CpuMetricGetByIntervalRequestByClient()
+				var request = new DotNetMetricGetByIntervalRequestByClient()
 				{
 					agentUri = agentInfo.AgentUri,
 					fromTime = lastTime,
@@ -65,9 +65,9 @@ namespace MetricsManager.ScheduledWorks
 				};
 
 				// Делаем запрос к Агенту метрик и получаем список метрик
-				var response = _client.GetCpuMetrics(request);
+				var response = _client.GetDotNetMetrics(request);
 
-				if(response != null)
+				if (response != null)
 				{
 					// Убираем из выборки первую метрику если она совпадает с последней сохраненной в базе
 					// для исключения дублирования данных в базе
@@ -77,10 +77,10 @@ namespace MetricsManager.ScheduledWorks
 					}
 
 					// Перекладываем данные из Response в модели метрик
-					var recievedMetrics = new AllCpuMetrics();
+					var recievedMetrics = new AllDotNetMetrics();
 					foreach (var metricDto in response.Metrics)
 					{
-						recievedMetrics.Metrics.Add(new CpuMetric
+						recievedMetrics.Metrics.Add(new DotNetMetric
 						{
 							AgentId = agentInfo.AgentId,
 							Time = metricDto.Time,
@@ -91,7 +91,7 @@ namespace MetricsManager.ScheduledWorks
 				}
 
 			}
-			_logger.LogDebug("!= CpuMetricJob END - " +
+			_logger.LogDebug("!= DotNetMetricJob END - " +
 				$"Time {DateTimeOffset.UtcNow}");
 			return Task.CompletedTask;
 		}

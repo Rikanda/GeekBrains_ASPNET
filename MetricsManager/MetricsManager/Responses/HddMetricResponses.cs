@@ -6,13 +6,13 @@ namespace MetricsManager.Responses
 	/// <summary>
 	/// Контейнер для передачи списка метрик в ответе от сервера
 	/// </summary>
-	public class AllCpuMetricsResponse
+	public class AllHddMetricsResponse
 	{
-		public List<CpuMetricDto> Metrics { get; set; }
+		public List<HddMetricDto> Metrics { get; set; }
 
-		public AllCpuMetricsResponse()
+		public AllHddMetricsResponse()
 		{
-			Metrics = new List<CpuMetricDto>();
+			Metrics = new List<HddMetricDto>();
 		}
 
 	}
@@ -20,7 +20,7 @@ namespace MetricsManager.Responses
 	/// <summary>
 	/// Контейнер для передачи метрики в ответе от сервера
 	/// </summary>
-	public class CpuMetricDto
+	public class HddMetricDto
 	{
 		public int AgentId { get; set; }
 		public DateTimeOffset Time { get; set; }
@@ -30,7 +30,7 @@ namespace MetricsManager.Responses
 	/// <summary>
 	/// Контейнер для передачи списка метрик в ответе от сервера
 	/// </summary>
-	public class AllAgentCpuMetricsResponse
+	public class AllAgentHddMetricsResponse
 	{
 		public List<CpuMetricFromAgentDto> Metrics { get; set; }
 	}
@@ -38,7 +38,7 @@ namespace MetricsManager.Responses
 	/// <summary>
 	/// Контейнер для передачи метрики в ответе от сервера
 	/// </summary>
-	public class CpuMetricFromAgentDto
+	public class HddMetricFromAgentDto
 	{
 		public DateTimeOffset Time { get; set; }
 		public int Value { get; set; }
