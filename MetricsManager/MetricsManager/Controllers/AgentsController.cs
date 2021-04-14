@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using MetricsManager.DAL;
+using MetricsManager.Requests;
 using MetricsManager.Responses;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -47,32 +48,19 @@ namespace MetricsManager.Controllers
 		}
 
 		[HttpPost("register")]
-		public IActionResult RegisterAgent([FromBody] AgentInfo agentInfo)
+		public IActionResult RegisterAgent([FromBody] AgentInfoRegisterRequest request)
 		{
 			_logger.LogDebug("Вызов метода. Параметры:" +
-				$" {nameof(agentInfo.AgentId)} = {agentInfo.AgentId}" +
-				$" {nameof(agentInfo.AgentUri)} = {agentInfo.AgentUri}");
+				$" {nameof(request.AgentId)} = {request.AgentId}" +
+				$" {nameof(request.AgentUri)} = {request.AgentUri}");
+
+			var agentInfo = new AgentInfo() { AgentId = request.AgentId, AgentUri = request.AgentUri};
+
+			_repository.RegisterAgent(agentInfo);
 
 			return Ok();
 		}
 
-		[HttpPut("enable/{agentId}")]
-		public IActionResult EnableAgentById([FromRoute] int agentId)
-		{
-			_logger.LogDebug("Вызов метода. Параметры:" +
-				$" {nameof(agentId)} = {agentId}");
-
-			return Ok();
-		}
-
-		[HttpPut("disable/{agentId}")]
-		public IActionResult DisableAgentById([FromRoute] int agentId)
-		{
-			_logger.LogDebug("Вызов метода. Параметры:" +
-				$" {nameof(agentId)} = {agentId}");
-
-			return Ok();
-		}
 	}
 	
 }
