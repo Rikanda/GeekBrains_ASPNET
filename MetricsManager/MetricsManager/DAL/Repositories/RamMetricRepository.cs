@@ -12,7 +12,7 @@ namespace MetricsManager.DAL
 	/// <summary>
 	/// Маркировочный интерфейс. Необходим, чтобы проверить работу репозитория на тесте-заглушке 
 	/// </summary>
-	public interface IRamMetricsRepository : IRepository<AllRamMetrics>
+	public interface IRamMetricsRepository : IRepository<AllMetrics<RamMetric>>
 	{
 	}
 
@@ -39,7 +39,7 @@ namespace MetricsManager.DAL
 		/// Записывает метрику в базу данных
 		/// </summary>
 		/// <param name="metrics">Список метрик для записи</param>
-		public void Create(AllRamMetrics metrics)
+		public void Create(AllMetrics<RamMetric> metrics)
 		{
 			using (var connection = new SQLiteConnection(mySql.ConnectionString))
 			{
@@ -81,9 +81,9 @@ namespace MetricsManager.DAL
 		/// <param name="fromTime">Начало временного интервала</param>
 		/// <param name="toTime">Конец временного интервала</param>
 		/// <returns>Список с метриками за заданный интервал времени</returns>
-		public AllRamMetrics GetByTimeInterval(int agentId, DateTimeOffset fromTime, DateTimeOffset toTime)
+		public AllMetrics<RamMetric> GetByTimeInterval(int agentId, DateTimeOffset fromTime, DateTimeOffset toTime)
 		{
-			var metrics = new AllRamMetrics();
+			var metrics = new AllMetrics<RamMetric>();
 			using (var connection = new SQLiteConnection(mySql.ConnectionString))
 			{
 				try
@@ -111,13 +111,13 @@ namespace MetricsManager.DAL
 		}
 
 
-		public AllRamMetrics GetByTimeIntervalPercentile(
+		public AllMetrics<RamMetric> GetByTimeIntervalPercentile(
 			int agentId,
 			DateTimeOffset fromTime,
 			DateTimeOffset toTime,
 			Percentile percentile)
 		{
-			var metrics = new AllRamMetrics();
+			var metrics = new AllMetrics<RamMetric>();
 			using (var connection = new SQLiteConnection(mySql.ConnectionString))
 			{
 				try
@@ -145,7 +145,7 @@ namespace MetricsManager.DAL
 
 			var percentileIndex = ((int)percentile * metrics.Metrics.Count / 100);
 
-			var returnMetrics = new AllRamMetrics();
+			var returnMetrics = new AllMetrics<RamMetric>();
 			returnMetrics.Metrics.Add(metrics.Metrics[percentileIndex - 1]);
 
 			return returnMetrics;
@@ -155,9 +155,9 @@ namespace MetricsManager.DAL
 		/// Извлекает последнюю по дате метрику из базы данных
 		/// </summary>
 		/// <returns>Последняя по времени метрика из базы данных</returns>
-		public AllRamMetrics GetLast(int agentId)
+		public AllMetrics<RamMetric> GetLast(int agentId)
 		{
-			var metrics = new AllRamMetrics();
+			var metrics = new AllMetrics<RamMetric>();
 			using (var connection = new SQLiteConnection(mySql.ConnectionString))
 			{
 				try

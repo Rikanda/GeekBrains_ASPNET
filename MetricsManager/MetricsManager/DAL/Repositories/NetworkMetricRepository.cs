@@ -12,7 +12,7 @@ namespace MetricsManager.DAL
 	/// <summary>
 	/// Маркировочный интерфейс. Необходим, чтобы проверить работу репозитория на тесте-заглушке 
 	/// </summary>
-	public interface INetworkMetricsRepository : IRepository<AllNetworkMetrics>
+	public interface INetworkMetricsRepository : IRepository<AllMetrics<NetworkMetric>>
 	{
 	}
 
@@ -39,7 +39,7 @@ namespace MetricsManager.DAL
 		/// Записывает метрику в базу данных
 		/// </summary>
 		/// <param name="metrics">Список метрик для записи</param>
-		public void Create(AllNetworkMetrics metrics)
+		public void Create(AllMetrics<NetworkMetric> metrics)
 		{
 			using (var connection = new SQLiteConnection(mySql.ConnectionString))
 			{
@@ -81,9 +81,9 @@ namespace MetricsManager.DAL
 		/// <param name="fromTime">Начало временного интервала</param>
 		/// <param name="toTime">Конец временного интервала</param>
 		/// <returns>Список с метриками за заданный интервал времени</returns>
-		public AllNetworkMetrics GetByTimeInterval(int agentId, DateTimeOffset fromTime, DateTimeOffset toTime)
+		public AllMetrics<NetworkMetric> GetByTimeInterval(int agentId, DateTimeOffset fromTime, DateTimeOffset toTime)
 		{
-			var metrics = new AllNetworkMetrics();
+			var metrics = new AllMetrics<NetworkMetric>();
 			using (var connection = new SQLiteConnection(mySql.ConnectionString))
 			{
 				try
@@ -111,13 +111,13 @@ namespace MetricsManager.DAL
 		}
 
 
-		public AllNetworkMetrics GetByTimeIntervalPercentile(
+		public AllMetrics<NetworkMetric> GetByTimeIntervalPercentile(
 			int agentId,
 			DateTimeOffset fromTime,
 			DateTimeOffset toTime,
 			Percentile percentile)
 		{
-			var metrics = new AllNetworkMetrics();
+			var metrics = new AllMetrics<NetworkMetric>();
 			using (var connection = new SQLiteConnection(mySql.ConnectionString))
 			{
 				try
@@ -145,7 +145,7 @@ namespace MetricsManager.DAL
 
 			var percentileIndex = ((int)percentile * metrics.Metrics.Count / 100);
 
-			var returnMetrics = new AllNetworkMetrics();
+			var returnMetrics = new AllMetrics<NetworkMetric>();
 			returnMetrics.Metrics.Add(metrics.Metrics[percentileIndex - 1]);
 
 			return returnMetrics;
@@ -155,9 +155,9 @@ namespace MetricsManager.DAL
 		/// Извлекает последнюю по дате метрику из базы данных
 		/// </summary>
 		/// <returns>Последняя по времени метрика из базы данных</returns>
-		public AllNetworkMetrics GetLast(int agentId)
+		public AllMetrics<NetworkMetric> GetLast(int agentId)
 		{
-			var metrics = new AllNetworkMetrics();
+			var metrics = new AllMetrics<NetworkMetric>();
 			using (var connection = new SQLiteConnection(mySql.ConnectionString))
 			{
 				try

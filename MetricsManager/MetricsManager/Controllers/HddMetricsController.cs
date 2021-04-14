@@ -45,7 +45,7 @@ namespace MetricsManager.Controllers
 
 			var metrics = _repository.GetByTimeInterval(request.agentId, request.fromTime, request.toTime);
 
-			var response = new AllHddMetricsResponse();
+			var response = new AllMetricsResponse<HddMetricDto>();
 
 			foreach (var metric in metrics.Metrics)
 			{
@@ -68,7 +68,7 @@ namespace MetricsManager.Controllers
 
 			var metrics = _repository.GetByTimeIntervalPercentile(request.agentId, request.fromTime, request.toTime, percentile);
 
-			var response = new AllHddMetricsResponse();
+			var response = new AllMetricsResponse<HddMetricDto>();
 
 			foreach (var metric in metrics.Metrics)
 			{
@@ -87,7 +87,7 @@ namespace MetricsManager.Controllers
 
 			var agents = _agentRepository.GetAllAgentsInfo();
 
-			var response = new AllHddMetricsResponse();
+			var response = new AllMetricsResponse<HddMetricDto>();
 
 			foreach (var agent in agents.Agents)
 			{
@@ -114,7 +114,7 @@ namespace MetricsManager.Controllers
 
 			var agents = _agentRepository.GetAllAgentsInfo();
 
-			var response = new AllHddMetricsResponse();
+			var response = new AllMetricsResponse<HddMetricDto>();
 
 			foreach (var agent in agents.Agents)
 			{

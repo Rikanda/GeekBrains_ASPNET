@@ -49,7 +49,7 @@ namespace MetricsManagerTests
 			};
 
 			//фейковые метрики возвращаемые репозиторием
-			var mockMetrics = new AllDotNetMetrics();
+			var mockMetrics = new AllMetrics<DotNetMetric>();
 			mockMetrics.Metrics.Add(new DotNetMetric() { AgentId = 1, Time = DateTimeOffset.MinValue, Value = 100 });
 			mockMetrics.Metrics.Add(new DotNetMetric() { AgentId = 1, Time = DateTimeOffset.UtcNow, Value = 121 });
 
@@ -78,7 +78,7 @@ namespace MetricsManagerTests
 			var percentile = Percentile.P90;
 
 			//фейковые метрики возвращаемые репозиторием
-			var mockMetrics = new AllDotNetMetrics();
+			var mockMetrics = new AllMetrics<DotNetMetric>();
 			mockMetrics.Metrics.Add(new DotNetMetric() { AgentId = 1, Time = DateTimeOffset.MinValue, Value = 100 });
 
 			mockRepository.
@@ -117,18 +117,18 @@ namespace MetricsManagerTests
 				Returns(mockAgentsInfo);
 
 			//фейковые метрики возвращаемые репозиторием для всех агентов
-			var mockMetrics = new AllDotNetMetrics();
+			var mockMetrics = new AllMetrics<DotNetMetric>();
 			mockMetrics.Metrics.Add(new DotNetMetric() { AgentId = 1, Time = DateTimeOffset.MinValue, Value = 100 });
 			mockMetrics.Metrics.Add(new DotNetMetric() { AgentId = 1, Time = DateTimeOffset.UtcNow, Value = 121 });
 			mockMetrics.Metrics.Add(new DotNetMetric() { AgentId = 2, Time = DateTimeOffset.MinValue, Value = 101 });
 			mockMetrics.Metrics.Add(new DotNetMetric() { AgentId = 2, Time = DateTimeOffset.UtcNow, Value = 122 });
 
 			//фейковые метрики возвращаемые репозиторием для первого агента
-			var mockMetricsForAgent_1 = new AllDotNetMetrics();
+			var mockMetricsForAgent_1 = new AllMetrics<DotNetMetric>();
 			mockMetricsForAgent_1.Metrics.Add(mockMetrics.Metrics[0]);
 			mockMetricsForAgent_1.Metrics.Add(mockMetrics.Metrics[1]);
 			//фейковые метрики возвращаемые репозиторием для второго агента
-			var mockMetricsForAgent_2 = new AllDotNetMetrics();
+			var mockMetricsForAgent_2 = new AllMetrics<DotNetMetric>();
 			mockMetricsForAgent_2.Metrics.Add(mockMetrics.Metrics[2]);
 			mockMetricsForAgent_2.Metrics.Add(mockMetrics.Metrics[3]);
 
@@ -174,15 +174,15 @@ namespace MetricsManagerTests
 				Returns(mockAgentsInfo);
 
 			//фейковые метрики возвращаемые репозиторием для всех агентов
-			var mockMetrics = new AllDotNetMetrics();
+			var mockMetrics = new AllMetrics<DotNetMetric>();
 			mockMetrics.Metrics.Add(new DotNetMetric() { AgentId = 1, Time = DateTimeOffset.MinValue, Value = 100 });
 			mockMetrics.Metrics.Add(new DotNetMetric() { AgentId = 2, Time = DateTimeOffset.UtcNow, Value = 122 });
 
 			//фейковые метрики возвращаемые репозиторием для первого агента
-			var mockMetricsForAgent_1 = new AllDotNetMetrics();
+			var mockMetricsForAgent_1 = new AllMetrics<DotNetMetric>();
 			mockMetricsForAgent_1.Metrics.Add(mockMetrics.Metrics[0]);
 			//фейковые метрики возвращаемые репозиторием для второго агента
-			var mockMetricsForAgent_2 = new AllDotNetMetrics();
+			var mockMetricsForAgent_2 = new AllMetrics<DotNetMetric>();
 			mockMetricsForAgent_2.Metrics.Add(mockMetrics.Metrics[1]);
 
 			mockRepository.
@@ -214,9 +214,9 @@ namespace MetricsManagerTests
 		/// <param name="result">Ответ возвращаемый контроллером</param>
 		/// <param name="mockMetrics">Мок контейнер с метриками</param>
 		/// <returns>true если содержимое контейнеров полностью совпадает</returns>
-		private bool CompareMetricsContainers(IActionResult result, AllDotNetMetrics mockMetrics)
+		private bool CompareMetricsContainers(IActionResult result, AllMetrics<DotNetMetric> mockMetrics)
 		{
-			var responseMetrics = ((result as OkObjectResult).Value as AllDotNetMetricsResponse);
+			var responseMetrics = ((result as OkObjectResult).Value as AllMetricsResponse<DotNetMetricDto>);
 
 			bool check = true;
 			if (mockMetrics.Metrics.Count == responseMetrics.Metrics.Count)

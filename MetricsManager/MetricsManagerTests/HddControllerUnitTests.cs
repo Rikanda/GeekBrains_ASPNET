@@ -49,7 +49,7 @@ namespace MetricsManagerTests
 			};
 
 			//фейковые метрики возвращаемые репозиторием
-			var mockMetrics = new AllHddMetrics();
+			var mockMetrics = new AllMetrics<HddMetric>();
 			mockMetrics.Metrics.Add(new HddMetric() { AgentId = 1, Time = DateTimeOffset.MinValue, Value = 100 });
 			mockMetrics.Metrics.Add(new HddMetric() { AgentId = 1, Time = DateTimeOffset.UtcNow, Value = 121 });
 
@@ -78,7 +78,7 @@ namespace MetricsManagerTests
 			var percentile = Percentile.P90;
 
 			//фейковые метрики возвращаемые репозиторием
-			var mockMetrics = new AllHddMetrics();
+			var mockMetrics = new AllMetrics<HddMetric>();
 			mockMetrics.Metrics.Add(new HddMetric() { AgentId = 1, Time = DateTimeOffset.MinValue, Value = 100 });
 
 			mockRepository.
@@ -117,18 +117,18 @@ namespace MetricsManagerTests
 				Returns(mockAgentsInfo);
 
 			//фейковые метрики возвращаемые репозиторием для всех агентов
-			var mockMetrics = new AllHddMetrics();
+			var mockMetrics = new AllMetrics<HddMetric>();
 			mockMetrics.Metrics.Add(new HddMetric() { AgentId = 1, Time = DateTimeOffset.MinValue, Value = 100 });
 			mockMetrics.Metrics.Add(new HddMetric() { AgentId = 1, Time = DateTimeOffset.UtcNow, Value = 121 });
 			mockMetrics.Metrics.Add(new HddMetric() { AgentId = 2, Time = DateTimeOffset.MinValue, Value = 101 });
 			mockMetrics.Metrics.Add(new HddMetric() { AgentId = 2, Time = DateTimeOffset.UtcNow, Value = 122 });
 
 			//фейковые метрики возвращаемые репозиторием для первого агента
-			var mockMetricsForAgent_1 = new AllHddMetrics();
+			var mockMetricsForAgent_1 = new AllMetrics<HddMetric>();
 			mockMetricsForAgent_1.Metrics.Add(mockMetrics.Metrics[0]);
 			mockMetricsForAgent_1.Metrics.Add(mockMetrics.Metrics[1]);
 			//фейковые метрики возвращаемые репозиторием для второго агента
-			var mockMetricsForAgent_2 = new AllHddMetrics();
+			var mockMetricsForAgent_2 = new AllMetrics<HddMetric>();
 			mockMetricsForAgent_2.Metrics.Add(mockMetrics.Metrics[2]);
 			mockMetricsForAgent_2.Metrics.Add(mockMetrics.Metrics[3]);
 
@@ -174,15 +174,15 @@ namespace MetricsManagerTests
 				Returns(mockAgentsInfo);
 
 			//фейковые метрики возвращаемые репозиторием для всех агентов
-			var mockMetrics = new AllHddMetrics();
+			var mockMetrics = new AllMetrics<HddMetric>();
 			mockMetrics.Metrics.Add(new HddMetric() { AgentId = 1, Time = DateTimeOffset.MinValue, Value = 100 });
 			mockMetrics.Metrics.Add(new HddMetric() { AgentId = 2, Time = DateTimeOffset.UtcNow, Value = 122 });
 
 			//фейковые метрики возвращаемые репозиторием для первого агента
-			var mockMetricsForAgent_1 = new AllHddMetrics();
+			var mockMetricsForAgent_1 = new AllMetrics<HddMetric>();
 			mockMetricsForAgent_1.Metrics.Add(mockMetrics.Metrics[0]);
 			//фейковые метрики возвращаемые репозиторием для второго агента
-			var mockMetricsForAgent_2 = new AllHddMetrics();
+			var mockMetricsForAgent_2 = new AllMetrics<HddMetric>();
 			mockMetricsForAgent_2.Metrics.Add(mockMetrics.Metrics[1]);
 
 			mockRepository.
@@ -214,9 +214,9 @@ namespace MetricsManagerTests
 		/// <param name="result">Ответ возвращаемый контроллером</param>
 		/// <param name="mockMetrics">Мок контейнер с метриками</param>
 		/// <returns>true если содержимое контейнеров полностью совпадает</returns>
-		private bool CompareMetricsContainers(IActionResult result, AllHddMetrics mockMetrics)
+		private bool CompareMetricsContainers(IActionResult result, AllMetrics<HddMetric> mockMetrics)
 		{
-			var responseMetrics = ((result as OkObjectResult).Value as AllHddMetricsResponse);
+			var responseMetrics = ((result as OkObjectResult).Value as AllMetricsResponse<HddMetricDto>);
 
 			bool check = true;
 			if (mockMetrics.Metrics.Count == responseMetrics.Metrics.Count)

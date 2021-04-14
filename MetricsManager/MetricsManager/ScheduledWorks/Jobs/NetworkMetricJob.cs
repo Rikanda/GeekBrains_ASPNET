@@ -77,7 +77,7 @@ namespace MetricsManager.ScheduledWorks
 					}
 
 					// Перекладываем данные из Response в модели метрик
-					var recievedMetrics = new AllNetworkMetrics();
+					var recievedMetrics = new AllMetrics<NetworkMetric>();
 					foreach (var metricDto in response.Metrics)
 					{
 						recievedMetrics.Metrics.Add(new NetworkMetric

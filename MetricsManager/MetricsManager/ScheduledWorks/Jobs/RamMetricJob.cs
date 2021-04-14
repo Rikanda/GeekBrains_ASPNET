@@ -77,7 +77,7 @@ namespace MetricsManager.ScheduledWorks
 					}
 
 					// Перекладываем данные из Response в модели метрик
-					var recievedMetrics = new AllRamMetrics();
+					var recievedMetrics = new AllMetrics<RamMetric>();
 					foreach (var metricDto in response.Metrics)
 					{
 						recievedMetrics.Metrics.Add(new RamMetric

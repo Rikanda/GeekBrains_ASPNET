@@ -77,7 +77,7 @@ namespace MetricsManager.ScheduledWorks
 					}
 
 					// Перекладываем данные из Response в модели метрик
-					var recievedMetrics = new AllCpuMetrics();
+					var recievedMetrics = new AllMetrics<CpuMetric>();
 					foreach (var metricDto in response.Metrics)
 					{
 						recievedMetrics.Metrics.Add(new CpuMetric
