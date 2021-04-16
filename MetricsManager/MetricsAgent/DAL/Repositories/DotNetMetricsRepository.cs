@@ -74,21 +74,5 @@ namespace MetricsAgent.DAL
 			}
 		}
 
-		/// <summary>
-		/// Извлекает последнюю по дате метрику из базы данных
-		/// </summary>
-		/// <returns>Последняя по времени метрика из базы данных</returns>
-		public DotNetMetric GetLast()
-		{
-			using (var connection = new SQLiteConnection(mySql.ConnectionString))
-			{
-				return connection.QuerySingle<DotNetMetric>(
-				"SELECT * " +
-				$"FROM {mySql[Tables.DotNetMetric]} " +
-				$"WHERE {mySql[Columns.Time]} = (SELECT MAX ({mySql[Columns.Time]}) FROM {mySql[Tables.DotNetMetric]})");
-			}
-		}
-
-
 	}
 }

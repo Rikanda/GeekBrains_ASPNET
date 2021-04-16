@@ -30,6 +30,13 @@ namespace MetricsManager.Controllers
 			_mapper = mapper;
 		}
 
+		/// <summary>
+		/// Собирает информацию обо всех зарегистрированных агентах
+		/// </summary>
+		/// <remarks>
+		/// У каждого агента есть свой Id и URL адрес по которому к нему можно достучаться
+		/// </remarks>		
+		/// /// <returns>Список со всеми зарегистрированными агентами</returns>
 		[HttpGet("read")]
 		public IActionResult Read()
 		{
@@ -47,6 +54,13 @@ namespace MetricsManager.Controllers
 			return Ok(response);
 		}
 
+		/// <summary>
+		/// Регистрирует нового агента
+		/// </summary>
+		/// <remarks>
+		/// Проверка на дублирование агентов по Id или по адресу не производится
+		/// </remarks>
+		/// <returns></returns>
 		[HttpPost("register")]
 		public IActionResult RegisterAgent([FromBody] AgentInfoRegisterRequest request)
 		{

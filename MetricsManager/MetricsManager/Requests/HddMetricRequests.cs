@@ -8,8 +8,11 @@ namespace MetricsManager.Requests
 	/// </summary>
 	public class HddMetricGetByIntervalForClusterRequest
 	{
+		/// <summary> Начало временного промежутка </summary>
 		[FromRoute]
 		public DateTimeOffset fromTime { get; set; }
+
+		/// <summary> Конец временного промежутка </summary>
 		[FromRoute]
 		public DateTimeOffset toTime { get; set; }
 	}
@@ -19,10 +22,15 @@ namespace MetricsManager.Requests
 	/// </summary>
 	public class HddMetricGetByIntervalForAgentRequest
 	{
+		/// <summary> Id агента </summary>
 		[FromRoute]
 		public int agentId { get; set; }
+
+		/// <summary> Начало временного промежутка </summary>
 		[FromRoute]
 		public DateTimeOffset fromTime { get; set; }
+
+		/// <summary> Конец временного промежутка </summary>
 		[FromRoute]
 		public DateTimeOffset toTime { get; set; }
 	}
@@ -32,10 +40,15 @@ namespace MetricsManager.Requests
 	/// </summary>
 	public class HddMetricGetByIntervalRequestByClient : IMetricGetByIntervalRequestByClient
 	{
+		/// <summary> URL адрес агента </summary>
 		[FromRoute]
 		public string agentUri { get; set; }
+
+		/// <summary> Начало временного промежутка </summary>
 		[FromRoute]
 		public DateTimeOffset fromTime { get; set; }
+
+		/// <summary> Конец временного промежутка </summary>
 		[FromRoute]
 		public DateTimeOffset toTime { get; set; }
 	}

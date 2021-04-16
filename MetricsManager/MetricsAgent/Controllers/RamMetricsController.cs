@@ -32,7 +32,7 @@ namespace MetricsAgent.Controllers
 		/// </summary>
 		/// <param name="request">Запрос на выдачу метрик с интервалом времени</param>
 		/// <returns>Список метрик за заданный интервал времени</returns>
-		[HttpGet("from/{request.fromTime}/to/{request.toTime}")]
+		[HttpGet("from/{fromTime}/to/{toTime}")]
 		public IActionResult GetMetrics([FromRoute] RamMetricGetByIntervalRequest request)
 		{
 			_logger.LogDebug("Вызов метода. Параметры:" +
@@ -54,22 +54,5 @@ namespace MetricsAgent.Controllers
 			return Ok(response);
 		}
 
-		/// <summary>
-		/// Получение последней собранной Ram метрики из базы данных
-		/// </summary>
-		/// <returns>Последняя собранная метрика из базы данных</returns>
-		[HttpGet("available")]
-		public IActionResult GetMetrics()
-		{
-			_logger.LogDebug("Вызов метода");
-
-			var metric = _repository.GetLast();
-
-			RamMetricDto response = null;
-
-			response = _mapper.Map<RamMetricDto>(metric);
-
-			return Ok(response);
-		}
 	}
 }

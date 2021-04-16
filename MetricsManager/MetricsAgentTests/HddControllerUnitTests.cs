@@ -79,40 +79,5 @@ namespace MetricsAgentsTests
 			Assert.True(check);
 		}
 
-		[Fact]
-		public void GetMetricsLast_ReturnsCorrectMetrics()
-		{
-			//Arrange
-			//фейковая метрика возвращаемая репозиторием
-			var mockMetric = new HddMetric() { Time = DateTimeOffset.MinValue, Value = 100 };
-			mockRepository.
-				Setup(repository => repository.GetLast()).
-				Returns(mockMetric);
-
-			//Act
-			var result = controller.GetMetrics();
-
-			var response = (result as OkObjectResult).Value as HddMetricDto;
-
-			//сравнение полученных значений с ожидаемыми значениями
-			bool check = true;
-			if (response != null)
-			{
-				if ((mockMetric.Value != response.Value) ||
-					(mockMetric.Time != response.Time))
-				{
-					check = false;
-				}
-			}
-			else
-			{
-				check = false;
-			}
-
-			// Assert
-			Assert.True(check);
-		}
-
-
 	}
 }
