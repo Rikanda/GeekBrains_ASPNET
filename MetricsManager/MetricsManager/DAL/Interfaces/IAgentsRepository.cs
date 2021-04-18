@@ -1,7 +1,8 @@
-﻿using System;
+﻿using MetricsManager.DAL.Models;
+using System;
 using System.Collections.Generic;
 
-namespace MetricsManager.DAL
+namespace MetricsManager.DAL.Interfaces
 {
 	public interface IAgentsRepository
 	{

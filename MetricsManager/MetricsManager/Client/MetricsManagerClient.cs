@@ -6,6 +6,8 @@ using System.Net.Http;
 using System.Text.Json;
 using System.IO;
 using System.Collections.Generic;
+using MetricsManager.Responses.FromAgent;
+using MetricsManager.Requests.Interfaces;
 
 namespace MetricsManager.Client
 {
@@ -41,11 +43,11 @@ namespace MetricsManager.Client
 
 		public AllAgentMetricsResponse<T> GetMetrics<T>(IMetricGetByIntervalRequestByClient request, ApiNames apiName)
 		{
-			var fromParameter = request.fromTime.ToString("O");
-			var toParameter = request.toTime.ToString("O");
+			var fromParameter = request.FromTime.ToString("O");
+			var toParameter = request.ToTime.ToString("O");
 			var httpRequest = new HttpRequestMessage(
 				HttpMethod.Get,
-				$"{request.agentUri}/api/metrics/{apiNames[apiName]}/from/{fromParameter}/to/{toParameter}");
+				$"{request.AgentUri}/api/metrics/{apiNames[apiName]}/from/{fromParameter}/to/{toParameter}");
 
 			try
 			{

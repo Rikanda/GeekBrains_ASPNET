@@ -3,8 +3,12 @@ using Metrics.Tools;
 using MetricsManager;
 using MetricsManager.Controllers;
 using MetricsManager.DAL;
+using MetricsManager.DAL.Interfaces;
+using MetricsManager.DAL.Models;
+using MetricsManager.DAL.Repositories;
 using MetricsManager.Requests;
 using MetricsManager.Responses;
+using MetricsManager.Responses.FromManager;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Moq;
@@ -43,9 +47,9 @@ namespace MetricsManagerTests
 			//Arrange
 			var request = new HddMetricGetByIntervalForAgentRequest()
 			{
-				agentId = 1,
-				fromTime = DateTimeOffset.MinValue,
-				toTime = DateTimeOffset.Now
+				AgentId = 1,
+				FromTime = DateTimeOffset.MinValue,
+				ToTime = DateTimeOffset.Now
 			};
 
 			//фейковые метрики возвращаемые репозиторием
@@ -71,9 +75,9 @@ namespace MetricsManagerTests
 			//Arrange
 			var request = new HddMetricGetByIntervalForAgentRequest()
 			{
-				agentId = 1,
-				fromTime = DateTimeOffset.MinValue,
-				toTime = DateTimeOffset.Now
+				AgentId = 1,
+				FromTime = DateTimeOffset.MinValue,
+				ToTime = DateTimeOffset.Now
 			};
 			var percentile = Percentile.P90;
 
@@ -103,8 +107,8 @@ namespace MetricsManagerTests
 			//Arrange
 			var request = new HddMetricGetByIntervalForClusterRequest()
 			{
-				fromTime = DateTimeOffset.MinValue,
-				toTime = DateTimeOffset.Now
+				FromTime = DateTimeOffset.MinValue,
+				ToTime = DateTimeOffset.Now
 			};
 
 			//фейковые данные об агентах
@@ -159,8 +163,8 @@ namespace MetricsManagerTests
 			//Arrange
 			var request = new HddMetricGetByIntervalForClusterRequest()
 			{
-				fromTime = DateTimeOffset.MinValue,
-				toTime = DateTimeOffset.Now
+				FromTime = DateTimeOffset.MinValue,
+				ToTime = DateTimeOffset.Now
 			};
 			var percentile = Percentile.P95;
 

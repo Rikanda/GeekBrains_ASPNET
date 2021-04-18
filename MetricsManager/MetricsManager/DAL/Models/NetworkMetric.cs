@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace MetricsManager.DAL
+namespace MetricsManager.DAL.Models
 {
 
 

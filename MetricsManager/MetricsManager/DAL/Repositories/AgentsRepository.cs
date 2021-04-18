@@ -1,5 +1,7 @@
 ﻿using Dapper;
-using MetricsManager.SQLsettings;
+using MetricsManager.DAL.Interfaces;
+using MetricsManager.DAL.Models;
+using MetricsManager.MySQLsettings;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
@@ -7,7 +9,7 @@ using System.Data.SQLite;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace MetricsManager.DAL
+namespace MetricsManager.DAL.Repositories
 {
 	public class AgentsRepository : IAgentsRepository
 	{

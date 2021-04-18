@@ -1,11 +1,13 @@
 ﻿using MetricsAgent.DAL;
+using MetricsAgent.DAL.Models;
+using MetricsAgent.DAL.Repositories;
 using Microsoft.Extensions.DependencyInjection;
 using Quartz;
 using System;
 using System.Diagnostics;
 using System.Threading.Tasks;
 
-namespace MetricsAgent.ScheduledWorks
+namespace MetricsAgent.ScheduledWorks.Jobs
 {
 	/// <summary>
 	/// Задача сбора DotNet метрик

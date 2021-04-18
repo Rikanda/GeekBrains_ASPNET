@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace MetricsAgent.DAL
+namespace MetricsAgent.DAL.Models
 {
 	public class HddMetric
 	{

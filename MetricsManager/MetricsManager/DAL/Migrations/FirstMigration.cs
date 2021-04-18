@@ -1,6 +1,6 @@
 ﻿using Dapper;
 using FluentMigrator;
-using MetricsManager.SQLsettings;
+using MetricsManager.MySQLsettings;
 using System;
 using System.Collections.Generic;
 using System.Data.SQLite;

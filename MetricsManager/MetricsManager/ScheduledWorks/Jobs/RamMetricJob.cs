@@ -10,8 +10,12 @@ using System.Collections.Generic;
 using AutoMapper;
 using MetricsManager.Client;
 using Microsoft.Extensions.Logging;
+using MetricsManager.DAL.Repositories;
+using MetricsManager.DAL.Interfaces;
+using MetricsManager.Responses.FromAgent;
+using MetricsManager.DAL.Models;
 
-namespace MetricsManager.ScheduledWorks
+namespace MetricsManager.ScheduledWorks.Jobs
 {
 	/// <summary>
 	/// Задача сбора Cpu метрик
@@ -51,17 +55,15 @@ namespace MetricsManager.ScheduledWorks
 			foreach (var agentInfo in allAgentsInfo.Agents)
 			{
 				//Временная метка, когда для текущего агента была снята последняя метрика
-				var lastMetric = _repository.GetLast(agentInfo.AgentId);
-				//Если метрик для этого агента не найдено, то берется минимально возможная дата
-				var lastTime = lastMetric.Metrics.Count != 0 ? lastMetric.Metrics[0].Time : DateTimeOffset.FromUnixTimeSeconds(0);
+				var lastTime = _repository.GetLast(agentInfo.AgentId);
 
 				// Создаем запрос для получения от текущего агента метрик за период времени
 				// от последней проверки до текущего момента
 				var request = new RamMetricGetByIntervalRequestByClient()
 				{
-					agentUri = agentInfo.AgentUri,
-					fromTime = lastTime,
-					toTime = DateTimeOffset.UtcNow,
+					AgentUri = agentInfo.AgentUri,
+					FromTime = lastTime,
+					ToTime = DateTimeOffset.UtcNow,
 				};
 
 				// Делаем запрос к Агенту метрик и получаем список метрик

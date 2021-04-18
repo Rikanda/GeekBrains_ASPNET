@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using MetricsManager.Requests.Interfaces;
+using Microsoft.AspNetCore.Mvc;
 using System;
 
 namespace MetricsManager.Requests
@@ -10,11 +11,11 @@ namespace MetricsManager.Requests
 	{
 		/// <summary> Начало временного промежутка </summary>
 		[FromRoute]
-		public DateTimeOffset fromTime { get; set; }
+		public DateTimeOffset FromTime { get; set; }
 
 		/// <summary> Конец временного промежутка </summary>
 		[FromRoute]
-		public DateTimeOffset toTime { get; set; }
+		public DateTimeOffset ToTime { get; set; }
 	}
 
 	/// <summary>
@@ -24,15 +25,15 @@ namespace MetricsManager.Requests
 	{
 		/// <summary> Id агента </summary>
 		[FromRoute]
-		public int agentId { get; set; }
+		public int AgentId { get; set; }
 
 		/// <summary> Начало временного промежутка </summary>
 		[FromRoute]
-		public DateTimeOffset fromTime { get; set; }
+		public DateTimeOffset FromTime { get; set; }
 
 		/// <summary> Конец временного промежутка </summary>
 		[FromRoute]
-		public DateTimeOffset toTime { get; set; }
+		public DateTimeOffset ToTime { get; set; }
 	}
 
 	/// <summary>
@@ -42,15 +43,15 @@ namespace MetricsManager.Requests
 	{
 		/// <summary> URL адрес агента </summary>
 		[FromRoute]
-		public string agentUri { get; set; }
+		public string AgentUri { get; set; }
 
 		/// <summary> Начало временного промежутка </summary>
 		[FromRoute]
-		public DateTimeOffset fromTime { get; set; }
+		public DateTimeOffset FromTime { get; set; }
 
 		/// <summary> Конец временного промежутка </summary>
 		[FromRoute]
-		public DateTimeOffset toTime { get; set; }
+		public DateTimeOffset ToTime { get; set; }
 	}
 
 }

@@ -1,5 +1,7 @@
 ﻿using AutoMapper;
 using MetricsManager.DAL;
+using MetricsManager.DAL.Interfaces;
+using MetricsManager.DAL.Models;
 using MetricsManager.Requests;
 using MetricsManager.Responses;
 using Microsoft.AspNetCore.Http;

@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace MetricsManager.Responses
+namespace MetricsManager.Responses.FromManager
 {
 
 

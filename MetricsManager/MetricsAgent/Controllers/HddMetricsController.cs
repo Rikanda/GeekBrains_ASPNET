@@ -5,6 +5,7 @@ using Microsoft.Extensions.Logging;
 using AutoMapper;
 using MetricsAgent.Requests;
 using System.Collections.Generic;
+using MetricsAgent.DAL.Repositories;
 
 namespace MetricsAgent.Controllers
 {
@@ -32,14 +33,14 @@ namespace MetricsAgent.Controllers
 		/// </summary>
 		/// <param name="request">Запрос на выдачу метрик с интервалом времени</param>
 		/// <returns>Список метрик за заданный интервал времени</returns>
-		[HttpGet("from/{fromTime}/to/{toTime}")]
+		[HttpGet("from/{FromTime}/to/{ToTime}")]
 		public IActionResult GetMetrics([FromRoute] HddMetricGetByIntervalRequest request)
 		{
 			_logger.LogDebug("Вызов метода. Параметры:" +
-				$" {nameof(request.fromTime)} = {request.fromTime}" +
-				$" {nameof(request.toTime)} = {request.toTime}");
+				$" {nameof(request.FromTime)} = {request.FromTime}" +
+				$" {nameof(request.ToTime)} = {request.ToTime}");
 
-			var metrics = _repository.GetByTimeInterval(request.fromTime, request.toTime);
+			var metrics = _repository.GetByTimeInterval(request.FromTime, request.ToTime);
 
 			var response = new AllHddMetricsResponse()
 			{

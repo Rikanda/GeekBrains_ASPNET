@@ -2,6 +2,8 @@
 using MetricsAgent;
 using MetricsAgent.Controllers;
 using MetricsAgent.DAL;
+using MetricsAgent.DAL.Models;
+using MetricsAgent.DAL.Repositories;
 using MetricsAgent.Requests;
 using MetricsAgent.Responses;
 using Microsoft.AspNetCore.Mvc;
@@ -37,8 +39,8 @@ namespace MetricsAgentsTests
 			//Arrange
 			var request = new NetworkMetricGetByIntervalRequest()
 			{
-				fromTime = DateTimeOffset.MinValue,
-				toTime = DateTimeOffset.Now
+				FromTime = DateTimeOffset.MinValue,
+				ToTime = DateTimeOffset.Now
 			};
 
 			//фейковые метрики возвращаемые репозиторием
