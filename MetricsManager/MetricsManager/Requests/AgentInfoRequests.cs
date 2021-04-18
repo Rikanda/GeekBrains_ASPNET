@@ -10,8 +10,14 @@ namespace MetricsManager.Requests
 	/// </summary>
 	public class AgentInfoRegisterRequest
 	{
+		/// <summary>
+		/// Id агента
+		/// </summary>
 		public int AgentId { get; set; }
 
+		/// <summary>
+		/// Адрес агента
+		/// </summary>
 		public string AgentUri { get; set; }
 
 	}

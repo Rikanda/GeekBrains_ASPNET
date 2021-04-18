@@ -76,21 +76,6 @@ namespace MetricsAgent.DAL.Repositories
 			}
 		}
 
-		/// <summary>
-		/// Извлекает последнюю по дате метрику из базы данных
-		/// </summary>
-		/// <returns>Последняя по времени метрика из базы данных</returns>
-		public HddMetric GetLast()
-		{
-			using (var connection = new SQLiteConnection(mySql.ConnectionString))
-			{
-				return connection.QuerySingle<HddMetric>(
-				"SELECT * " +
-				$"FROM {mySql[Tables.HddMetric]} " +
-				$"WHERE {mySql[Columns.Time]} = (SELECT MAX ({mySql[Columns.Time]}) FROM {mySql[Tables.HddMetric]})");
-			}
-		}
-
 
 	}
 }

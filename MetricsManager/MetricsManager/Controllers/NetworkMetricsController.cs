@@ -38,7 +38,12 @@ namespace MetricsManager.Controllers
 			_agentRepository = agentRepository;
 		}
 
-		[HttpGet("agent/{request.agentId}/from/{request.fromTime}/to/{request.toTime}")]
+		/// <summary>
+		/// Запрос списка Network метрик от определенного агента за промежуток времени
+		/// </summary>
+		/// <param name="request">Id агента и временной интервал</param>
+		/// <returns>Список Network метрик</returns>
+		[HttpGet("agent/{AgentId}/from/{FromTime}/to/{ToTime}")]
 		public IActionResult GetMetricsFromAgent([FromRoute] NetworkMetricGetByIntervalForAgentRequest request)
 		{
 			_logger.LogDebug("Вызов метода. Параметры:" +
@@ -58,7 +63,13 @@ namespace MetricsManager.Controllers
 			return Ok(response);
 		}
 
-		[HttpGet("agent/{request.agentId}/from/{request.fromTime}/to/{request.toTime}/percentiles/{percentile}")]
+		/// <summary>
+		/// Запрос перцентиля Network метрик от определенного агента за промежуток времени
+		/// </summary>
+		/// <param name="request">Id агента и временной интервал</param>
+		/// <param name="percentile">Перцентиль</param>
+		/// <returns>Перцентиль Network метрик</returns>
+		[HttpGet("agent/{AgentId}/from/{FromTime}/to/{ToTime}/percentiles/{percentile}")]
 		public IActionResult GetMetricsByPercentileFromAgent(
 			[FromRoute] NetworkMetricGetByIntervalForAgentRequest request,
 			[FromRoute] Percentile percentile)
@@ -81,7 +92,12 @@ namespace MetricsManager.Controllers
 			return Ok(response);
 		}
 
-		[HttpGet("cluster/from/{request.fromTime}/to/{request.toTime}")]
+		/// <summary>
+		/// Запрос списка Network метрик от всех агентов за промежуток времени
+		/// </summary>
+		/// <param name="request">Временной интервал</param>
+		/// <returns>Список Network метрик</returns>
+		[HttpGet("cluster/from/{FromTime}/to/{ToTime}")]
 		public IActionResult GetMetricsFromAllCluster([FromRoute] NetworkMetricGetByIntervalForClusterRequest request)
 		{
 			_logger.LogDebug("Вызов метода. Параметры:" +
@@ -105,7 +121,13 @@ namespace MetricsManager.Controllers
 			return Ok(response);
 		}
 
-		[HttpGet("cluster/from/{request.fromTime}/to/{request.toTime}/percentiles/{percentile}")]
+		/// <summary>
+		/// Запрос перцентиля Network метрик для каждого агента за промежуток времени
+		/// </summary>
+		/// <param name="request">Временной интервал</param>
+		/// <param name="percentile">Перцентиль</param>
+		/// <returns>Перцентиль Network метрик</returns>
+		[HttpGet("cluster/from/{FromTime}/to/{ToTime}/percentiles/{percentile}")]
 		public IActionResult GetMetricsByPercentileFromAllCluster(
 			[FromRoute] NetworkMetricGetByIntervalForClusterRequest request,
 			[FromRoute] Percentile percentile)
