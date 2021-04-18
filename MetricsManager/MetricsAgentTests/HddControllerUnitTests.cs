@@ -2,6 +2,8 @@
 using MetricsAgent;
 using MetricsAgent.Controllers;
 using MetricsAgent.DAL;
+using MetricsAgent.DAL.Models;
+using MetricsAgent.DAL.Repositories;
 using MetricsAgent.Requests;
 using MetricsAgent.Responses;
 using Microsoft.AspNetCore.Mvc;
@@ -37,15 +39,15 @@ namespace MetricsAgentsTests
 			//Arrange
 			var request = new HddMetricGetByIntervalRequest()
 			{
-				fromTime = DateTimeOffset.MinValue,
-				toTime = DateTimeOffset.Now
+				FromTime = DateTimeOffset.MinValue,
+				ToTime = DateTimeOffset.Now
 			};
 
 			//фейковые метрики возвращаемые репозиторием
 			var mockMetrics = new List<HddMetric>()
 			{
-				{ new HddMetric() {Time = TimeSpan.FromDays(5), Value = 100 } },
-				{ new HddMetric() {Time = TimeSpan.FromDays(10), Value = 100 } }
+				{ new HddMetric() {Time = DateTimeOffset.MinValue, Value = 100 } },
+				{ new HddMetric() {Time = DateTimeOffset.UtcNow, Value = 121 } }
 			};
 
 			mockRepository.
@@ -84,7 +86,7 @@ namespace MetricsAgentsTests
 		{
 			//Arrange
 			//фейковая метрика возвращаемая репозиторием
-			var mockMetric = new HddMetric() { Time = TimeSpan.Zero, Value = 100 };
+			var mockMetric = new HddMetric() { Time = DateTimeOffset.MinValue, Value = 100 };
 			mockRepository.
 				Setup(repository => repository.GetLast()).
 				Returns(mockMetric);

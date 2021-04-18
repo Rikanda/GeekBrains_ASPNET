@@ -1,11 +1,11 @@
 ﻿using System;
 
-namespace MetricsAgent.DAL
+namespace MetricsAgent.DAL.Models
 {
 	public class NetworkMetric
 	{
 		public int Value { get; set; }
 
-		public TimeSpan Time { get; set; }
+		public DateTimeOffset Time { get; set; }
 	}
 }

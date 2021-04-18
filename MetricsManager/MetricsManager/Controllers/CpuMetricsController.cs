@@ -1,4 +1,11 @@
-﻿using Metrics.Tools;
+﻿using AutoMapper;
+using Metrics.Tools;
+using MetricsManager.DAL;
+using MetricsManager.DAL.Interfaces;
+using MetricsManager.DAL.Repositories;
+using MetricsManager.Requests;
+using MetricsManager.Responses;
+using MetricsManager.Responses.FromManager;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
@@ -14,67 +21,116 @@ namespace MetricsManager.Controllers
 	public class CpuMetricsController : ControllerBase
 	{
 		private readonly ILogger<CpuMetricsController> _logger;
+		private readonly ICpuMetricsRepository _repository;
+		private readonly IAgentsRepository _agentRepository;
+		private readonly IMapper _mapper;
 
-		public CpuMetricsController(ILogger<CpuMetricsController> logger)
+		public CpuMetricsController(
+			ILogger<CpuMetricsController> logger, 
+			ICpuMetricsRepository repository, 
+			IAgentsRepository agentRepository, 
+			IMapper mapper)
 		{
 			_logger = logger;
 			_logger.LogDebug("Вызов конструктора");
+			_repository = repository;
+			_mapper = mapper;
+			_agentRepository = agentRepository;
 		}
 
-		[HttpGet("agent/{agentId}/from/{fromTime}/to/{toTime}")]
-		public IActionResult GetMetricsFromAgent(
-			[FromRoute] int agentId, 
-			[FromRoute] TimeSpan fromTime, 
-			[FromRoute] TimeSpan toTime)
+		[HttpGet("agent/{request.agentId}/from/{request.fromTime}/to/{request.toTime}")]
+		public IActionResult GetMetricsFromAgent([FromRoute] CpuMetricGetByIntervalForAgentRequest request)
 		{
 			_logger.LogDebug("Вызов метода. Параметры:" +
-				$" {nameof(agentId)} = {agentId}" +
-				$" {nameof(fromTime)} = {fromTime}" +
-				$" {nameof(toTime)} = {toTime}");
+				$" {nameof(request.AgentId)} = {request.AgentId}" +
+				$" {nameof(request.FromTime)} = {request.FromTime}" +
+				$" {nameof(request.ToTime)} = {request.ToTime}");
 
-			return Ok();
+			var metrics = _repository.GetByTimeInterval(request.AgentId, request.FromTime, request.ToTime);
+
+			var response = new AllMetricsResponse<CpuMetricDto>();
+
+			foreach (var metric in metrics.Metrics)
+			{
+				response.Metrics.Add(_mapper.Map<CpuMetricDto>(metric));
+			}
+
+			return Ok(response);
 		}
 
-		[HttpGet("agent/{agentId}/from/{fromTime}/to/{toTime}/percentiles/{percentile}")]
+		[HttpGet("agent/{request.agentId}/from/{request.fromTime}/to/{request.toTime}/percentiles/{percentile}")]
 		public IActionResult GetMetricsByPercentileFromAgent(
-			[FromRoute] int agentId,
-			[FromRoute] TimeSpan fromTime, 
-			[FromRoute] TimeSpan toTime,
+			[FromRoute] CpuMetricGetByIntervalForAgentRequest request,
 			[FromRoute] Percentile percentile)
 		{
 			_logger.LogDebug("Вызов метода. Параметры:" +
-				$" {nameof(agentId)} = {agentId}" +
-				$" {nameof(fromTime)} = {fromTime}" +
-				$" {nameof(toTime)} = {toTime}" +
+				$" {nameof(request.AgentId)} = {request.AgentId}" +
+				$" {nameof(request.FromTime)} = {request.FromTime}" +
+				$" {nameof(request.ToTime)} = {request.ToTime}" +
 				$" {nameof(percentile)} = {percentile}");
 
-			return Ok();
+			var metrics = _repository.GetByTimeIntervalPercentile(request.AgentId, request.FromTime, request.ToTime, percentile);
+
+			var response = new AllMetricsResponse<CpuMetricDto>();
+
+			foreach (var metric in metrics.Metrics)
+			{
+				response.Metrics.Add(_mapper.Map<CpuMetricDto>(metric));
+			}
+
+			return Ok(response);
 		}
 
-		[HttpGet("cluster/from/{fromTime}/to/{toTime}")]
-		public IActionResult GetMetricsFromAllCluster(
-			[FromRoute] TimeSpan fromTime,
-			[FromRoute] TimeSpan toTime)
+		[HttpGet("cluster/from/{request.fromTime}/to/{request.toTime}")]
+		public IActionResult GetMetricsFromAllCluster([FromRoute] CpuMetricGetByIntervalForClusterRequest request)
 		{
 			_logger.LogDebug("Вызов метода. Параметры:" +
-				$" {nameof(fromTime)} = {fromTime}" +
-				$" {nameof(toTime)} = {toTime}");
+				$" {nameof(request.FromTime)} = {request.FromTime}" +
+				$" {nameof(request.ToTime)} = {request.ToTime}");
 
-			return Ok();
+			var agents = _agentRepository.GetAllAgentsInfo();
+
+			var response = new AllMetricsResponse<CpuMetricDto>();
+
+			foreach (var agent in agents.Agents)
+			{
+				var currentAgentMetrics = _repository.GetByTimeInterval(agent.AgentId, request.FromTime, request.ToTime);
+
+				foreach (var metric in currentAgentMetrics.Metrics)
+				{
+					response.Metrics.Add(_mapper.Map<CpuMetricDto>(metric));
+				}
+			}
+
+			return Ok(response);
 		}
 
-		[HttpGet("cluster/from/{fromTime}/to/{toTime}/percentiles/{percentile}")]
+		[HttpGet("cluster/from/{request.fromTime}/to/{request.toTime}/percentiles/{percentile}")]
 		public IActionResult GetMetricsByPercentileFromAllCluster(
-			[FromRoute] TimeSpan fromTime, 
-			[FromRoute] TimeSpan toTime,
+			[FromRoute] CpuMetricGetByIntervalForClusterRequest request,
 			[FromRoute] Percentile percentile)
 		{
 			_logger.LogDebug("Вызов метода. Параметры:" +
-				$" {nameof(fromTime)} = {fromTime}" +
-				$" {nameof(toTime)} = {toTime}" +
+				$" {nameof(request.FromTime)} = {request.FromTime}" +
+				$" {nameof(request.ToTime)} = {request.ToTime}" +
 				$" {nameof(percentile)} = {percentile}");
 
-			return Ok();
+			var agents = _agentRepository.GetAllAgentsInfo();
+
+			var response = new AllMetricsResponse<CpuMetricDto>();
+
+			foreach (var agent in agents.Agents)
+			{
+				var currentAgentMetrics = _repository.GetByTimeIntervalPercentile(agent.AgentId, request.FromTime, request.ToTime, percentile);
+
+				foreach (var metric in currentAgentMetrics.Metrics)
+				{
+					response.Metrics.Add(_mapper.Map<CpuMetricDto>(metric));
+				}
+
+			}
+
+			return Ok(response);
 		}
 	}
 }

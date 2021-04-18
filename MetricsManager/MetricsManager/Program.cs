@@ -3,6 +3,9 @@ using NLog.Web;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Hosting;
+using System.Net;
+using System.Security.Cryptography.X509Certificates;
+using System.Net.Security;
 
 namespace MetricsManager
 {
@@ -10,11 +13,24 @@ namespace MetricsManager
 	{
 		public static void Main(string[] args)
 		{
+			// Disabling certificate validation can expose you to a man-in-the-middle attack
+			// which may allow your encrypted message to be read by an attacker
+			// https://stackoverflow.com/a/14907718/740639
+			ServicePointManager.ServerCertificateValidationCallback =
+				delegate (
+					object s,
+					X509Certificate certificate,
+					X509Chain chain,
+					SslPolicyErrors sslPolicyErrors
+				)
+				{
+					return true;
+				};
+
 			var logger = NLogBuilder.ConfigureNLog("nlog.config").GetCurrentClassLogger();
 			try
 			{
 				logger.Info("---- [BEGIN]----");
-				
 				CreateHostBuilder(args).Build().Run();
 			}
 			// отлов всех исключений в рамках работы приложения
@@ -22,15 +38,12 @@ namespace MetricsManager
 			{
 				//NLog: устанавливаем отлов исключений
 				logger.Error(exception, "Stopped program because of exception");
-				throw;
 			}
 			finally
 			{
 				// остановка логера 
 				NLog.LogManager.Shutdown();
 			}
-
-			CreateHostBuilder(args).Build().Run();
 		}
 
 		public static IHostBuilder CreateHostBuilder(string[] args) =>

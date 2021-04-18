@@ -2,6 +2,8 @@ using AutoMapper;
 using MetricsAgent;
 using MetricsAgent.Controllers;
 using MetricsAgent.DAL;
+using MetricsAgent.DAL.Models;
+using MetricsAgent.DAL.Repositories;
 using MetricsAgent.Requests;
 using MetricsAgent.Responses;
 using Microsoft.AspNetCore.Mvc;
@@ -37,15 +39,15 @@ namespace MetricsAgentsTests
 			//Arrange
 			var request = new CpuMetricGetByIntervalRequest() 
 			{ 
-				fromTime = DateTimeOffset.MinValue, 
-				toTime = DateTimeOffset.Now 
+				FromTime = DateTimeOffset.MinValue, 
+				ToTime = DateTimeOffset.Now 
 			};
 
 			//фейковые метрики возвращаемые репозиторием
 			var mockMetrics = new List<CpuMetric>()
 			{
-				{ new CpuMetric() {Time = TimeSpan.FromDays(5), Value = 100 } },
-				{ new CpuMetric() {Time = TimeSpan.FromDays(10), Value = 100 } }
+				{ new CpuMetric() {Time = DateTimeOffset.MinValue, Value = 100 } },
+				{ new CpuMetric() {Time = DateTimeOffset.UtcNow, Value = 121 } }
 			};
 
 			mockRepository.

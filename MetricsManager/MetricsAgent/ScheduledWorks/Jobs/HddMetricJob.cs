@@ -1,15 +1,18 @@
 ﻿using MetricsAgent.DAL;
+using MetricsAgent.DAL.Models;
+using MetricsAgent.DAL.Repositories;
 using Microsoft.Extensions.DependencyInjection;
 using Quartz;
 using System;
 using System.Diagnostics;
 using System.Threading.Tasks;
 
-namespace MetricsAgent.ScheduledWorks
+namespace MetricsAgent.ScheduledWorks.Jobs
 {
 	/// <summary>
 	/// Задача сбора Hdd метрик
 	/// </summary>
+	[DisallowConcurrentExecution]
 	public class HddMetricJob : IJob
 	{
 		// Инжектируем DI провайдер
@@ -39,7 +42,7 @@ namespace MetricsAgent.ScheduledWorks
 			int value = Convert.ToInt32(_counter.NextValue());
 
 			// Время когда была собрана метрика
-			var time = TimeSpan.FromSeconds(DateTimeOffset.UtcNow.ToUnixTimeSeconds());
+			var time = DateTimeOffset.UtcNow;
 
 			// Запись метрики в репозиторий
 			_repository.Create(new HddMetric { Time = time, Value = value });

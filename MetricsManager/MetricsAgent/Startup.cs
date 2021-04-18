@@ -14,7 +14,10 @@ using Quartz;
 using Quartz.Spi;
 using MetricsAgent.ScheduledWorks;
 using Quartz.Impl;
-using MetricsAgent.SQLsettings;
+using MetricsAgent.MySQLsettings;
+using MetricsAgent.ScheduledWorks.Tools;
+using MetricsAgent.ScheduledWorks.Jobs;
+using MetricsAgent.DAL.Repositories;
 
 namespace MetricsAgent
 {
@@ -110,7 +113,7 @@ namespace MetricsAgent
 				app.UseDeveloperExceptionPage();
 			}
 
-			app.UseHttpsRedirection();
+			//app.UseHttpsRedirection();
 
 			app.UseRouting();
 

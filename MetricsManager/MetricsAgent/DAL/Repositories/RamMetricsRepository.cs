@@ -3,9 +3,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Data.SQLite;
 using Dapper;
-using MetricsAgent.SQLsettings;
+using MetricsAgent.MySQLsettings;
+using MetricsAgent.DAL.Models;
+using MetricsAgent.DAL.Interfaces;
 
-namespace MetricsAgent.DAL
+namespace MetricsAgent.DAL.Repositories
 {
 	/// <summary>
 	/// Маркировочный интерфейс. Необходим, чтобы проверить работу репозитория на тесте-заглушке 
@@ -26,8 +28,8 @@ namespace MetricsAgent.DAL
 
 		public RamMetricsRepository(IMySqlSettings mySqlSettings)
 		{
-			// Добавляем парсилку типа TimeSpan в качестве подсказки для SQLite
-			SqlMapper.AddTypeHandler(new TimeSpanHandler());
+			// Добавляем парсилку типа DateTimeOffset в качестве подсказки для SQLite
+			SqlMapper.AddTypeHandler(new DateTimeOffsetHandler());
 			mySql = mySqlSettings;
 		}
 
@@ -46,7 +48,7 @@ namespace MetricsAgent.DAL
 				new
 				{
 					value = metric.Value,
-					time = metric.Time.TotalSeconds,
+					time = metric.Time.ToUnixTimeSeconds(),
 				});
 			}
 		}

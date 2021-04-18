@@ -1,20 +1,23 @@
 ﻿using MetricsAgent.DAL;
+using MetricsAgent.DAL.Models;
+using MetricsAgent.DAL.Repositories;
 using Microsoft.Extensions.DependencyInjection;
 using Quartz;
 using System;
 using System.Diagnostics;
 using System.Threading.Tasks;
 
-namespace MetricsAgent.ScheduledWorks
+namespace MetricsAgent.ScheduledWorks.Jobs
 {
 	/// <summary>
 	/// Задача сбора Cpu метрик
 	/// </summary>
+	[DisallowConcurrentExecution]
 	public class CpuMetricJob : IJob
 	{
 		// Инжектируем DI провайдер
 		private readonly IServiceProvider _provider;
-		private ICpuMetricsRepository _repository;
+		private readonly ICpuMetricsRepository _repository;
 
 		/// <summary>Имя категории счетчика</summary>
 		private readonly string categoryName = "Processor";
@@ -39,7 +42,7 @@ namespace MetricsAgent.ScheduledWorks
 			int value = Convert.ToInt32(_counter.NextValue());
 
 			// Время когда была собрана метрика
-			var time = TimeSpan.FromSeconds(DateTimeOffset.UtcNow.ToUnixTimeSeconds());
+			var time = DateTimeOffset.UtcNow;
 
 			// Запись метрики в репозиторий
 			_repository.Create(new CpuMetric { Time = time, Value = value });

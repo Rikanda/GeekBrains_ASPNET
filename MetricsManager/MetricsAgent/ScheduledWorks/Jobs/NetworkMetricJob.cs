@@ -1,4 +1,6 @@
 ﻿using MetricsAgent.DAL;
+using MetricsAgent.DAL.Models;
+using MetricsAgent.DAL.Repositories;
 using Microsoft.Extensions.DependencyInjection;
 using Quartz;
 using System;
@@ -6,11 +8,12 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Threading.Tasks;
 
-namespace MetricsAgent.ScheduledWorks
+namespace MetricsAgent.ScheduledWorks.Jobs
 {
 	/// <summary>
 	/// Задача сбора Network метрик
 	/// </summary>
+	[DisallowConcurrentExecution]
 	public class NetworkMetricJob : IJob
 	{
 		// Инжектируем DI провайдер
@@ -49,7 +52,7 @@ namespace MetricsAgent.ScheduledWorks
 			}
 
 			// Время когда была собрана метрика
-			var time = TimeSpan.FromSeconds(DateTimeOffset.UtcNow.ToUnixTimeSeconds());
+			var time = DateTimeOffset.UtcNow;
 
 			// Запись метрики в репозиторий
 			_repository.Create(new NetworkMetric { Time = time, Value = value });

@@ -2,6 +2,8 @@
 using MetricsAgent;
 using MetricsAgent.Controllers;
 using MetricsAgent.DAL;
+using MetricsAgent.DAL.Models;
+using MetricsAgent.DAL.Repositories;
 using MetricsAgent.Requests;
 using MetricsAgent.Responses;
 using Microsoft.AspNetCore.Mvc;
@@ -38,15 +40,15 @@ namespace MetricsAgentsTests
 			//Arrange
 			var request = new DotNetMetricGetByIntervalRequest()
 			{
-				fromTime = DateTimeOffset.MinValue,
-				toTime = DateTimeOffset.Now
+				FromTime = DateTimeOffset.MinValue,
+				ToTime = DateTimeOffset.Now
 			};
 
 			//фейковые метрики возвращаемые репозиторием
 			var mockMetrics = new List<DotNetMetric>()
 			{
-				{ new DotNetMetric() { Time = TimeSpan.FromDays(5), Value = 100 } },
-				{ new DotNetMetric() { Time = TimeSpan.FromDays(10), Value = 100 } }
+				{ new DotNetMetric() {Time = DateTimeOffset.MinValue, Value = 100 } },
+				{ new DotNetMetric() {Time = DateTimeOffset.UtcNow, Value = 121 } }
 			};
 			mockRepository.
 				Setup(repository => repository.GetByTimeInterval(It.IsAny<DateTimeOffset>(), It.IsAny<DateTimeOffset>())).

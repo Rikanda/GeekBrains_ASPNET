@@ -1,5 +1,5 @@
 ﻿using FluentMigrator;
-using MetricsAgent.SQLsettings;
+using MetricsAgent.MySQLsettings;
 using System;
 using System.Collections.Generic;
 
