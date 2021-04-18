@@ -1,11 +1,13 @@
 ﻿using MetricsAgent.DAL;
+using MetricsAgent.DAL.Models;
+using MetricsAgent.DAL.Repositories;
 using Microsoft.Extensions.DependencyInjection;
 using Quartz;
 using System;
 using System.Diagnostics;
 using System.Threading.Tasks;
 
-namespace MetricsAgent.ScheduledWorks
+namespace MetricsAgent.ScheduledWorks.Jobs
 {
 	/// <summary>
 	/// Задача сбора Cpu метрик
@@ -15,7 +17,7 @@ namespace MetricsAgent.ScheduledWorks
 	{
 		// Инжектируем DI провайдер
 		private readonly IServiceProvider _provider;
-		private ICpuMetricsRepository _repository;
+		private readonly ICpuMetricsRepository _repository;
 
 		/// <summary>Имя категории счетчика</summary>
 		private readonly string categoryName = "Processor";

@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using MetricsAgent.DAL;
+using MetricsAgent.DAL.Repositories;
 using MetricsAgent.Requests;
 using MetricsAgent.Responses;
 using Microsoft.AspNetCore.Mvc;
@@ -36,10 +37,10 @@ namespace MetricsAgent.Controllers
 		public IActionResult GetMetrics([FromRoute]CpuMetricGetByIntervalRequest request)
 		{
 			_logger.LogDebug("Вызов метода. Параметры:" +
-				$" {nameof(request.fromTime)} = {request.fromTime}" +
-				$" {nameof(request.toTime)} = {request.toTime}");
+				$" {nameof(request.FromTime)} = {request.FromTime}" +
+				$" {nameof(request.ToTime)} = {request.ToTime}");
 
-			var metrics = _repository.GetByTimeInterval(request.fromTime, request.toTime);
+			var metrics = _repository.GetByTimeInterval(request.FromTime, request.ToTime);
 
 			var response = new AllCpuMetricsResponse()
 			{

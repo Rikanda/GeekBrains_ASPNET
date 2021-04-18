@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace MetricsAgent.SQLsettings
+namespace MetricsAgent.MySQLsettings
 {
 	/// <summary> Ключи имен таблиц </summary>
 	public enum Tables
@@ -27,7 +27,7 @@ namespace MetricsAgent.SQLsettings
 	public class MySqlSettings : IMySqlSettings
 	{
 		/// <summary>Словарь для хранения имен таблиц</summary>
-		private Dictionary<Tables, string> tablesNames = new Dictionary<Tables, string>
+		private readonly Dictionary<Tables, string> tablesNames = new Dictionary<Tables, string>
 		{
 			{Tables.CpuMetric, "cpumetric" },
 			{Tables.DotNetMetric, "dotnetmetric" },
@@ -38,7 +38,7 @@ namespace MetricsAgent.SQLsettings
 
 
 		/// <summary>Словарь для хранения имен рядов в таблицах</summary>
-		private Dictionary<Columns, string> rowsNames = new Dictionary<Columns, string>
+		private readonly Dictionary<Columns, string> rowsNames = new Dictionary<Columns, string>
 		{
 			{Columns.Id, "id" },
 			{Columns.Value, "value" },

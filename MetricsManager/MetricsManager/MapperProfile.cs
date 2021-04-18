@@ -1,6 +1,8 @@
 ﻿using AutoMapper;
 using MetricsManager.DAL;
+using MetricsManager.DAL.Models;
 using MetricsManager.Responses;
+using MetricsManager.Responses.FromManager;
 
 namespace MetricsManager
 {

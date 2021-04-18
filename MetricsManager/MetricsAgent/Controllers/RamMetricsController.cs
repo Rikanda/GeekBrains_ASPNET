@@ -5,6 +5,7 @@ using Microsoft.Extensions.Logging;
 using AutoMapper;
 using MetricsAgent.Requests;
 using System.Collections.Generic;
+using MetricsAgent.DAL.Repositories;
 
 namespace MetricsAgent.Controllers
 {
@@ -36,10 +37,10 @@ namespace MetricsAgent.Controllers
 		public IActionResult GetMetrics([FromRoute] RamMetricGetByIntervalRequest request)
 		{
 			_logger.LogDebug("Вызов метода. Параметры:" +
-				$" {nameof(request.fromTime)} = {request.fromTime}" +
-				$" {nameof(request.toTime)} = {request.toTime}");
+				$" {nameof(request.FromTime)} = {request.FromTime}" +
+				$" {nameof(request.ToTime)} = {request.ToTime}");
 
-			var metrics = _repository.GetByTimeInterval(request.fromTime, request.toTime);
+			var metrics = _repository.GetByTimeInterval(request.FromTime, request.ToTime);
 
 			var response = new AllRamMetricsResponse()
 			{

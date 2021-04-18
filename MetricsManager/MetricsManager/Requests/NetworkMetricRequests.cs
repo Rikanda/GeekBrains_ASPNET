@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using MetricsManager.Requests.Interfaces;
+using Microsoft.AspNetCore.Mvc;
 using System;
 
 namespace MetricsManager.Requests
@@ -9,9 +10,9 @@ namespace MetricsManager.Requests
 	public class NetworkMetricGetByIntervalForClusterRequest
 	{
 		[FromRoute]
-		public DateTimeOffset fromTime { get; set; }
+		public DateTimeOffset FromTime { get; set; }
 		[FromRoute]
-		public DateTimeOffset toTime { get; set; }
+		public DateTimeOffset ToTime { get; set; }
 	}
 
 	/// <summary>
@@ -20,11 +21,11 @@ namespace MetricsManager.Requests
 	public class NetworkMetricGetByIntervalForAgentRequest
 	{
 		[FromRoute]
-		public int agentId { get; set; }
+		public int AgentId { get; set; }
 		[FromRoute]
-		public DateTimeOffset fromTime { get; set; }
+		public DateTimeOffset FromTime { get; set; }
 		[FromRoute]
-		public DateTimeOffset toTime { get; set; }
+		public DateTimeOffset ToTime { get; set; }
 	}
 
 	/// <summary>
@@ -33,11 +34,11 @@ namespace MetricsManager.Requests
 	public class NetworkMetricGetByIntervalRequestByClient : IMetricGetByIntervalRequestByClient
 	{
 		[FromRoute]
-		public string agentUri { get; set; }
+		public string AgentUri { get; set; }
 		[FromRoute]
-		public DateTimeOffset fromTime { get; set; }
+		public DateTimeOffset FromTime { get; set; }
 		[FromRoute]
-		public DateTimeOffset toTime { get; set; }
+		public DateTimeOffset ToTime { get; set; }
 	}
 
 }

@@ -3,9 +3,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Data.SQLite;
 using Dapper;
-using MetricsAgent.SQLsettings;
+using MetricsAgent.MySQLsettings;
+using MetricsAgent.DAL.Interfaces;
+using MetricsAgent.DAL.Models;
 
-namespace MetricsAgent.DAL
+namespace MetricsAgent.DAL.Repositories
 {
 	/// <summary>
 	/// Маркировочный интерфейс. Необходим, чтобы проверить работу репозитория на тесте-заглушке 

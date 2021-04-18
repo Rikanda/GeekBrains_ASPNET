@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace MetricsManager.SQLsettings
+namespace MetricsManager.MySQLsettings
 {
 	/// <summary> Ключи имен таблиц </summary>
 	public enum Tables

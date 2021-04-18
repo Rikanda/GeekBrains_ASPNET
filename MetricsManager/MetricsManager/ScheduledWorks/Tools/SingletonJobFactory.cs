@@ -3,18 +3,22 @@ using Quartz;
 using Quartz.Spi;
 using System;
 
-public class SingletonJobFactory : IJobFactory
+namespace MetricsManager.ScheduledWorks.Tools
 {
-	private readonly IServiceProvider _serviceProvider;
-	public SingletonJobFactory(IServiceProvider serviceProvider)
-	{
-		_serviceProvider = serviceProvider;
-	}
 
-	public IJob NewJob(TriggerFiredBundle bundle, IScheduler scheduler)
+	public class SingletonJobFactory : IJobFactory
 	{
-		return _serviceProvider.GetRequiredService(bundle.JobDetail.JobType) as IJob;
-	}
+		private readonly IServiceProvider _serviceProvider;
+		public SingletonJobFactory(IServiceProvider serviceProvider)
+		{
+			_serviceProvider = serviceProvider;
+		}
 
-	public void ReturnJob(IJob job) { }
+		public IJob NewJob(TriggerFiredBundle bundle, IScheduler scheduler)
+		{
+			return _serviceProvider.GetRequiredService(bundle.JobDetail.JobType) as IJob;
+		}
+
+		public void ReturnJob(IJob job) { }
+	}
 }

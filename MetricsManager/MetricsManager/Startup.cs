@@ -15,8 +15,12 @@ using Quartz;
 using Quartz.Spi;
 //using MetricsManager.ScheduledWorks;
 using Quartz.Impl;
-using MetricsManager.SQLsettings;
+using MetricsManager.MySQLsettings;
 using MetricsManager.ScheduledWorks;
+using MetricsManager.ScheduledWorks.Tools;
+using MetricsManager.ScheduledWorks.Jobs;
+using MetricsManager.DAL.Interfaces;
+using MetricsManager.DAL.Repositories;
 
 namespace MetricsManager
 {

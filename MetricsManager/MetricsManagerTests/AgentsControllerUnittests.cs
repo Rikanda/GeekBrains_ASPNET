@@ -3,6 +3,8 @@ using Metrics.Tools;
 using MetricsManager;
 using MetricsManager.Controllers;
 using MetricsManager.DAL;
+using MetricsManager.DAL.Interfaces;
+using MetricsManager.DAL.Models;
 using MetricsManager.Requests;
 using MetricsManager.Responses;
 using Microsoft.AspNetCore.Mvc;

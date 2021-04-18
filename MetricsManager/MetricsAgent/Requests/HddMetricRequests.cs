@@ -9,9 +9,9 @@ namespace MetricsAgent.Requests
 	public class HddMetricGetByIntervalRequest
 	{
 		[FromRoute]
-		public DateTimeOffset fromTime { get; set; }
+		public DateTimeOffset FromTime { get; set; }
 		[FromRoute]
-		public DateTimeOffset toTime { get; set; }
+		public DateTimeOffset ToTime { get; set; }
 	}
 }
 

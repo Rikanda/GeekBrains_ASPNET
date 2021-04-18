@@ -3,11 +3,13 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Data.SQLite;
 using Dapper;
-using MetricsManager.SQLsettings;
+using MetricsManager.MySQLsettings;
 using Microsoft.Extensions.Logging;
 using Metrics.Tools;
+using MetricsManager.DAL.Models;
+using MetricsManager.DAL.Interfaces;
 
-namespace MetricsManager.DAL
+namespace MetricsManager.DAL.Repositories
 {
 	/// <summary>
 	/// Маркировочный интерфейс. Необходим, чтобы проверить работу репозитория на тесте-заглушке 
@@ -151,35 +153,28 @@ namespace MetricsManager.DAL
 			return returnMetrics;
 		}
 
-		/// <summary>
-		/// Извлекает последнюю по дате метрику из базы данных
-		/// </summary>
-		/// <returns>Последняя по времени метрика из базы данных</returns>
-		public AllMetrics<RamMetric> GetLast(int agentId)
+		public DateTimeOffset GetLast(int agentId)
 		{
-			var metrics = new AllMetrics<RamMetric>();
+			DateTimeOffset lastTime = DateTimeOffset.FromUnixTimeSeconds(0);
 			using (var connection = new SQLiteConnection(mySql.ConnectionString))
 			{
 				try
 				{
-					metrics.Metrics.Add(
-						connection.QueryFirst<RamMetric>(
-						$"SELECT * " +
+					lastTime = connection.QueryFirst<DateTimeOffset>(
+						$"SELECT MAX({mySql[Columns.Time]}) " +
 						$"FROM {mySql[Tables.RamMetric]} " +
-						$"WHERE ({mySql[Columns.AgentId]}, {mySql[Columns.Time]}) " +
-						$"IN (SELECT {mySql[Columns.AgentId]}, MAX({mySql[Columns.Time]}) " +
-						$"FROM {mySql[Tables.RamMetric]} WHERE {mySql[Columns.AgentId]} == @agentId);",
+						$"WHERE {mySql[Columns.AgentId]} == @agentId",
 						new
 						{
 							agentId = agentId
-						}));
+						});
 				}
 				catch (Exception ex)
 				{
 					_logger.LogDebug(ex.Message);
 				}
 
-				return metrics;
+				return lastTime;
 			}
 		}
 

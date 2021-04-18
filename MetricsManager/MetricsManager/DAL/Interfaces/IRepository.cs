@@ -2,7 +2,7 @@
 using System;
 using System.Collections.Generic;
 
-namespace MetricsManager.DAL
+namespace MetricsManager.DAL.Interfaces
 {
 	public interface IRepository<T> where T : class
 	{
@@ -26,11 +26,11 @@ namespace MetricsManager.DAL
 		T GetByTimeIntervalPercentile(int agentId, DateTimeOffset fromTime, DateTimeOffset toTime, Percentile percentile);
 
 		/// <summary>
-		/// Извлекает последнюю собранную метрику из базы данных
+		/// Ищет дату-время за которое был собрана последняя метрика для заданного агента
 		/// </summary>
 		/// <param name="agentId">Id агента</param>
-		/// <returns>Последняя собранная метрика из базы данных</returns>
-		T GetLast(int agentId);
+		/// <returns>Дата-вреям последней собранной метрика для заданного агента</returns>
+		DateTimeOffset GetLast(int agentId);
 
 		/// <summary>
 		/// Записывает значение метрики в базу данных
