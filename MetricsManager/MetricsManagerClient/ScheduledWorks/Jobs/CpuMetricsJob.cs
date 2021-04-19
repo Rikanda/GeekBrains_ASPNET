@@ -18,13 +18,19 @@ namespace MetricsManagerClient.ScheduledWorks.Jobs
 		private readonly IServiceProvider _provider;
 		private IMetricsClient _client;
 		private readonly ILogger _logger;
+		private MainWindow _mainWindow;
 
 
-		public CpuMetricJob(IServiceProvider provider, IMetricsClient client, ILogger<CpuMetricJob> logger)
+		public CpuMetricJob(
+			IServiceProvider provider,
+			IMetricsClient client,
+			ILogger<CpuMetricJob> logger,
+			MainWindow mainWindow)
 		{
 			_provider = provider;
 			_client = client;
 			_logger = logger;
+			_mainWindow = mainWindow;
 
 
 		}
@@ -44,19 +50,31 @@ namespace MetricsManagerClient.ScheduledWorks.Jobs
 			// Создаем запрос для получения от текущего агента метрик за период времени
 			// за 50 секунд от текущего момента
 
-			var cpuMetrics = new AllMetricsResponse<CpuMetricDto>();
+			var metrics = new AllMetricsResponse<CpuMetricDto>();
 
 			if(allAgentsInfo.Agents.Count!=0)
 			{
-				var debugTime = DateTimeOffset.Parse("2021-04-15T14:14:50Z");
+				//var timeNow = DateTimeOffset.Parse("2021-04-15T14:14:50Z");
+				var timeNow = DateTimeOffset.UtcNow;
 				var request = new CpuMetricGetByIntervalRequestByClient()
 				{
 					AgentId = allAgentsInfo.Agents[0].AgentId,
-					ToTime = debugTime,
-					FromTime = debugTime - TimeSpan.FromSeconds(49),
+					ToTime = timeNow,
+					FromTime = timeNow - TimeSpan.FromSeconds(54),
 				};
-				cpuMetrics = _client.GetMetrics<CpuMetricDto>(request, ApiNames.Cpu);
+				metrics = _client.GetMetrics<CpuMetricDto>(request, ApiNames.Cpu);
 			}
+
+			var values = _mainWindow.CpuChart.ColumnServiesValues[0].Values;
+
+			values.Clear();
+			for (int i = 0; i < metrics.Metrics.Count; i++)
+			{
+			    values.Add((double)metrics.Metrics[i].Value);
+ 			}
+
+			//CpuChart.ColumnServiesValues[0].Values.Add(new Random().NextDouble() * 100);
+			//CpuChart.ColumnServiesValues[0].Values.RemoveAt(0);
 
 
 			//	// Делаем запрос к Агенту метрик и получаем список метрик

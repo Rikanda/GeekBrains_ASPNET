@@ -20,7 +20,7 @@ namespace MetricsManagerClient.Client
 
 	public class MetricsClient : IMetricsClient
 	{
-		private readonly string ManagerUri = "http://localhost:5000";
+		private readonly string ManagerUri = "http://localhost:5050";
 
 		private readonly HttpClient _httpClient;
 		private readonly ILogger _logger;

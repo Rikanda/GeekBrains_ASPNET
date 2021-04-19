@@ -47,15 +47,18 @@ namespace MetricsManager
 		}
 
 		public static IHostBuilder CreateHostBuilder(string[] args) =>
-			Host.CreateDefaultBuilder(args).ConfigureWebHostDefaults(webBuilder =>
+			Host.CreateDefaultBuilder(args)
+			.ConfigureWebHostDefaults(webBuilder =>
 			{
-				webBuilder.UseStartup<Startup>();
+				webBuilder.UseStartup<Startup>().UseUrls("http://localhost:5050");
 			})
 			.ConfigureLogging(logging =>
 			{
 				logging.AddDebug();
 				logging.ClearProviders(); // создание провайдеров логирования
 				logging.SetMinimumLevel(LogLevel.Trace); // устанавливаем минимальный уровень логирования
-			}).UseNLog(); // добавляем библиотеку nlog
+			})
+			.UseNLog(); // добавляем библиотеку nlog
+
 	}
 }

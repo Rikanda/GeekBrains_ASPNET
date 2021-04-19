@@ -59,21 +59,21 @@ namespace MetricsManagerClient.ScheduledWorks.Tools
 		private static ITrigger CreateTrigger(JobSchedule schedule)
 		{
 			//!DEBUG для прогона один раз в начале программы
-			return TriggerBuilder
-				.Create()
-				.WithIdentity($"{schedule.JobType.FullName}.trigger")
-				.WithSimpleSchedule(x => x
-						.WithIntervalInSeconds(1)
-						.WithRepeatCount(0))
-				.WithDescription(schedule.CronExpression)
-				.Build();
-
 			//return TriggerBuilder
 			//	.Create()
 			//	.WithIdentity($"{schedule.JobType.FullName}.trigger")
-			//	.WithCronSchedule(schedule.CronExpression)
+			//	.WithSimpleSchedule(x => x
+			//			.WithIntervalInSeconds(1)
+			//			.WithRepeatCount(0))
 			//	.WithDescription(schedule.CronExpression)
 			//	.Build();
+
+			return TriggerBuilder
+				.Create()
+				.WithIdentity($"{schedule.JobType.FullName}.trigger")
+				.WithCronSchedule(schedule.CronExpression)
+				.WithDescription(schedule.CronExpression)
+				.Build();
 		}
 	}
 }
