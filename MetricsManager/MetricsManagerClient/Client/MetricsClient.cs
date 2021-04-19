@@ -49,24 +49,25 @@ namespace MetricsManagerClient.Client
 				HttpMethod.Get,
 				$"{ManagerUri}/api/agents/read");
 
+			var response = new AllAgentsInfoResponse();
+
 			try
 			{
-				HttpResponseMessage response = _httpClient.SendAsync(httpRequest).Result;
+				HttpResponseMessage managerResponse = _httpClient.SendAsync(httpRequest).Result;
 
-				var responseStream = response.Content.ReadAsStreamAsync().Result;
+				var responseStream = managerResponse.Content.ReadAsStreamAsync().Result;
 				var streamReader = new StreamReader(responseStream);
 				var content = streamReader.ReadToEnd();
 
 				var options = new JsonSerializerOptions() { PropertyNameCaseInsensitive = true };
-				var returnResponse = JsonSerializer.Deserialize<AllAgentsInfoResponse>(content, options);
-				return returnResponse;
+				response = JsonSerializer.Deserialize<AllAgentsInfoResponse>(content, options);
 			}
 			catch (Exception ex)
 			{
 				_logger.LogError(ex.Message);
 			}
 
-			return null;
+			return response;
 		}
 
 		public AllMetricsResponse<T> GetMetrics<T>(IMetricGetByIntervalRequestByClient request, ApiNames apiName)
@@ -78,6 +79,8 @@ namespace MetricsManagerClient.Client
 				HttpMethod.Get,
 				$"{ManagerUri}/api/metrics/{apiNames[apiName]}/agent/{agentId}/from/{fromParameter}/to/{toParameter}");
 
+			var response = new AllMetricsResponse<T>();
+
 			try
 			{
 				HttpResponseMessage managerResponse = _httpClient.SendAsync(httpRequest).Result;
@@ -87,15 +90,14 @@ namespace MetricsManagerClient.Client
 				var content = streamReader.ReadToEnd();
 
 				var options = new JsonSerializerOptions() { PropertyNameCaseInsensitive = true };
-				var response = JsonSerializer.Deserialize<AllMetricsResponse<T>>(content, options);
-				return response;
+				response = JsonSerializer.Deserialize<AllMetricsResponse<T>>(content, options);
 			}
 			catch (Exception ex)
 			{
 				_logger.LogError(ex.Message);
 			}
 
-			return null;
+			return response;
 		}
 
 	}
