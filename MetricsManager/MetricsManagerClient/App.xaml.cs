@@ -1,7 +1,13 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+﻿using MetricsManagerClient.Client;
+using MetricsManagerClient.ScheduledWorks.Jobs;
+using MetricsManagerClient.ScheduledWorks.Tools;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using NLog.Web;
+using Quartz;
+using Quartz.Impl;
+using Quartz.Spi;
 using System;
 using System.Windows;
 
@@ -12,7 +18,11 @@ namespace MetricsManagerClient
     /// </summary>
     public partial class App : Application
     {
-		private readonly ServiceProvider _serviceProvider;
+		/// <summary>
+		/// Периодичность запуска задач по сбору метрик
+		/// </summary>
+		private const string CronExpression = "0/5 * * * * ?";
+
 		private IHost _host;
 		private NLog.Logger _logger;
 
@@ -43,6 +53,8 @@ namespace MetricsManagerClient
 		private void ConfigureServices(IServiceCollection services)
 		{
 			services.AddSingleton<MainWindow>();
+			// Клиенты для запросов к Агентам метрик
+			services.AddHttpClient<IMetricsClient, MetricsClient>();
 
 			JobsSheduleSettings(services);
 		}
@@ -94,21 +106,21 @@ namespace MetricsManagerClient
 		/// <param name="services"></param>
 		private void JobsSheduleSettings(IServiceCollection services)
 		{
-			//// Планировщики заданий
-			//services.AddSingleton<IJobFactory, SingletonJobFactory>();
-			//services.AddSingleton<ISchedulerFactory, StdSchedulerFactory>();
+			// Планировщики заданий
+			services.AddSingleton<IJobFactory, SingletonJobFactory>();
+			services.AddSingleton<ISchedulerFactory, StdSchedulerFactory>();
 
-			//// Задачи для разных метрик
-			//services.AddSingleton<CpuMetricJob>();
+			// Задачи для разных метрик
+			services.AddSingleton<CpuMetricJob>();
 			//services.AddSingleton<DotNetMetricJob>();
 			//services.AddSingleton<HddMetricJob>();
 			//services.AddSingleton<NetworkMetricJob>();
 			//services.AddSingleton<RamMetricJob>();
 
-			//// Периодичность запуска задач
-			//services.AddSingleton(new JobSchedule(
-			//	jobType: typeof(CpuMetricJob),
-			//	cronExpression: CronExpression));
+			// Периодичность запуска задач
+			services.AddSingleton(new JobSchedule(
+				jobType: typeof(CpuMetricJob),
+				cronExpression: CronExpression));
 			//services.AddSingleton(new JobSchedule(
 			//	jobType: typeof(DotNetMetricJob),
 			//	cronExpression: CronExpression));
@@ -122,19 +134,10 @@ namespace MetricsManagerClient
 			//	jobType: typeof(RamMetricJob),
 			//	cronExpression: CronExpression));
 
-			//// Сервис для запуска задач с помощью Quarz
-			//services.AddHostedService<QuartzHostedService>();
+			// Сервис для запуска задач с помощью Quarz
+			services.AddHostedService<QuartzHostedService>();
 
 		}
-
-		public static IHostBuilder CreateHostBuilder() =>
-		Host.CreateDefaultBuilder()
-		.ConfigureLogging(logging =>
-		{
-			logging.AddDebug();
-			logging.ClearProviders(); // создание провайдеров логирования
-			logging.SetMinimumLevel(LogLevel.Trace); // устанавливаем минимальный уровень логирования
-		}).UseNLog(); // добавляем библиотеку nlog
 
 	}
 }
