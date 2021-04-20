@@ -1,6 +1,4 @@
 ﻿using MetricsManagerClient.Requests;
-using MetricsManagerClient.Requests.Interfaces;
-using MetricsManagerClient.Responses;
 using MetricsManagerClient.Responses.FromManager;
 
 namespace MetricsManagerClient.Client

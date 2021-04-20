@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace MetricsManagerClient.Requests.Interfaces
+namespace MetricsManagerClient.Requests
 {
 	public interface IMetricGetByIntervalRequestByClient
 	{

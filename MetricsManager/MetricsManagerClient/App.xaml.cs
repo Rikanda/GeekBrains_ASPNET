@@ -1,4 +1,5 @@
 ﻿using MetricsManagerClient.Client;
+using MetricsManagerClient.Models;
 using MetricsManagerClient.ScheduledWorks.Jobs;
 using MetricsManagerClient.ScheduledWorks.Tools;
 using Microsoft.Extensions.DependencyInjection;
@@ -52,9 +53,13 @@ namespace MetricsManagerClient
 		/// <param name="services">Контейнер для сервисов</param>
 		private void ConfigureServices(IServiceCollection services)
 		{
+			// Главное окно
 			services.AddSingleton<MainWindow>();
-			// Клиенты для запросов к Агентам метрик
+			// Клиент для запросов к Менеджеру метрик
 			services.AddHttpClient<IMetricsClient, MetricsClient>();
+
+			// Модель собирающая Cpu метрики
+			services.AddSingleton<AllCpuMetrics>();
 
 			JobsSheduleSettings(services);
 		}

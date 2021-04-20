@@ -4,7 +4,7 @@ using System.Net.Http;
 using System.Text.Json;
 using System.IO;
 using System.Collections.Generic;
-using MetricsManagerClient.Requests.Interfaces;
+using MetricsManagerClient.Requests;
 using MetricsManagerClient.Responses.FromManager;
 
 namespace MetricsManagerClient.Client
@@ -43,8 +43,6 @@ namespace MetricsManagerClient.Client
 
 		public AllAgentsInfoResponse GetAllAgentsInfo()
 		{
-			var allAgentsInfo = new AllAgentsInfoResponse();
-
 			var httpRequest = new HttpRequestMessage(
 				HttpMethod.Get,
 				$"{ManagerUri}/api/agents/read");
