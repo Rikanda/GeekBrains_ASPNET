@@ -8,8 +8,8 @@
         Title="MainWindow" Height="480" Width="640" Background="Aqua">
     <Grid>
         <StackPanel>
-            <local:MaterialCards Grid.Column="0" Grid.Row="0" x:Name="CpuChart" Loaded="CpuChart_Loaded"></local:MaterialCards>
-            <Button Width="380" Height="48" Click="Button_Click" BorderBrush="Yellow" Background="BlueViolet" FontSize="24" Foreground="YellowGreen">Next</Button>
+            <local:CpuMaterialCards Grid.Column="0" Grid.Row="0" x:Name="CpuChart" Loaded="CpuChart_Loaded"></local:CpuMaterialCards>
+            <local:RamMaterialCards Grid.Column="1" Grid.Row="0" x:Name="RamChart" Loaded="RamChart_Loaded"></local:RamMaterialCards>
         </StackPanel>
     </Grid>
 </Window>

@@ -287,6 +287,9 @@
     </ApplicationDefinition>
     <Compile Include="Client\MetricsClient.cs" />
     <Compile Include="Client\IMetricsClient.cs" />
+    <Compile Include="RamMaterialCards.xaml.cs">
+      <DependentUpon>RamMaterialCards.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Models\AllCpuMetrics.cs" />
     <Compile Include="Models\Metrics\CpuMetric.cs" />
     <Compile Include="Responses\FromManager\AllAgentsInfoResponse.cs" />
@@ -300,6 +303,10 @@
     <Compile Include="ScheduledWorks\Tools\QuarzHostedService.cs" />
     <Compile Include="ScheduledWorks\Tools\SingletonJobFactory.cs" />
     <Compile Include="StartUp.cs" />
+    <Page Include="RamMaterialCards.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -312,14 +319,14 @@
       <DependentUpon>MainWindow.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
-    <Page Include="MaterialCards.xaml">
+    <Page Include="CpuMaterialCards.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="MaterialCards.xaml.cs">
-      <DependentUpon>MaterialCards.xaml</DependentUpon>
+    <Compile Include="CpuMaterialCards.xaml.cs">
+      <DependentUpon>CpuMaterialCards.xaml</DependentUpon>
     </Compile>
     <Compile Include="Properties\AssemblyInfo.cs">
       <SubType>Code</SubType>

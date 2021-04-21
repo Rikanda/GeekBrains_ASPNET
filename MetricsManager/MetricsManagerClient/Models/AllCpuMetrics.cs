@@ -1,4 +1,6 @@
 ﻿using MetricsManagerClient.Models.Metrics;
+using MetricsManagerClient.Responses.FromManager;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -9,65 +11,106 @@ using System.Threading.Tasks;
 
 namespace MetricsManagerClient.Models
 {
-	public class AllCpuMetrics : INotifyPropertyChanged
+	public class AllCpuMetrics
 	{
-		private readonly int Amount = 10;
+		/// <summary>Количество метрик хранящихся в классе</summary>
+		private readonly int Amount = 200;
 
-		public event PropertyChangedEventHandler PropertyChanged;
+		private readonly ILogger _logger;
 
 		public int AgentId { get; set; }
 
 		public List<CpuMetric> Metrics { get; set; }
 
-		public AllCpuMetrics()
+		//Делегат для события при изменении списка метрик
+		public delegate void MethodContainer();
+
+		//Событие при изменении списка метрик
+		public event MethodContainer onMetricsChange;
+
+		public AllCpuMetrics(ILogger<AllCpuMetrics> logger)
 		{
+			_logger = logger;
 			AgentId = 1;
+
 			Metrics = new List<CpuMetric>();
 
+			//Заполнение списка метрик пустыми значениями
 			var newMetric = new CpuMetric() { Time = DateTimeOffset.UtcNow, Value = 0 };
-
 			for (int i = 0; i < Amount; i++)
 			{
 				Metrics.Add(newMetric);
 				newMetric.Time -= TimeSpan.FromSeconds(5);
 			}
-
-			
 		}
 
+		/// <summary>
+		/// Последняя сохраненная временная метка в списке
+		/// </summary>
 		public DateTimeOffset LastTime
 		{
 			get
 			{
-				return Metrics.Last().Time;
+				return Metrics.Last().Time; ;
 			}
 		}
 
-		public void AddMetric(int value, DateTimeOffset time)
+		/// <summary>
+		/// Добавляет метрики в список
+		/// </summary>
+		/// <param name="metrics">Набор метрик для добавления</param>
+		public void AddMetrics(AllMetricsResponse<CpuMetricDto> metrics)
 		{
-			Metrics.Add(new CpuMetric() { Value = value, Time = time });
-			Metrics.RemoveAt(0);
-		}
+			_logger.LogDebug("Adding metrics ");
 
-		public List<CpuMetric> GetMetrics(int amount, DateTimeOffset time)
-		{
-			var newMetricsList = new List<CpuMetric>();
-
-			for (int i = 0; i < amount; i++)
+			//Убираем дубликат последней метрике если он есть
+			if (metrics.Metrics.Count != 0)
 			{
-
+				if(metrics.Metrics[0].Time == Metrics.Last().Time)
+				{
+					metrics.Metrics.RemoveAt(0);
+				}
 			}
 
-			return newMetricsList;
+			//Если еще остались новые метрики, то заносим их в список, удаля старые в начале
+			if (metrics.Metrics.Count != 0)
+			{
+				foreach (var metric in metrics.Metrics)
+				{
+					Metrics.Add(new CpuMetric() { Value = metric.Value, Time = metric.Time });
+					Metrics.RemoveAt(0);
+				}
+
+				//Отправляем сообщение о том, что список метрик изменился
+				onMetricsChange();
+				_logger.LogDebug($"Added {metrics.Metrics.Count} metrics");
+			}
 		}
 
-		public void OnPropertyChanged([CallerMemberName] string prop = "")
+		/// <summary>
+		/// Выдает список из значений последних сохраненных метрик
+		/// </summary>
+		/// <param name="amount">Количество значений которые нужно выдать</param>
+		/// <returns>Список значений метрик</returns>
+		public List<int> GetMetricsValues(int amount)
 		{
-			if (PropertyChanged != null)
-				PropertyChanged(this, new PropertyChangedEventArgs(prop));
+			var newValuesList = new List<int>();
+
+			//Проверка на то что запрашиваемое количество не больше того, которое хранится в списке
+			if(amount > Amount)
+			{
+				amount = Amount;
+			}
+			_logger.LogDebug($"Sended {amount} metrics");
+
+			//Составляем список который вернем по запросу
+			for (int i = Metrics.Count - amount; i < Metrics.Count; i++)
+			{
+				newValuesList.Add(Metrics[i].Value);
+			}
+
+			return newValuesList;
 		}
 
 	}
-
-
 }

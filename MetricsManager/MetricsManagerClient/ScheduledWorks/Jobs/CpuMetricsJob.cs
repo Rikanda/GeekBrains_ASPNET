@@ -15,12 +15,10 @@ namespace MetricsManagerClient.ScheduledWorks.Jobs
 	[DisallowConcurrentExecution]
 	public class CpuMetricJob : IJob
 	{
-		// Инжектируем DI провайдер
 		private readonly IServiceProvider _provider;
 		private IMetricsClient _client;
 		private readonly ILogger _logger;
 		private AllCpuMetrics _allCpuMetrics;
-
 
 		public CpuMetricJob(
 			IServiceProvider provider,
@@ -32,8 +30,6 @@ namespace MetricsManagerClient.ScheduledWorks.Jobs
 			_client = client;
 			_logger = logger;
 			_allCpuMetrics = allCpuMetrics;
-
-
 		}
 
 		public Task Execute(IJobExecutionContext context)
@@ -46,15 +42,12 @@ namespace MetricsManagerClient.ScheduledWorks.Jobs
 			var request = new CpuMetricGetByIntervalRequestByClient()
 			{
 				AgentId = _allCpuMetrics.AgentId,
-					FromTime = _allCpuMetrics.LastTime,
-					ToTime = DateTimeOffset.UtcNow,
+				FromTime = _allCpuMetrics.LastTime,
+				ToTime = DateTimeOffset.UtcNow,
 			};
 			metrics = _client.GetMetrics<CpuMetricDto>(request, ApiNames.Cpu);
 
-			foreach(var metric in metrics.Metrics)
-			{
-				_allCpuMetrics.AddMetric(metric.Value, metric.Time);
-			}
+			_allCpuMetrics.AddMetrics(metrics);
 
 			_logger.LogDebug("!= CpuMetricJob END - " +
 				$"Time {DateTimeOffset.UtcNow}");
