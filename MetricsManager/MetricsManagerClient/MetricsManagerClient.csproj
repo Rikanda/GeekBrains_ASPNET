@@ -287,9 +287,6 @@
     </ApplicationDefinition>
     <Compile Include="Client\MetricsClient.cs" />
     <Compile Include="Client\IMetricsClient.cs" />
-    <Compile Include="RamMaterialCards.xaml.cs">
-      <DependentUpon>RamMaterialCards.xaml</DependentUpon>
-    </Compile>
     <Compile Include="Models\AllCpuMetrics.cs" />
     <Compile Include="Models\Metrics\CpuMetric.cs" />
     <Compile Include="Responses\FromManager\AllAgentsInfoResponse.cs" />
@@ -302,11 +299,6 @@
     <Compile Include="ScheduledWorks\Tools\JobSchedule.cs" />
     <Compile Include="ScheduledWorks\Tools\QuarzHostedService.cs" />
     <Compile Include="ScheduledWorks\Tools\SingletonJobFactory.cs" />
-    <Compile Include="StartUp.cs" />
-    <Page Include="RamMaterialCards.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>

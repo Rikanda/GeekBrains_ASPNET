@@ -14,13 +14,29 @@ namespace MetricsManagerClient
 	/// </summary>
 	public partial class CpuMaterialCards : UserControl, INotifyPropertyChanged
 	{
-		/// <summary>Количество метрик отображающихся на графике</summary>
-		private readonly int Amount = 12;
+		private string currentLoad;
+		private string currentTime;
+		public string CurrentLoad 
+		{
+			get { return currentLoad; }
+			set 
+			{
+				currentLoad = value;
+				OnPropertyChanged("CurrentLoad");
+			}
+		}
 
-		private readonly ILogger _logger;
-		private AllCpuMetrics _allCpuMetrics;
+		public string CurrentTime
+		{
+			get { return currentTime; }
+			set
+			{
+				currentTime = value;
+				OnPropertyChanged("CurrentTime");
+			}
+		}
 
-		public CpuMaterialCards(ILogger<MainWindow> logger, AllCpuMetrics allCpuMetrics)
+		public CpuMaterialCards()
 		{
 			InitializeComponent();
 
@@ -28,31 +44,16 @@ namespace MetricsManagerClient
 			{
 				new ColumnSeries
 				{
-					Values = new ChartValues<double> { }
+					Values = new ChartValues<int> { }
 				}
 			};
 
+			CurrentLoad = "0";
+
 			DataContext = this;
 
-			_logger = logger;
-			_allCpuMetrics = allCpuMetrics;
-			//Подписка на событие изменения значений метрик в модели
-			allCpuMetrics.onMetricsChange += onDataChange;
 		}
 
-		public void onDataChange()
-		{
-			_logger.LogDebug("Data changed ");
-
-			List<int> values = _allCpuMetrics.GetMetricsValues(Amount);
-
-			ColumnServiesValues[0].Values.Clear();
-			foreach (var value in values)
-			{
-				ColumnServiesValues[0].Values.Add((double)value);
-			}
-
-		}
 
 		public SeriesCollection ColumnServiesValues { get; set; }
 

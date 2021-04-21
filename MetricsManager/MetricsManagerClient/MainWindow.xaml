@@ -5,11 +5,10 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:MetricsManagerClient"
         mc:Ignorable="d"
-        Title="MainWindow" Height="480" Width="640" Background="Aqua">
+        Title="MainWindow" Height="360" Width="500" Background="Aqua">
     <Grid>
         <StackPanel>
             <local:CpuMaterialCards Grid.Column="0" Grid.Row="0" x:Name="CpuChart" Loaded="CpuChart_Loaded"></local:CpuMaterialCards>
-            <local:RamMaterialCards Grid.Column="1" Grid.Row="0" x:Name="RamChart" Loaded="RamChart_Loaded"></local:RamMaterialCards>
         </StackPanel>
     </Grid>
 </Window>

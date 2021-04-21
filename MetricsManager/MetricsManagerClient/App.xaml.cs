@@ -22,7 +22,7 @@ namespace MetricsManagerClient
 		/// <summary>
 		/// Периодичность запуска задач по сбору метрик
 		/// </summary>
-		private const string CronExpression = "0/2 * * * * ?";
+		private const string CronExpression = "0/4 * * * * ?";
 
 		private IHost _host;
 		private NLog.Logger _logger;
