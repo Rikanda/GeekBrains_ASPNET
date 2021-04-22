@@ -300,7 +300,6 @@
     <Compile Include="Responses\FromManager\AllAgentsInfoResponse.cs" />
     <Compile Include="Responses\FromManager\RamMetricDto.cs" />
     <Compile Include="ScheduledWorks\Jobs\RamMetricsJob.cs" />
-    <Compile Include="Tools\MetricsEnums.cs" />
     <Compile Include="Requests\CpuMetricRequests.cs" />
     <Compile Include="Requests\IMetricRequests.cs" />
     <Compile Include="Responses\FromManager\AllMetricsResponse.cs" />
