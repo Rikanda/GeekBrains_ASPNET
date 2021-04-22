@@ -13,55 +13,55 @@ using Microsoft.Extensions.DependencyInjection;
 namespace MetricsManagerClient.ScheduledWorks.Jobs
 {
 	/// <summary>
-	/// Задача сбора Cpu метрик
+	/// Задача сбора Ram метрик
 	/// </summary>
 	[DisallowConcurrentExecution]
-	public class CpuMetricJob : IJob
+	public class RamMetricJob : IJob
 	{
 		private readonly IServiceProvider _provider;
 		private IMetricsClient _client;
 		private readonly ILogger _logger;
-		private IAllCpuMetrics _allCpuMetrics;
+		private IAllRamMetrics _allRamMetrics;
 
-		public CpuMetricJob(
+		public RamMetricJob(
 			IServiceProvider provider,
 			IMetricsClient client,
-			ILogger<CpuMetricJob> logger)
+			ILogger<RamMetricJob> logger)
 		{
 			_provider = provider;
 			_client = client;
 			_logger = logger;
-			_allCpuMetrics = _provider.GetService<IAllCpuMetrics>();
+			_allRamMetrics = _provider.GetService<IAllRamMetrics>();
 		}
 
 		public Task Execute(IJobExecutionContext context)
 		{
-			_logger.LogDebug("== CpuMetricJob START - " +
+			_logger.LogDebug("== RamMetricJob START - " +
 				$"Time {DateTimeOffset.UtcNow}");
 
-			var request = new CpuMetricGetByIntervalRequestByClient()
+			var request = new RamMetricGetByIntervalRequestByClient()
 			{
-				AgentId = _allCpuMetrics.AgentId,
-				FromTime = _allCpuMetrics.LastTime,
+				AgentId = _allRamMetrics.AgentId,
+				FromTime = _allRamMetrics.LastTime,
 				ToTime = DateTimeOffset.UtcNow,
 			};
 
-			var response = _client.GetMetrics<CpuMetricDto>(request, ApiNames.Cpu);
+			var response = _client.GetMetrics<RamMetricDto>(request, ApiNames.Ram);
 
 			// Перекладываем данные из Response в модели метрик
-			var metrics = new List<CpuMetric>();
+			var metrics = new List<RamMetric>();
 			foreach (var metricDto in response.Metrics)
 			{
-				metrics.Add(new CpuMetric
+				metrics.Add(new RamMetric
 				{
 					Time = metricDto.Time,
 					Value = metricDto.Value
 				});
 			}
 
-			_allCpuMetrics.AddMetrics(metrics);
+			_allRamMetrics.AddMetrics(metrics);
 
-			_logger.LogDebug("!= CpuMetricJob END - " +
+			_logger.LogDebug("!= RamMetricJob END - " +
 				$"Time {DateTimeOffset.UtcNow}");
 			return Task.CompletedTask;
 		}

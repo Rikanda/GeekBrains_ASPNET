@@ -22,7 +22,7 @@ namespace MetricsManagerClient
 		/// <summary>
 		/// Периодичность запуска задач по сбору метрик
 		/// </summary>
-		private const string CronExpression = "0/4 * * * * ?";
+		private const string CronExpression = "0/5 * * * * ?";
 
 		private IHost _host;
 		private NLog.Logger _logger;
@@ -55,11 +55,14 @@ namespace MetricsManagerClient
 		{
 			// Главное окно
 			services.AddSingleton<MainWindow>();
+
+			// Модели собирающие метрики
+			services.AddSingleton<IAllCpuMetrics, AllCpuMetrics>();
+			services.AddSingleton<IAllRamMetrics, AllRamMetrics>();
+
 			// Клиент для запросов к Менеджеру метрик
 			services.AddHttpClient<IMetricsClient, MetricsClient>();
 
-			// Модель собирающая Cpu метрики
-			services.AddSingleton<AllCpuMetrics>();
 
 			JobsSheduleSettings(services);
 		}
@@ -117,10 +120,14 @@ namespace MetricsManagerClient
 
 			// Задачи для разных метрик
 			services.AddSingleton<CpuMetricJob>();
+			services.AddSingleton<RamMetricJob>();
 
 			// Периодичность запуска задач
 			services.AddSingleton(new JobSchedule(
 				jobType: typeof(CpuMetricJob),
+				cronExpression: CronExpression));
+			services.AddSingleton(new JobSchedule(
+				jobType: typeof(RamMetricJob),
 				cronExpression: CronExpression));
 
 			// Сервис для запуска задач с помощью Quarz

@@ -12,11 +12,12 @@ using System.Threading.Tasks;
 
 namespace MetricsManagerClient.Models
 {
-	public interface IAllCpuMetrics : IAllMetrics<CpuMetric>
+
+	public interface IAllRamMetrics : IAllMetrics<RamMetric>
 	{
 	}
 
-	public class AllCpuMetrics : IAllCpuMetrics
+	public class AllRamMetrics : IAllRamMetrics
 	{
 		/// <summary>Количество метрик хранящихся в классе</summary>
 		private readonly int Amount = 200;
@@ -25,20 +26,20 @@ namespace MetricsManagerClient.Models
 
 		public int AgentId { get; set; }
 
-		public List<CpuMetric> Metrics { get; set; }
+		public List<RamMetric> Metrics { get; set; }
 
 		//Событие при изменении списка метрик
 		public event EventHandler OnMetricsChange;
 
-		public AllCpuMetrics(ILogger<AllCpuMetrics> logger)
+		public AllRamMetrics(ILogger<AllRamMetrics> logger)
 		{
 			_logger = logger;
 			AgentId = 1;
 
-			Metrics = new List<CpuMetric>();
+			Metrics = new List<RamMetric>();
 
 			//Заполнение списка метрик пустыми значениями
-			var newMetric = new CpuMetric() { Time = DateTimeOffset.UtcNow, Value = 0 };
+			var newMetric = new RamMetric() { Time = DateTimeOffset.UtcNow, Value = 0 };
 			for (int i = 0; i < Amount; i++)
 			{
 				Metrics.Add(newMetric);
@@ -61,14 +62,14 @@ namespace MetricsManagerClient.Models
 		/// Добавляет метрики в список
 		/// </summary>
 		/// <param name="metrics">Набор метрик для добавления</param>
-		public void AddMetrics(List<CpuMetric> metrics)
+		public void AddMetrics(List<RamMetric> metrics)
 		{
 			_logger.LogDebug("Adding metrics ");
 
 			//Убираем дубликат последней метрике если он есть
 			if (metrics.Count != 0)
 			{
-				if(metrics[0].Time == Metrics.Last().Time)
+				if (metrics[0].Time == Metrics.Last().Time)
 				{
 					metrics.RemoveAt(0);
 				}
@@ -96,7 +97,7 @@ namespace MetricsManagerClient.Models
 			var newValuesList = new List<int>();
 
 			//Проверка на то что запрашиваемое количество не больше того, которое хранится в списке
-			if(amount > Amount)
+			if (amount > Amount)
 			{
 				amount = Amount;
 			}

@@ -4,25 +4,33 @@ using MetricsManagerClient.Models;
 using Microsoft.Extensions.Logging;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.Windows;
 using System.Windows.Controls;
 
-namespace MetricsManagerClient
+namespace MetricsManagerClient.Charts
 {
 	/// <summary>
 	/// Interaction logic for MaterialCards.xaml
 	/// </summary>
-	public partial class CpuMaterialCards : UserControl, INotifyPropertyChanged
+	public partial class MaterialCardsRam : UserControl, INotifyPropertyChanged
 	{
-		private string currentLoad;
+		private  readonly string maxValue;
+		private string currentMetric;
 		private string currentTime;
-		public string CurrentLoad 
+
+		public string MaxValue
 		{
-			get { return currentLoad; }
-			set 
+			get { return maxValue; }
+		}
+
+		public string CurrentMetric
+		{
+			get { return currentMetric; }
+			set
 			{
-				currentLoad = value;
-				OnPropertyChanged("CurrentLoad");
+				currentMetric = value;
+				OnPropertyChanged("CurrentMetric");
 			}
 		}
 
@@ -36,8 +44,9 @@ namespace MetricsManagerClient
 			}
 		}
 
-		public CpuMaterialCards()
+		public MaterialCardsRam()
 		{
+			maxValue = (new Microsoft.VisualBasic.Devices.ComputerInfo().TotalPhysicalMemory >> 20).ToString();
 			InitializeComponent();
 
 			ColumnServiesValues = new SeriesCollection
@@ -48,7 +57,7 @@ namespace MetricsManagerClient
 				}
 			};
 
-			CurrentLoad = "0";
+			CurrentMetric = "0";
 
 			DataContext = this;
 

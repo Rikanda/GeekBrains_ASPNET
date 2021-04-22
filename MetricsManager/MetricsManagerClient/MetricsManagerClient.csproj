@@ -185,6 +185,7 @@
     <Reference Include="Microsoft.Net.Http.Headers, Version=2.2.0.0, Culture=neutral, PublicKeyToken=adb9793829ddae60, processorArchitecture=MSIL">
       <HintPath>..\packages\Microsoft.Net.Http.Headers.2.2.0\lib\netstandard2.0\Microsoft.Net.Http.Headers.dll</HintPath>
     </Reference>
+    <Reference Include="Microsoft.VisualBasic" />
     <Reference Include="Newtonsoft.Json, Version=9.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <HintPath>..\packages\Newtonsoft.Json.9.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
     </Reference>
@@ -285,11 +286,20 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="Charts\MaterialCardsRam.xaml.cs">
+      <DependentUpon>MaterialCardsRam.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Client\MetricsClient.cs" />
     <Compile Include="Client\IMetricsClient.cs" />
     <Compile Include="Models\AllCpuMetrics.cs" />
+    <Compile Include="Models\AllRamMetric.cs" />
+    <Compile Include="Models\Interfaces\IAllMetrics.cs" />
     <Compile Include="Models\Metrics\CpuMetric.cs" />
+    <Compile Include="Models\Metrics\RamMetric.cs" />
+    <Compile Include="Requests\RamMetricRequest.cs" />
     <Compile Include="Responses\FromManager\AllAgentsInfoResponse.cs" />
+    <Compile Include="Responses\FromManager\RamMetricDto.cs" />
+    <Compile Include="ScheduledWorks\Jobs\RamMetricsJob.cs" />
     <Compile Include="Tools\MetricsEnums.cs" />
     <Compile Include="Requests\CpuMetricRequests.cs" />
     <Compile Include="Requests\IMetricRequests.cs" />
@@ -299,6 +309,10 @@
     <Compile Include="ScheduledWorks\Tools\JobSchedule.cs" />
     <Compile Include="ScheduledWorks\Tools\QuarzHostedService.cs" />
     <Compile Include="ScheduledWorks\Tools\SingletonJobFactory.cs" />
+    <Page Include="Charts\MaterialCardsRam.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -311,14 +325,14 @@
       <DependentUpon>MainWindow.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
-    <Page Include="CpuMaterialCards.xaml">
+    <Page Include="Charts\MaterialCardsCpu.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="CpuMaterialCards.xaml.cs">
-      <DependentUpon>CpuMaterialCards.xaml</DependentUpon>
+    <Compile Include="Charts\MaterialCardsCpu.xaml.cs">
+      <DependentUpon>MaterialCardsCpu.xaml</DependentUpon>
     </Compile>
     <Compile Include="Properties\AssemblyInfo.cs">
       <SubType>Code</SubType>
