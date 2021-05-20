@@ -39,9 +39,7 @@ namespace MetricsManager.DAL.Migrations
 
 			//! DEBUG Тестовые данные по агентам
 			Insert.IntoTable(mySql.AgentsTable)
-				.Row(new { AgentId = 1, AgentUri = "http://localhost:5000" });
-			Insert.IntoTable(mySql.AgentsTable)
-				.Row(new { AgentId = 2, AgentUri = "http://localhost:5000" });
+				.Row(new { AgentId = 1, AgentUri = "http://metricsagent.verm-v.ru" });
 		}
 
 		public override void Down()
